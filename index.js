@@ -9,7 +9,8 @@ for (var i = 0; i < 5; i++) {
   years.push(`${currentYear + i}`)
 }
 
-const terms = ['1', '2', '3', '4', '5', '6']
+const terms = ['1', '2']
+const periods = ['1', '2', '3', '4', '5', '6']
 
 const files = [
   {
@@ -40,16 +41,27 @@ inquirer.prompt([
     type: 'list'
   },
   {
+    message: 'Välj period',
+    name: 'period',
+    choices: periods,
+    type: 'list'
+  },
+  {
     message: 'Vad vill du skapa?',
-    name: 'files',
+    name: 'filesToCreate',
     choices: files,
     type: 'checkbox'
   }
 ])
-.then(({year, term, files}) => {
-  const tasks = []
-  if (files.includes('courses')) {
-    tasks.push(createCoursesFile)
-  }
-  return Promise.each(tasks)
+.then(({year, term, filesToCreate, period}) => {
+  console.log('ok, börjar med att skapa csvfil med kurserna...')
+  createCoursesFile({year, term, period})
+    .then(() => {
+      if (filesToCreate.includes('enrollments')) {
+        console.log('Och nu skapar vi fil med enrollments')
+        return Promise.reject('TODO: call enrollments!')
+      } else {
+        return Promise.resolve()
+      }
+    })
 }).catch(e => console.error(e))

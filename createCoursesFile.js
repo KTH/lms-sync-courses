@@ -9,13 +9,7 @@ canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
 const csvFile = require('./csvFile')
 const fs = Promise.promisifyAll(require('fs'))
-
-const termin = process.env.TERMIN
-const period = process.env.PERIOD
-
-console.log('creating csv file using settings', termin, period)
-
-const fileName = `csv/courses-${termin}-${period}.csv`
+let fileName
 
 function get (url) {
   // console.log(url)
@@ -33,7 +27,7 @@ function get (url) {
 * return example:
 * {"round":{"courseCode":"MJ2244","startTerm":"20171","roundId":"1","xmlns":""},"periods":[{"term":"20171","number":"3"}]}
 */
-function addPeriods (courseRounds) {
+function addPeriods (courseRounds, termin) {
   function addInfoForCourseRound ([round]) {
     return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
     .then(parseString)
@@ -115,13 +109,16 @@ function deleteFile () {
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
-module.exports = function() {
-    return deleteFile()
+module.exports = function ({term, year, period}) {
+  const termin = `${year}:${term}`
+  fileName = `csv/courses-${termin}-${period}.csv`
+  console.log('filename:' + fileName)
+  return deleteFile()
     .then(() => get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`))
     .then(parseString)
     .then(extractRelevantData)
     .then(courseRounds => filterCoursesByCount(courseRounds, courses => courses.length === 1))
-    .then(addPeriods)
+    .then(courseRounds => addPeriods(courseRounds, termin))
     .then(coursesWithPeriods => coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period)))
     .then(buildCanvasCourseObjects)
     .then(writeCsvFile)
