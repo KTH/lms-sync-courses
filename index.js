@@ -5,7 +5,7 @@ require('colors')
 const currentYear = moment().year()
 const years = []
 const createCoursesFile = require('./createCoursesFile.js')
-for (var i = 0; i < 5; i++) {
+for (var i = -2; i < 4; i++) {
   years.push(`${currentYear + i}`)
 }
 
