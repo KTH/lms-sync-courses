@@ -1,19 +1,20 @@
+require('dotenv').config()
 const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const parseString = Promise.promisify(require('xml2js').parseString)
 const {groupBy} = require('lodash')
 // const config = require('../server/init/configuration')
 const canvasUtilities = require('kth-canvas-utilities')
-canvasUtilities.init(config.full.canvas.apiUrl, config.secure.canvas.apiKey)
+canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
-const csvFile = require('../csvFile')
+const csvFile = require('./csvFile')
 const fs = Promise.promisifyAll(require('fs'))
 
 const termin = process.env.TERMIN
 const period = process.env.PERIOD
 
 console.log('creating csv file using settings', termin, period)
-//
+
 const fileName = `csv/courses-${termin}-${period}.csv`
 
 function get (url) {
