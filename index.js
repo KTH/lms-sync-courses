@@ -62,7 +62,7 @@ inquirer.prompt([
 ])
 .then(({year, term, filesToCreate, period}) => {
   console.log('ok, börjar med att skapa csvfil med kurserna...'.green)
-  createCoursesFile({year, term, period})
+  return createCoursesFile({year, term, period})
     .then(() => {
       if (filesToCreate.includes('enrollments')) {
         console.log('Och nu skapar vi fil med enrollments'.green)
@@ -71,4 +71,7 @@ inquirer.prompt([
         return Promise.resolve()
       }
     })
-}).catch(e => console.error(e))
+
+})
+.then(()=>console.log('😀 Done!'.green))
+.catch(e => console.error(e))
