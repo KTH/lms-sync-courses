@@ -2,7 +2,7 @@ const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const parseString = Promise.promisify(require('xml2js').parseString)
 const {groupBy} = require('lodash')
-const config = require('../server/init/configuration')
+// const config = require('../server/init/configuration')
 const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init(config.full.canvas.apiUrl, config.secure.canvas.apiKey)
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
