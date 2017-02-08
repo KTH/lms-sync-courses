@@ -1,7 +1,7 @@
 var inquirer = require('inquirer')
 const moment = require('moment')
 const Promise = require('bluebird')
-
+require('colors')
 const currentYear = moment().year()
 const years = []
 const createCoursesFile = require('./createCoursesFile.js')
@@ -54,11 +54,11 @@ inquirer.prompt([
   }
 ])
 .then(({year, term, filesToCreate, period}) => {
-  console.log('ok, börjar med att skapa csvfil med kurserna...')
+  console.log('ok, börjar med att skapa csvfil med kurserna...'.green)
   createCoursesFile({year, term, period})
     .then(() => {
       if (filesToCreate.includes('enrollments')) {
-        console.log('Och nu skapar vi fil med enrollments')
+        console.log('Och nu skapar vi fil med enrollments'.green)
         return Promise.reject('TODO: call enrollments!')
       } else {
         return Promise.resolve()
