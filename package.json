@@ -4,7 +4,8 @@
   "description": "A kth specific library for creating and managing courses in Canvas LMS",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "npm test",
+    "create-courses-file": "node createCoursesFile.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,16 @@
   "bugs": {
     "url": "https://github.com/KTH/lms-courses/issues"
   },
-  "homepage": "https://github.com/KTH/lms-courses#readme"
+  "homepage": "https://github.com/KTH/lms-courses#readme",
+  "dependencies": {
+    "ldapjs": "^1.0.1",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1",
+    "xml2js": "^0.4.17"
+  },
+  "devDependencies": {
+    "rewire": "^2.5.2",
+    "sinon": "^1.17.7",
+    "tap": "^10.1.0"
+  }
 }
