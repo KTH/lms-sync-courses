@@ -9,7 +9,14 @@ for (var i = -2; i < 4; i++) {
   years.push(`${currentYear + i}`)
 }
 
-const terms = ['1', '2']
+const terms = [
+  {
+    name: 'Hösttermin',
+    value: '1'},
+  {
+    name: 'Vårtermin',
+    value: '2'
+  }]
 const periods = ['1', '2', '3', '4', '5', '6']
 
 const files = [
