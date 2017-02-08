@@ -1,0 +1,19 @@
+{
+  "name": "lms-courses",
+  "version": "0.1.0",
+  "description": "A kth specific library for creating and managing courses in Canvas LMS",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KTH/lms-courses.git"
+  },
+  "author": "emilsten@kth.se",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KTH/lms-courses/issues"
+  },
+  "homepage": "https://github.com/KTH/lms-courses#readme"
+}
