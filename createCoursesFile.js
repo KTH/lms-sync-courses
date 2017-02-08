@@ -115,14 +115,15 @@ function deleteFile () {
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
-// Start executing
-deleteFile()
-.then(() => get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`))
-.then(parseString)
-.then(extractRelevantData)
-.then(courseRounds => filterCoursesByCount(courseRounds, courses => courses.length === 1))
-.then(addPeriods)
-.then(coursesWithPeriods => coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period)))
-.then(buildCanvasCourseObjects)
-.then(writeCsvFile)
-.catch(e => console.error(e))
+module.exports = function() {
+    return deleteFile()
+    .then(() => get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`))
+    .then(parseString)
+    .then(extractRelevantData)
+    .then(courseRounds => filterCoursesByCount(courseRounds, courses => courses.length === 1))
+    .then(addPeriods)
+    .then(coursesWithPeriods => coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period)))
+    .then(buildCanvasCourseObjects)
+    .then(writeCsvFile)
+    .catch(e => console.error(e))
+}
