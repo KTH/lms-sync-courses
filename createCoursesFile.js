@@ -109,10 +109,14 @@ function deleteFile () {
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
-function getCourseRounds(termin){
+function getCourseRounds (termin) {
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
+}
+
+function filterCoursesDuringPeriod (coursesWithPeriods, period) {
+  return coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period))
 }
 
 module.exports = function ({term, year, period}) {
@@ -120,10 +124,10 @@ module.exports = function ({term, year, period}) {
   fileName = `csv/courses-${termin}-${period}.csv`
   console.log('filename:' + fileName)
   return deleteFile()
-    .then(()=>getCourseRounds(termin))
+    .then(() => getCourseRounds(termin))
     .then(courseRounds => filterCoursesByCount(courseRounds, courses => courses.length === 1))
     .then(courseRounds => addPeriods(courseRounds, termin))
-    .then(coursesWithPeriods => coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period)))
+    .then(coursesWithPeriods => filterCoursesDuringPeriod(coursesWithPeriods, period))
     .then(buildCanvasCourseObjects)
     .then(writeCsvFile)
     .catch(e => console.error(e))
