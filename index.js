@@ -20,10 +20,10 @@ for (var i = -2; i < 4; i++) {
 const terms = [
   {
     name: 'Hösttermin',
-    value: '1'},
+    value: '2'},
   {
     name: 'Vårtermin',
-    value: '2'
+    value: '1'
   }]
 const periods = ['1', '2', '3', '4', '5', '6']
 
