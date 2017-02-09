@@ -4,7 +4,8 @@
   "description": "A kth specific library for creating and managing courses in Canvas LMS",
   "main": "index.js",
   "scripts": {
-    "test": "npm test",
+    "test": "tape \"test/unit/**/*.js\"",
+    "test:integration": "tape \"test/integration/**/*.js\"",
     "start": "node index.js",
     "create-courses-file": "node createCoursesFile.js"
   },
@@ -28,6 +29,7 @@
     "moment": "^2.17.1",
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
+    "tape": "^4.6.3",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
