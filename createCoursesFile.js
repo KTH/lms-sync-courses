@@ -109,14 +109,18 @@ function deleteFile () {
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
+function getCourseRounds(termin){
+  return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
+  .then(parseString)
+  .then(extractRelevantData)
+}
+
 module.exports = function ({term, year, period}) {
   const termin = `${year}:${term}`
   fileName = `csv/courses-${termin}-${period}.csv`
   console.log('filename:' + fileName)
   return deleteFile()
-    .then(() => get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`))
-    .then(parseString)
-    .then(extractRelevantData)
+    .then(()=>getCourseRounds(termin))
     .then(courseRounds => filterCoursesByCount(courseRounds, courses => courses.length === 1))
     .then(courseRounds => addPeriods(courseRounds, termin))
     .then(coursesWithPeriods => coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period)))
