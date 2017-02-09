@@ -58,11 +58,17 @@ function addPeriods (courseRounds, termin) {
 */
 function filterCourses (courseRounds, filterFn) {
   const courseRoundsGrouped = groupBy(courseRounds, courseRound => courseRound.courseCode)
+  console.log('Filter:',JSON.stringify(courseRoundsGrouped, null, 4))
 
   return Object.getOwnPropertyNames(courseRoundsGrouped)
   .map(name => courseRoundsGrouped[name])
   .filter(filterFn)
 }
+
+function groupByCourseCode() {
+
+}
+
 
 function extractRelevantData (courseRounds) {
   return courseRounds.courseRoundList.courseRound.map(round => round.$)
@@ -141,16 +147,9 @@ function getCourseRounds(termin){
       return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
       .then(parseString)
       .then(({courseRound:{$:info,tutoringLanguage}})=>{
-        // console.log(args)
         round.startWeek = info.startWeek
         const [{_:lang}] = tutoringLanguage
         round.lang = lang
-        // try{
-        //     const [{_:lang}] = args
-        //     round.tutoringLanguage = lang
-        // }catch(e){
-        //   console.log('could not get language from ', args)
-        // }
         return round
       })
     })
@@ -161,11 +160,6 @@ function getCourseRounds(termin){
   .then(parseString)
   .then(extractRelevantData)
   .then(addTutoringLanguageAndStartDate)
-  .then(roundsWithLanguages => {
-    console.log('roundsWithLanguages', JSON.stringify( roundsWithLanguages ))
-    return roundsWithLanguages
-  })
-  console.log('TODO: should fetch data about language and start date')
 }
 
 
@@ -181,17 +175,21 @@ function filterCoursesDuringPeriod(coursesWithPeriods, period){
   return coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period))
 }
 
+function filter(courseRounds){
+  return filterCourses(courseRounds, courses => courses.length === 1)
+}
+
 module.exports = function ({term, year, period}) {
   const termin = `${year}:${term}`
   fileName = `csv/courses-${termin}-${period}.csv`
 
   return deleteFile()
     .then(()=>getCourseRounds(termin))
-    .then(courseRounds => filterCourses(courseRounds, courses => courses.length === 1))
-    .then(coursesByCount => {
-      console.log('coursesByCount', JSON.stringify( coursesByCount ))
-      return coursesByCount
+    .then(courseRounds => {
+      console.log('courseRounds', JSON.stringify( courseRounds ))
+      return courseRounds
     })
+    .then(groupByCourseCode)
       /*
       [
       [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}],

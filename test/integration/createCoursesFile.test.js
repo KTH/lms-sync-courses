@@ -6,7 +6,8 @@ test('should create the file with correct name', t => {
   t.plan(1)
   fs.removeSync('csv')
 
-  createCoursesFile({term: '2', year: '2017', period: '4'})
+  // Choose autumn, but a period on the spring to get a smaller amount of courses
+  createCoursesFile({term: '1', year: '2017', period: '3'})
   .then(() => {
     t.ok(fs.existsSync('csv/courses-2017:2-4.csv'))
   })
