@@ -5,6 +5,13 @@ require('colors')
 const currentYear = moment().year()
 const years = []
 const createCoursesFile = require('./createCoursesFile.js')
+
+console.log(`
+  Detta är ett program för att ta
+  fram alla kurser och studenter under en
+  viss period ur KTHs system
+  och spara dem i csv-filer, för import till Canvas LMS`.greenBG)
+
 for (var i = -2; i < 4; i++) {
   years.push(`${currentYear + i}`)
 }
@@ -18,20 +25,6 @@ const terms = [
     value: '2'
   }]
 const periods = ['1', '2', '3', '4', '5', '6']
-
-const files = [
-  {
-    name: 'Csv-fil med kurser',
-    value: 'courses',
-    disabled: true,
-    checked: true
-  },
-  {
-    name: 'Csv-fil med enrollments för alla kurser',
-    value: 'enrollments',
-    checked: true
-  }
-]
 
 inquirer.prompt([
   {
@@ -52,26 +45,15 @@ inquirer.prompt([
     name: 'period',
     choices: periods,
     type: 'list'
-  },
-  {
-    message: 'Vad vill du skapa?',
-    name: 'filesToCreate',
-    choices: files,
-    type: 'checkbox'
   }
 ])
-.then(({year, term, filesToCreate, period}) => {
+.then(({year, term, period}) => {
   console.log('ok, börjar med att skapa csvfil med kurserna...'.green)
   return createCoursesFile({year, term, period})
     .then(() => {
-      if (filesToCreate.includes('enrollments')) {
-        console.log('Och nu skapar vi fil med enrollments'.green)
-        return Promise.reject('TODO: call enrollments!')
-      } else {
-        return Promise.resolve()
-      }
+      console.log('Och nu skapar vi fil med enrollments'.green)
+      return Promise.reject('TODO: call enrollments!'.red)
     })
-
 })
 .then(()=>console.log('😀 Done!'.green))
 .catch(e => console.error(e))
