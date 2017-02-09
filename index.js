@@ -5,6 +5,7 @@ require('colors')
 const currentYear = moment().year()
 const years = []
 const createCoursesFile = require('./createCoursesFile.js')
+const createEnrollmentsFile = require('./createEnrollmentsFile.js')
 
 console.log(`
   Detta är ett program för att ta
@@ -54,14 +55,16 @@ inquirer.prompt([
       console.log('Och nu skapar vi fil med enrollments'.green)
       const {ugUsername, ugUrl, ugPwd} = process.env
       if(!(ugUsername && ugUrl && ugPwd)){
-        console.log(`Kan inte skapa csvfil med alla användare i
+        console.log(`
+          Kan inte skapa csvfil med alla användare i
           kurser (enrollments) eftersom alla hemligheter inte är angivna.
           Jag behöver ugUsername, ugUrl och ugPwd i filen .env.
           Hoppar över att skapa denna fil.
           `.yellow)
         return Promise.resolve()
+      }else{
+        return createEnrollmentsFile({ugUsername, ugUrl, ugPwd, year, term, period})
       }
-      return Promise.reject('TODO: call enrollments!'.red)
     })
 })
 .then(()=>console.log('😀 Done!'.green))

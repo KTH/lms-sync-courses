@@ -1,26 +1,16 @@
 const Promise = require('bluebird')
 const ldap = require('ldapjs')
 const fs = Promise.promisifyAll(require('fs'))
-const config = require('../server/init/configuration')
-const csvFile = require('../csvFile')
+const csvFile = require('./csvFile')
 require('colors')
 
-const termin = process.env.TERMIN
-const period = process.env.PERIOD
-
 const attributes = ['ugKthid', 'name']
-const fileName = `csv/enrollments-${termin}-${period}.csv`
-const coursesFileName = `csv/courses-${termin}-${period}.csv`
 const columns = [
   'course_id',
   'user_id',
   'role',
   'status'
 ]
-
-const ldapClient = Promise.promisifyAll(ldap.createClient({
-  url: config.secure.ldap.client.url
-}))
 
 /*
 * For string array with ldap keys for users, fetch every user object
@@ -131,20 +121,33 @@ function deleteFile () {
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
-function bindLdapClient () {
-  return ldapClient.bindAsync(config.secure.ldap.bind.username, config.secure.ldap.bind.password)
+function bindLdapClient (username, password) {
+  return ldapClient.bindAsync(username, password)
 }
 
 function createFileAndWriteHeadlines () {
   return csvFile.writeLine(columns, fileName)
 }
 
-// Run the script
-deleteFile()
-.then(bindLdapClient)
-.then(createFileAndWriteHeadlines)
-.then(getAllCoursesAsLinesArrays)
-.then(linesArrays => Promise.mapSeries(linesArrays, writeUsersForCourse)) // write all users for each course to the file
-.then(() => console.log('Done!'.green))
-.catch(e => console.error(e))
-.finally(() => ldapClient.unbindAsync())
+let ldapClient
+let fileName
+let coursesFileName
+let termin
+module.exports = function ({ugUsername, ugUrl, ugPwd, term, year, period}) {
+  termin = `${year}:${term}`
+  fileName = `csv/enrollments-${termin}-${period}.csv`
+  coursesFileName = `csv/courses-${termin}-${period}.csv`
+
+  ldapClient = Promise.promisifyAll(ldap.createClient({
+    url: ugUrl
+  }))
+
+  return deleteFile()
+  .then(() => bindLdapClient(ugUsername, ugPwd))
+  .then(createFileAndWriteHeadlines)
+  .then(getAllCoursesAsLinesArrays)
+  .then(linesArrays => Promise.mapSeries(linesArrays, writeUsersForCourse)) // write all users for each course to the file
+  .then(() => console.log('Done!'.green))
+  .catch(e => console.error(e))
+  .finally(() => ldapClient.unbindAsync())
+}
