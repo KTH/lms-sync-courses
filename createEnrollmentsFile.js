@@ -103,7 +103,7 @@ function writeUsersForCourse ([sisCourseId, courseCode, name]) {
   ])
   )
 }
-
+//
 /*
 * Reads the courses file and splits it's content into an array of arrays.
 * One array per line, containing one array per column
