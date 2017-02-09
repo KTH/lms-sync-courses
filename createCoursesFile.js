@@ -12,7 +12,7 @@ const fs = Promise.promisifyAll(require('fs'))
 let fileName
 
 function get (url) {
-  // console.log(url)
+  console.log(url)
   return rp({
     url,
     method: 'GET',
@@ -41,7 +41,22 @@ function addPeriods (courseRounds, termin) {
   return Promise.map(courseRounds, addInfoForCourseRound)
 }
 
-function filterCoursesByCount (courseRounds, filterFn) {
+
+/*
+ returns:
+ [
+  [
+    {"courseCode":"ML1000","startTerm":"20172","roundId":"1","xmlns":""},
+    {"courseCode":"ML1000","startTerm":"20172","roundId":"2","xmlns":""}
+  ],
+  [
+    {"courseCode":"HF0017","startTerm":"20172","roundId":"2","xmlns":""},
+    {"courseCode":"HF0017","startTerm":"20172","roundId":"1","xmlns":""}
+  ],[
+  {"courseCode":"HE1026","startTerm":"20172","roundId":"2","xmlns":""},
+  ...
+*/
+function filterCourses (courseRounds, filterFn) {
   const courseRoundsGrouped = groupBy(courseRounds, courseRound => courseRound.courseCode)
 
   return Object.getOwnPropertyNames(courseRoundsGrouped)
@@ -108,13 +123,60 @@ function deleteFile () {
   return fs.unlinkAsync(fileName)
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
-
+/**
+@arg {string} termin example: '2017:1'
+* returns:
+    [
+      {"courseCode":"ML1000","startTerm":"20172","roundId":"1","xmlns":""},
+      {"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}, ...
+    ]
+*/
 function getCourseRounds(termin){
+  /*
+  *  @param {array} arrayOfCourseRounds example: [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}]
+  * @return {array} arrayOfCourseRounds example: [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":"", tutoringLanguage: "Swedish"}]
+  */
+  function addTutoringLanguageAndStartDate(courseRounds) {
+    return Promise.map(courseRounds, round => {
+      return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
+      .then(parseString)
+      .then(({courseRound:{$:info,tutoringLanguage}})=>{
+        // console.log(args)
+        round.startWeek = info.startWeek
+        const [{_:lang}] = tutoringLanguage
+        round.lang = lang
+        // try{
+        //     const [{_:lang}] = args
+        //     round.tutoringLanguage = lang
+        // }catch(e){
+        //   console.log('could not get language from ', args)
+        // }
+        return round
+      })
+    })
+  }
+
+
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
+  .then(addTutoringLanguageAndStartDate)
+  .then(roundsWithLanguages => {
+    console.log('roundsWithLanguages', JSON.stringify( roundsWithLanguages ))
+    return roundsWithLanguages
+  })
+  console.log('TODO: should fetch data about language and start date')
 }
 
+
+/*
+returns:
+[
+  [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}],
+  [{"courseCode":"EH2720","startTerm":"20172","roundId":"1","xmlns":""}],
+  [{"courseCode":"EF2215","startTerm":"20172","roundId":"1","xmlns":""}], ...
+]
+*/
 function filterCoursesDuringPeriod(coursesWithPeriods, period){
   return coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period))
 }
@@ -125,13 +187,11 @@ module.exports = function ({term, year, period}) {
 
   return deleteFile()
     .then(()=>getCourseRounds(termin))
-      /*
-      [
-      {"courseCode":"ML1000","startTerm":"20172","roundId":"1","xmlns":""},
-      {"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}, ...
-    ]
-      */
-    .then(courseRounds => filterCoursesByCount(courseRounds, courses => courses.length === 1))
+    .then(courseRounds => filterCourses(courseRounds, courses => courses.length === 1))
+    .then(coursesByCount => {
+      console.log('coursesByCount', JSON.stringify( coursesByCount ))
+      return coursesByCount
+    })
       /*
       [
       [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}],
@@ -191,10 +251,6 @@ module.exports = function ({term, year, period}) {
     },
     {"course":{"course": ...
     */
-    .then(canvasCourseObjects => {
-      console.log('canvasCourseObjects', JSON.stringify( canvasCourseObjects ))
-      return canvasCourseObjects
-    })
     .then(writeCsvFile)
     .catch(e => console.error(e))
 }
