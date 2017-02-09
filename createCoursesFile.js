@@ -122,21 +122,16 @@ function filterCoursesDuringPeriod(coursesWithPeriods, period){
 module.exports = function ({term, year, period}) {
   const termin = `${year}:${term}`
   fileName = `csv/courses-${termin}-${period}.csv`
-  console.log('filename:' + fileName)
+
   return deleteFile()
     .then(()=>getCourseRounds(termin))
-    .then(courseRounds => {
       /*
       [
       {"courseCode":"ML1000","startTerm":"20172","roundId":"1","xmlns":""},
       {"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}, ...
     ]
       */
-      // console.log('courseRounds', JSON.stringify( courseRounds ))
-      return courseRounds
-    })
     .then(courseRounds => filterCoursesByCount(courseRounds, courses => courses.length === 1))
-    .then(courseRounds => {
       /*
       [
       [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}],
@@ -145,10 +140,7 @@ module.exports = function ({term, year, period}) {
     ]
       */
       // console.log('courseRounds filtered', JSON.stringify( courseRounds ))
-      return courseRounds
-    })
     .then(courseRounds => addPeriods(courseRounds, termin))
-    .then(courseRounds => {
       /*
        [
       {
@@ -164,10 +156,7 @@ module.exports = function ({term, year, period}) {
     ]
       */
       // console.log('courseRounds with added periods', JSON.stringify( courseRounds ))
-      return courseRounds
-    })
     .then(coursesWithPeriods =>filterCoursesDuringPeriod(coursesWithPeriods, period))
-    .then(courseRounds => {
       /*
       [
       {
@@ -180,27 +169,46 @@ module.exports = function ({term, year, period}) {
       },...
     ]
       */
-      // console.log('filtered courses', JSON.stringify( courseRounds ))
-      return courseRounds
-    })
     .then(coursesWithPeriods => coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period)))
-    .then(courseRounds => {
       /*
       [
       {
         "round":{"courseCode":"DM2678","startTerm":"20172","roundId":"1","xmlns":""},
         "periods":[
-            {"term":"20172","number":"1"},
-            {"term":"20172","number":"2"},
-            {"term":"20181","number":"3"},
-            {"term":"20181","number":"4"},
-      },...
-    ]
+              {"term":"20172","number":"1"},
+              {"term":"20172","number":"2"},
+              {"term":"20181","number":"3"},
+              {"term":"20181","number":"4"},
+              ...
+        }
+      ]
       */
-      console.log('filtered courses', JSON.stringify( courseRounds ))
-      return courseRounds
-    })
     .then(buildCanvasCourseObjects)
+    /*
+    [
+    { "course":{
+      "course":{
+        "name":"HT17-1 Program Integrating Course in Interactive Media Technology",
+        "course_code":"DM2678",
+        "sis_course_id":"DM2678HT171",
+        "start_at":"2017-08-28T10:33:46.832Z"}
+      },
+      "sisAccountId":"CSC - Imported course rounds",
+      "courseRound":{
+        "courseCode":"DM2678",
+        "startTerm":"20172",
+        "roundId":"1",
+        "startWeek":"2017-35",
+        "endWeek":"2019-23",
+        "xmlns":"http://www.kth.se/student/kurser"
+      }
+    },
+    {"course":{"course": ...
+    */
+    .then(canvasCourseObjects => {
+      console.log('canvasCourseObjects', JSON.stringify( canvasCourseObjects ))
+      return canvasCourseObjects
+    })
     .then(writeCsvFile)
     .catch(e => console.error(e))
 }
