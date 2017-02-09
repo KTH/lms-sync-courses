@@ -52,6 +52,15 @@ inquirer.prompt([
   return createCoursesFile({year, term, period})
     .then(() => {
       console.log('Och nu skapar vi fil med enrollments'.green)
+      const {ugUsername, ugUrl, ugPwd} = process.env
+      if(!(ugUsername && ugUrl && ugPwd)){
+        console.log(`Kan inte skapa csvfil med alla användare i
+          kurser (enrollments) eftersom alla hemligheter inte är angivna.
+          Jag behöver ugUsername, ugUrl och ugPwd i filen .env.
+          Hoppar över att skapa denna fil.
+          `.yellow)
+        return Promise.resolve()
+      }
       return Promise.reject('TODO: call enrollments!'.red)
     })
 })
