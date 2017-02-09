@@ -169,20 +169,6 @@ module.exports = function ({term, year, period}) {
       },...
     ]
       */
-    .then(coursesWithPeriods => coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period)))
-      /*
-      [
-      {
-        "round":{"courseCode":"DM2678","startTerm":"20172","roundId":"1","xmlns":""},
-        "periods":[
-              {"term":"20172","number":"1"},
-              {"term":"20172","number":"2"},
-              {"term":"20181","number":"3"},
-              {"term":"20181","number":"4"},
-              ...
-        }
-      ]
-      */
     .then(buildCanvasCourseObjects)
     /*
     [
