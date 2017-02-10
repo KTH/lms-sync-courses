@@ -179,10 +179,6 @@ function filterCoursesDuringPeriod (coursesWithPeriods, period) {
   return coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period))
 }
 
-function filter (courseRounds) {
-  return filterCourses(courseRounds, courses => courses.length === 1)
-}
-
 module.exports = function ({term, year, period}) {
   const termin = `${year}:${term}`
   fileName = `csv/courses-${termin}-${period}.csv`
@@ -191,21 +187,6 @@ module.exports = function ({term, year, period}) {
     .then(() => getCourseRounds(termin))
     .then(groupRoundsByCourseCode)
     .then(courseRounds => addPeriods(courseRounds, termin))
-      /*
-       [
-      {
-        "round":{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""},
-        "periods":[{"term":"20172","number":"2"}]
-      },{
-        "round":{"courseCode":"EH2720","startTerm":"20172","roundId":"1","xmlns":""},
-        "periods":[{"term":"20172","number":"1"}]
-      },{
-        "round":{"courseCode":"EF2215","startTerm":"20172","roundId":"1","xmlns":""},
-        "periods":[{"term":"20172","number":"1"}]
-      },...
-    ]
-      */
-      // console.log('courseRounds with added periods', JSON.stringify( courseRounds ))
     .then(coursesWithPeriods => filterCoursesDuringPeriod(coursesWithPeriods, period))
       /*
       [
