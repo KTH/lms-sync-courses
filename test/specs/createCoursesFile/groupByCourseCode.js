@@ -3,7 +3,7 @@ const rewire = require('rewire')
 const createCoursesFile = rewire('../../../createCoursesFile.js')
 const groupRoundsByCourseCode = createCoursesFile.__get__('groupRoundsByCourseCode')
 
-test.only('should return an array of arrays, with rounds for the same course in the same array', t => {
+test('should return an array of arrays, with rounds for the same course in the same array', t => {
   const courseRounds = [
     {courseCode: 'AL0001'},
     {courseCode: 'AL0001', startTerm: '20171'},

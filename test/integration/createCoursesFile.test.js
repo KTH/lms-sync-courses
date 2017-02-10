@@ -9,6 +9,6 @@ test('should create the file with correct name', t => {
   // Choose autumn, but a period on the spring to get a smaller amount of courses
   createCoursesFile({term: '1', year: '2017', period: '3'})
   .then(() => {
-    t.ok(fs.existsSync('csv/courses-2017:2-4.csv'))
+    t.ok(fs.existsSync('csv/courses-2017:1-3.csv'))
   })
 })

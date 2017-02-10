@@ -30,6 +30,7 @@ function get (url) {
 function addPeriods (courseRounds, termin) {
   function addInfoForCourseRound ([round]) {
     return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
+    // return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
     .then(parseString)
     .then(roundInfo => {
       const periods = roundInfo.courseRound.periods && roundInfo.courseRound.periods[0].period.map(period => period.$)
@@ -70,8 +71,6 @@ function filterCourses (courseRounds, filterFn) {
 function groupRoundsByCourseCode (courseRounds) {
   // console.log(JSON.stringify(courseRounds.splice(0, 5), null, 4))
   const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
-  console.log('Filter:', JSON.stringify(courseRoundsGrouped, null, 4))
-
   return Object.getOwnPropertyNames(courseRoundsGrouped)
   .map(name => courseRoundsGrouped[name])
 }
@@ -160,10 +159,11 @@ function getCourseRounds (termin) {
       })
     })
   }
-
+  console.log('TODO: remove the subsetting!')
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
+  .then(d => d.splice(0, 10))
   .then(addTutoringLanguageAndStartDate)
 }
 
@@ -191,7 +191,6 @@ module.exports = function ({term, year, period}) {
     .then(() => getCourseRounds(termin))
     .then(groupRoundsByCourseCode)
     .then(courseRounds => addPeriods(courseRounds, termin))
-    .then(rounds => console.log('rounds', JSON.stringify(rounds)))
       /*
        [
       {
