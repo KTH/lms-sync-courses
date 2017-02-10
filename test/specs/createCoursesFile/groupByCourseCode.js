@@ -5,18 +5,20 @@ const groupRoundsByCourseCode = createCoursesFile.__get__('groupRoundsByCourseCo
 
 test.only('should return an array of arrays, with rounds for the same course in the same array', t => {
   const courseRounds = [
-    {round: {courseCode: 'EK0001'}},
-    {round: {courseCode: 'EK0001'}, periods: []},
-    {round: {courseCode: 'EF0002'}, periods: [{}]}
+    {courseCode: 'AL0001'},
+    {courseCode: 'AL0001', startTerm: '20171'},
+    {courseCode: 'AL0002'}
   ]
+
   const result = groupRoundsByCourseCode(courseRounds)
+
   const expected = [
     [
-      {round: {courseCode: 'EK0001'}},
-      {round: {courseCode: 'EK0001'}, periods: []}
+      {courseCode: 'AL0001'},
+      {courseCode: 'AL0001', startTerm: '20171'}
     ],
     [
-      {round: {courseCode: 'EF0002'}, periods: [{}]}
+      {courseCode: 'AL0002'}
     ]]
 
   t.deepEqual(result, expected)

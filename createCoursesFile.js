@@ -68,7 +68,8 @@ function filterCourses (courseRounds, filterFn) {
 }
 
 function groupRoundsByCourseCode (courseRounds) {
-  const courseRoundsGrouped = groupBy(courseRounds, ({round}) => round.courseCode)
+  // console.log(JSON.stringify(courseRounds.splice(0, 5), null, 4))
+  const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
   console.log('Filter:', JSON.stringify(courseRoundsGrouped, null, 4))
 
   return Object.getOwnPropertyNames(courseRoundsGrouped)
@@ -188,20 +189,9 @@ module.exports = function ({term, year, period}) {
 
   return deleteFile()
     .then(() => getCourseRounds(termin))
-    .then(courseRounds => {
-      console.log('courseRounds', JSON.stringify(courseRounds))
-      return courseRounds
-    })
     .then(groupRoundsByCourseCode)
-      /*
-      [
-      [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}],
-      [{"courseCode":"EH2720","startTerm":"20172","roundId":"1","xmlns":""}],
-      [{"courseCode":"EF2215","startTerm":"20172","roundId":"1","xmlns":""}], ...
-    ]
-      */
-      // console.log('courseRounds filtered', JSON.stringify( courseRounds ))
     .then(courseRounds => addPeriods(courseRounds, termin))
+    .then(rounds => console.log('rounds', JSON.stringify(rounds)))
       /*
        [
       {
