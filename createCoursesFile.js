@@ -28,7 +28,9 @@ function get (url) {
 * {"round":{"courseCode":"MJ2244","startTerm":"20171","roundId":"1","xmlns":""},"periods":[{"term":"20171","number":"3"}]}
 */
 function addPeriods (courseRounds, termin) {
-  function addInfoForCourseRound ([round]) {
+  console.log('courseRounds', JSON.stringify(courseRounds, null, 4))
+  function addInfoForCourseRound (round) {
+    console.log('about to get...')
     return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
     // return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
     .then(parseString)
@@ -80,7 +82,8 @@ function extractRelevantData (courseRounds) {
 }
 
 function buildCanvasCourseObjects (courseRounds) {
-  return Promise.map(courseRounds, ({round}) => {
+  console.log('courseRounds', JSON.stringify(courseRounds, null, 4))
+  return Promise.map(courseRounds, round => {
     // Add a ':' between year and term
     const position = 4
     const startTerm = [round.startTerm.slice(0, position), ':', round.startTerm.slice(position)].join('')
@@ -90,17 +93,7 @@ function buildCanvasCourseObjects (courseRounds) {
 }
 
 function writeCsvFile (canvasCourseObjects) {
-  /* {"course":{
-   * "course":{
-   * "name":"VT17-1 Practical Energy Related Project",
-   * "course_code":"MJ1432",
-   * "sis_course_id":"MJ1432VT171",
-   * "start_at":"2017-01-16T12:57:02.897Z"}},
-   * "sisAccountId":"ITM - Imported course rounds",
-   * "courseRound":{"courseCode":"MJ1432","startTerm":"20171","roundId":"1","startWeek":"2017-03","endWeek":"2017-23",
-   * "xmlns":"http://www.kth.se/student/kurser"}}
-   * */
-
+  console.log('canvasCourseObjects', JSON.stringify(canvasCourseObjects, null, 4))
   const columns = [
     'course_id',
     'short_name',
@@ -110,6 +103,7 @@ function writeCsvFile (canvasCourseObjects) {
     'status']
 
   function _writeLine ({course, sisAccountId, courseRound, shortName}) {
+    console.log('course', course)
     const lineArr = [
       course.course.sis_course_id,
       course.course.course_code,
@@ -124,10 +118,14 @@ function writeCsvFile (canvasCourseObjects) {
     })
   }
 
+  function writeLinesForRounds (roundsForACourse) {
+    return Promise.map(roundsForACourse, _writeLine)
+  }
+
   return fs.mkdirAsync('csv')
   .catch(e => console.log('couldnt create csv folder. This is probably fine, just continue'))
   .then(() => csvFile.writeLine(columns, fileName))
-  .then(() => Promise.map(canvasCourseObjects, _writeLine))
+  .then(() => Promise.map(canvasCourseObjects, writeLinesForRounds))
 }
 
 function deleteFile () {
@@ -151,7 +149,8 @@ function getCourseRounds (termin) {
     return Promise.map(courseRounds, round => {
       return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
       .then(parseString)
-      .then(({courseRound: {$: info, tutoringLanguage}}) => {
+      .then(({courseRound: {$: info, tutoringLanguage, periods}}) => {
+        round.periods = periods[0].period.map(period => period.$)
         round.startWeek = info.startWeek
         const [{_: lang}] = tutoringLanguage
         round.lang = lang
@@ -177,10 +176,28 @@ module.exports = function ({term, year, period}) {
 
   return deleteFile()
     .then(() => getCourseRounds(termin))
-    .then(groupRoundsByCourseCode)
-    .then(courseRounds => addPeriods(courseRounds, termin))
+    // .then(courseRounds => console.log('courseRounds', JSON.stringify(courseRounds)))
     .then(coursesWithPeriods => filterCoursesDuringPeriod(coursesWithPeriods, period))
+    .then(buildCanvasCourseObjects)
+    .then(groupRoundsByCourseCode)
+    .then(writeCsvFile)
+    .catch(e => console.error(e))
+}
+
+/*
+module.exports = function ({term, year, period}) {
+  const termin = `${year}:${term}`
+  fileName = `csv/courses-${termin}-${period}.csv`
+  console.log('filename:' + fileName)
+  return deleteFile()
+    .then(() => get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`))
+    .then(parseString)
+    .then(extractRelevantData)
+    .then(courseRounds => filterCoursesByCount(courseRounds, courses => courses.length === 1))
+    .then(courseRounds => addPeriods(courseRounds, termin))
+    .then(coursesWithPeriods => coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period)))
     .then(buildCanvasCourseObjects)
     .then(writeCsvFile)
     .catch(e => console.error(e))
 }
+*/
