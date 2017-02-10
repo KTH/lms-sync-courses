@@ -52,6 +52,7 @@ function groupRoundsByCourseCode (courseRounds) {
 
 function buildCanvasCourseObjects (courseRounds) {
   console.log('courseRounds', JSON.stringify(courseRounds, null, 4))
+  return Promise.reject('TODO: rebuild this')
   return Promise.map(courseRounds, round => {
     // Add a ':' between year and term
     const position = 4
