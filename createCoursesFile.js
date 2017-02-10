@@ -59,10 +59,14 @@ function buildCanvasCourseObjects (courseRounds) {
     return getCourseAndCourseRoundFromKopps({courseCode: round.courseCode, startTerm, round: round.roundId})
   })
   .then(coursesAndCourseRounds => Promise.map(coursesAndCourseRounds, createSimpleCanvasCourseObject))
+  .then(result => {
+    throw new Error('TODO: lang försvinner! startWeek då? De ska ju komma med till nästa funktion!')
+    console.log('result', JSON.stringify(result))
+    return result
+  })
 }
 
 function writeCsvFile (canvasCourseObjects, fileName) {
-  console.log('canvasCourseObjects', JSON.stringify(canvasCourseObjects, null, 4))
   const columns = [
     'course_id',
     'short_name',
@@ -72,7 +76,6 @@ function writeCsvFile (canvasCourseObjects, fileName) {
     'status']
 
   function _writeLine ({course, sisAccountId, courseRound, shortName}) {
-    console.log('course', course)
     const lineArr = [
       course.course.sis_course_id,
       course.course.course_code,
@@ -126,6 +129,7 @@ function getCourseRounds (termin) {
         round.periods = periods[0].period.map(period => period.$)
         round.startWeek = info.startWeek
         const [{_: lang}] = tutoringLanguage
+        console.log('setting lang to ', lang)
         round.lang = lang
         return round
       })
@@ -143,6 +147,11 @@ function filterCoursesDuringPeriod (coursesWithPeriods, period) {
   return coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period))
 }
 
+function filterByLogic (groupedCourses) {
+  console.log('groupedCourses', JSON.stringify(groupedCourses, null, 4))
+  return groupedCourses
+}
+
 module.exports = function ({term, year, period}) {
   const termin = `${year}:${term}`
   const fileName = `csv/courses-${termin}-${period}.csv`
@@ -152,6 +161,7 @@ module.exports = function ({term, year, period}) {
     .then(coursesWithPeriods => filterCoursesDuringPeriod(coursesWithPeriods, period))
     .then(buildCanvasCourseObjects)
     .then(groupRoundsByCourseCode)
+    .then(filterByLogic)
     .then(canvasCourseObjects => writeCsvFile(canvasCourseObjects, fileName))
     .catch(e => console.error(e))
 }

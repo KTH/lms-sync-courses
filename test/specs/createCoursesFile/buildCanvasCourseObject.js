@@ -3,7 +3,7 @@ const rewire = require('rewire')
 const createCoursesFile = rewire('../../../createCoursesFile.js')
 const buildCanvasCourseObjects = createCoursesFile.__get__('buildCanvasCourseObjects')
 
-// Needs internet
+// TODO: rebuild this test and impl! It shouldnt have to fetch data again from kopps!
 test.skip('should create a course object containing attributes needed for creating the course in canvas ', t => {
   t.plan(1)
   const courseRounds = [
@@ -43,6 +43,8 @@ test.skip('should create a course object containing attributes needed for creati
           'roundId': '1',
           'startWeek': '2017-03',
           'endWeek': '2017-11',
+          'startWeek': '2017-03',
+          'lang': 'English',
           'xmlns': 'http://www.kth.se/student/kurser'}}
     ]
 
