@@ -1,21 +1,24 @@
 const test = require('tape')
 const rewire = require('rewire')
 const createCoursesFile = rewire('../../../createCoursesFile.js')
-const groupByCourseCode = createCoursesFile.__get__('groupByCourseCode')
+const groupRoundsByCourseCode = createCoursesFile.__get__('groupRoundsByCourseCode')
 
-test.only('should do something', t => {
+test.only('should return an array of arrays, with rounds for the same course in the same array', t => {
   const courseRounds = [
-    {
-      'round': {'courseCode': 'EK2360'},
-      'periods': [{'term': '20172', 'number': '2'}]
-    }, {
-      'round': {'courseCode': 'EK2360'},
-      'periods': [{'term': '20172', 'number': '1'}]
-    }, {
-      'round': {'courseCode': 'EF2215'},
-      'periods': [{'term': '20172', 'number': '1'}]
-    }
+    {round: {courseCode: 'EK0001'}},
+    {round: {courseCode: 'EK0001'}, periods: []},
+    {round: {courseCode: 'EF0002'}, periods: [{}]}
   ]
-  t.plan(1)
-  t.equal(1, 0)
+  const result = groupRoundsByCourseCode(courseRounds)
+  const expected = [
+    [
+      {round: {courseCode: 'EK0001'}},
+      {round: {courseCode: 'EK0001'}, periods: []}
+    ],
+    [
+      {round: {courseCode: 'EF0002'}, periods: [{}]}
+    ]]
+
+  t.deepEqual(result, expected)
+  t.end()
 })

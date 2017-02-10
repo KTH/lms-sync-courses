@@ -41,7 +41,6 @@ function addPeriods (courseRounds, termin) {
   return Promise.map(courseRounds, addInfoForCourseRound)
 }
 
-
 /*
  returns:
  [
@@ -57,18 +56,24 @@ function addPeriods (courseRounds, termin) {
   ...
 */
 function filterCourses (courseRounds, filterFn) {
-  const courseRoundsGrouped = groupBy(courseRounds, courseRound => courseRound.courseCode)
-  console.log('Filter:',JSON.stringify(courseRoundsGrouped, null, 4))
+  const courseRoundsGrouped = groupBy(courseRounds, round => {
+    console.log(JSON.stringify(round, null, 4))
+    return round.courseCode
+  })
+  // console.log('Filter:', JSON.stringify(courseRoundsGrouped, null, 4))
 
   return Object.getOwnPropertyNames(courseRoundsGrouped)
   .map(name => courseRoundsGrouped[name])
   .filter(filterFn)
 }
 
-function groupByCourseCode() {
+function groupRoundsByCourseCode (courseRounds) {
+  const courseRoundsGrouped = groupBy(courseRounds, ({round}) => round.courseCode)
+  console.log('Filter:', JSON.stringify(courseRoundsGrouped, null, 4))
 
+  return Object.getOwnPropertyNames(courseRoundsGrouped)
+  .map(name => courseRoundsGrouped[name])
 }
-
 
 function extractRelevantData (courseRounds) {
   return courseRounds.courseRoundList.courseRound.map(round => round.$)
@@ -137,31 +142,29 @@ function deleteFile () {
       {"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}, ...
     ]
 */
-function getCourseRounds(termin){
+function getCourseRounds (termin) {
   /*
   *  @param {array} arrayOfCourseRounds example: [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}]
   * @return {array} arrayOfCourseRounds example: [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":"", tutoringLanguage: "Swedish"}]
   */
-  function addTutoringLanguageAndStartDate(courseRounds) {
+  function addTutoringLanguageAndStartDate (courseRounds) {
     return Promise.map(courseRounds, round => {
       return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
       .then(parseString)
-      .then(({courseRound:{$:info,tutoringLanguage}})=>{
+      .then(({courseRound: {$: info, tutoringLanguage}}) => {
         round.startWeek = info.startWeek
-        const [{_:lang}] = tutoringLanguage
+        const [{_: lang}] = tutoringLanguage
         round.lang = lang
         return round
       })
     })
   }
 
-
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
   .then(addTutoringLanguageAndStartDate)
 }
-
 
 /*
 returns:
@@ -171,11 +174,11 @@ returns:
   [{"courseCode":"EF2215","startTerm":"20172","roundId":"1","xmlns":""}], ...
 ]
 */
-function filterCoursesDuringPeriod(coursesWithPeriods, period){
+function filterCoursesDuringPeriod (coursesWithPeriods, period) {
   return coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period))
 }
 
-function filter(courseRounds){
+function filter (courseRounds) {
   return filterCourses(courseRounds, courses => courses.length === 1)
 }
 
@@ -184,12 +187,12 @@ module.exports = function ({term, year, period}) {
   fileName = `csv/courses-${termin}-${period}.csv`
 
   return deleteFile()
-    .then(()=>getCourseRounds(termin))
+    .then(() => getCourseRounds(termin))
     .then(courseRounds => {
-      console.log('courseRounds', JSON.stringify( courseRounds ))
+      console.log('courseRounds', JSON.stringify(courseRounds))
       return courseRounds
     })
-    .then(groupByCourseCode)
+    .then(groupRoundsByCourseCode)
       /*
       [
       [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}],
@@ -214,7 +217,7 @@ module.exports = function ({term, year, period}) {
     ]
       */
       // console.log('courseRounds with added periods', JSON.stringify( courseRounds ))
-    .then(coursesWithPeriods =>filterCoursesDuringPeriod(coursesWithPeriods, period))
+    .then(coursesWithPeriods => filterCoursesDuringPeriod(coursesWithPeriods, period))
       /*
       [
       {
