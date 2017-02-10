@@ -80,6 +80,7 @@ function extractRelevantData (courseRounds) {
 }
 
 function buildCanvasCourseObjects (courseRounds) {
+  console.log('arg::::::::::', JSON.stringify(courseRounds, null, 4))
   return Promise.map(courseRounds, ({round}) => {
     // Add a ':' between year and term
     const position = 4
@@ -163,7 +164,7 @@ function getCourseRounds (termin) {
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
-  .then(d => d.splice(0, 10))
+  .then(d => d.splice(0, 2))
   .then(addTutoringLanguageAndStartDate)
 }
 
@@ -188,18 +189,6 @@ module.exports = function ({term, year, period}) {
     .then(groupRoundsByCourseCode)
     .then(courseRounds => addPeriods(courseRounds, termin))
     .then(coursesWithPeriods => filterCoursesDuringPeriod(coursesWithPeriods, period))
-      /*
-      [
-      {
-        "round":{"courseCode":"DM2678","startTerm":"20172","roundId":"1","xmlns":""},
-        "periods":[
-            {"term":"20172","number":"1"},
-            {"term":"20172","number":"2"},
-            {"term":"20181","number":"3"},
-            {"term":"20181","number":"4"},
-      },...
-    ]
-      */
     .then(buildCanvasCourseObjects)
     /*
     [
@@ -222,6 +211,7 @@ module.exports = function ({term, year, period}) {
     },
     {"course":{"course": ...
     */
+    .then(arg => console.log('arg', JSON.stringify( arg )))
     .then(writeCsvFile)
     .catch(e => console.error(e))
 }
