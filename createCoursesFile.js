@@ -9,7 +9,6 @@ canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
 const csvFile = require('./csvFile')
 const fs = Promise.promisifyAll(require('fs'))
-let fileName
 
 function get (url) {
   console.log(url)
@@ -62,7 +61,7 @@ function buildCanvasCourseObjects (courseRounds) {
   .then(coursesAndCourseRounds => Promise.map(coursesAndCourseRounds, createSimpleCanvasCourseObject))
 }
 
-function writeCsvFile (canvasCourseObjects) {
+function writeCsvFile (canvasCourseObjects, fileName) {
   console.log('canvasCourseObjects', JSON.stringify(canvasCourseObjects, null, 4))
   const columns = [
     'course_id',
@@ -98,7 +97,7 @@ function writeCsvFile (canvasCourseObjects) {
   .then(() => Promise.map(canvasCourseObjects, writeLinesForRounds))
 }
 
-function deleteFile () {
+function deleteFile (fileName) {
   return fs.unlinkAsync(fileName)
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
@@ -146,13 +145,13 @@ function filterCoursesDuringPeriod (coursesWithPeriods, period) {
 
 module.exports = function ({term, year, period}) {
   const termin = `${year}:${term}`
-  fileName = `csv/courses-${termin}-${period}.csv`
+  const fileName = `csv/courses-${termin}-${period}.csv`
 
-  return deleteFile()
+  return deleteFile(fileName)
     .then(() => getCourseRounds(termin))
     .then(coursesWithPeriods => filterCoursesDuringPeriod(coursesWithPeriods, period))
     .then(buildCanvasCourseObjects)
     .then(groupRoundsByCourseCode)
-    .then(writeCsvFile)
+    .then(canvasCourseObjects => writeCsvFile(canvasCourseObjects, fileName))
     .catch(e => console.error(e))
 }
