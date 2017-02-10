@@ -80,7 +80,6 @@ function extractRelevantData (courseRounds) {
 }
 
 function buildCanvasCourseObjects (courseRounds) {
-  console.log('arg::::::::::', JSON.stringify(courseRounds, null, 4))
   return Promise.map(courseRounds, ({round}) => {
     // Add a ':' between year and term
     const position = 4
@@ -168,14 +167,6 @@ function getCourseRounds (termin) {
   .then(addTutoringLanguageAndStartDate)
 }
 
-/*
-returns:
-[
-  [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}],
-  [{"courseCode":"EH2720","startTerm":"20172","roundId":"1","xmlns":""}],
-  [{"courseCode":"EF2215","startTerm":"20172","roundId":"1","xmlns":""}], ...
-]
-*/
 function filterCoursesDuringPeriod (coursesWithPeriods, period) {
   return coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period))
 }
@@ -190,28 +181,6 @@ module.exports = function ({term, year, period}) {
     .then(courseRounds => addPeriods(courseRounds, termin))
     .then(coursesWithPeriods => filterCoursesDuringPeriod(coursesWithPeriods, period))
     .then(buildCanvasCourseObjects)
-    /*
-    [
-    { "course":{
-      "course":{
-        "name":"HT17-1 Program Integrating Course in Interactive Media Technology",
-        "course_code":"DM2678",
-        "sis_course_id":"DM2678HT171",
-        "start_at":"2017-08-28T10:33:46.832Z"}
-      },
-      "sisAccountId":"CSC - Imported course rounds",
-      "courseRound":{
-        "courseCode":"DM2678",
-        "startTerm":"20172",
-        "roundId":"1",
-        "startWeek":"2017-35",
-        "endWeek":"2019-23",
-        "xmlns":"http://www.kth.se/student/kurser"
-      }
-    },
-    {"course":{"course": ...
-    */
-    .then(arg => console.log('arg', JSON.stringify( arg )))
     .then(writeCsvFile)
     .catch(e => console.error(e))
 }
