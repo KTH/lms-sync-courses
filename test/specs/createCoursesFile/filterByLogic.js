@@ -3,7 +3,7 @@ const rewire = require('rewire')
 const createCoursesFile = rewire('../../../createCoursesFile.js')
 // const filterByLogic = createCoursesFile.__get__('filterByLogic')
 
-test('should include a course if it only has one course round', t => {
+test.skip('should include a course if it only has one course round', t => {
   const courseRounds = [
     {
       round: {courseCode: 'AL2140', roundId: '1'},
