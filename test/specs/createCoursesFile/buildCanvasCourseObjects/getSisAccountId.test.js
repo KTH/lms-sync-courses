@@ -1,5 +1,12 @@
-const test = require('tape');
-test('should do something',t =>{
-  t.plan(1)
-  t.equal(1,0)
+const test = require('tape')
+const rewire = require('rewire')
+const createCoursesFile = rewire('../../../../createCoursesFile.js')
+const getSisAccountId = createCoursesFile.__get__('getSisAccountId')
+
+test.only('should build a hardcoded sis account id', t => {
+const expected = {}
+const result = getSisAccountId()
+
+  t.deepEqual(result, expected)
+  t.end()
 })

@@ -7,6 +7,9 @@ const {groupBy} = require('lodash')
 const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
+
+const departmentCodeMapping = require('kth-canvas-utilities/departmentCodeMapping')
+
 const csvFile = require('./csvFile')
 const fs = Promise.promisifyAll(require('fs'))
 
@@ -20,6 +23,10 @@ function get (url) {
       'content-type': 'application/json'
     }
   })
+}
+
+function getSisAccountId() {
+
 }
 
 /** *
