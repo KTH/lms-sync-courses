@@ -51,21 +51,30 @@ function groupRoundsByCourseCode (courseRounds) {
 }
 
 function buildCanvasCourseObjects (courseRounds) {
-  console.log('courseRounds', JSON.stringify(courseRounds, null, 4))
-  return Promise.resolve([{}])
+  const result = courseRounds.map(courseRound => {
+    return {
+      course_id: createSisCourseId(courseRound),
+      short_name: courseRound.round.courseCode,
+      long_name: createLongName(courseRound),
+      start_date: calcStartDate(courseRound),
+      account_id: getSisAccountId(courseRound),
+      status: 'active'
+    }
+  })
+  return Promise.resolve(result)
 
-  return Promise.map(courseRounds, round => {
-    // Add a ':' between year and term
-    const position = 4
-    const startTerm = [round.startTerm.slice(0, position), ':', round.startTerm.slice(position)].join('')
-    return getCourseAndCourseRoundFromKopps({courseCode: round.courseCode, startTerm, round: round.roundId})
-  })
-  .then(coursesAndCourseRounds => Promise.map(coursesAndCourseRounds, createSimpleCanvasCourseObject))
-  .then(result => {
-    throw new Error('TODO: lang försvinner! startWeek då? De ska ju komma med till nästa funktion!')
-    console.log('result', JSON.stringify(result))
-    return result
-  })
+  // return Promise.map(courseRounds, round => {
+  //   // Add a ':' between year and term
+  //   const position = 4
+  //   const startTerm = [round.startTerm.slice(0, position), ':', round.startTerm.slice(position)].join('')
+  //   return getCourseAndCourseRoundFromKopps({courseCode: round.courseCode, startTerm, round: round.roundId})
+  // })
+  // .then(coursesAndCourseRounds => Promise.map(coursesAndCourseRounds, createSimpleCanvasCourseObject))
+  // .then(result => {
+  //   throw new Error('TODO: lang försvinner! startWeek då? De ska ju komma med till nästa funktion!')
+  //   console.log('result', JSON.stringify(result))
+  //   return result
+  // })
 }
 
 function writeCsvFile (canvasCourseObjects, fileName) {
