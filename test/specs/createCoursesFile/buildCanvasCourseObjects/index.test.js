@@ -4,8 +4,13 @@ const createCoursesFile = rewire('../../../createCoursesFile.js')
 const buildCanvasCourseObjects = createCoursesFile.__get__('buildCanvasCourseObjects')
 const moment = require('moment')
 // TODO: rebuild this test and impl! It shouldnt have to fetch data again from kopps!
+
 test.only('should create a course object containing attributes needed for creating the course in canvas ', t => {
   t.plan(1)
+  createCoursesFile.__set__('createSisCourseId', () => 'abc123')
+  createCoursesFile.__set__('createLongName', () => 'Långt namn')
+  createCoursesFile.__set__('getSisAccountId', () => 'sis account id')
+
   const courseRounds = [
     {
       'round': {
@@ -27,9 +32,6 @@ test.only('should create a course object containing attributes needed for creati
 
   buildCanvasCourseObjects(courseRounds)
   .then(result => {
-    createCoursesFile.__set__('createSisCourseId', () => 'abc123')
-    createCoursesFile.__set__('createLongName', () => 'Långt namn')
-    createCoursesFile.__set__('getSisAccountId', () => 'sis account id')
     const expected = [
       {
         course_id: 'abc123',
