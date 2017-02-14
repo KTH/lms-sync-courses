@@ -52,7 +52,8 @@ function groupRoundsByCourseCode (courseRounds) {
 
 function buildCanvasCourseObjects (courseRounds) {
   console.log('courseRounds', JSON.stringify(courseRounds, null, 4))
-  return Promise.reject('TODO: rebuild this')
+  return Promise.resolve([{}])
+
   return Promise.map(courseRounds, round => {
     // Add a ':' between year and term
     const position = 4
@@ -160,9 +161,9 @@ module.exports = function ({term, year, period}) {
   return deleteFile(fileName)
     .then(() => getCourseRounds(termin))
     .then(coursesWithPeriods => filterCoursesDuringPeriod(coursesWithPeriods, period))
-    .then(buildCanvasCourseObjects)
     .then(groupRoundsByCourseCode)
     .then(filterByLogic)
+    .then(buildCanvasCourseObjects)
     .then(canvasCourseObjects => writeCsvFile(canvasCourseObjects, fileName))
     .catch(e => console.error(e))
 }
