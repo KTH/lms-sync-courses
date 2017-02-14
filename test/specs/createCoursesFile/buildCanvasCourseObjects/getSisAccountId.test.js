@@ -4,9 +4,8 @@ const createCoursesFile = rewire('../../../../createCoursesFile.js')
 const getSisAccountId = createCoursesFile.__get__('getSisAccountId')
 
 test.only('should build a hardcoded sis account id', t => {
-const expected = {}
-const result = getSisAccountId()
+  const result = getSisAccountId('A12345')
 
-  t.deepEqual(result, expected)
+  t.equal(result,'ABE - Imported course rounds')
   t.end()
 })

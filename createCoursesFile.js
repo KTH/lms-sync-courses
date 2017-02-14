@@ -25,7 +25,7 @@ function get (url) {
   })
 }
 
-function getSisAccountId() {
+function getSisAccountId (courseCode) {
 
 }
 
