@@ -26,7 +26,8 @@ function get (url) {
 }
 
 function getSisAccountId (courseCode) {
-
+  const firstChar = courseCode[0]
+  return `${departmentCodeMapping[firstChar]} - Imported course rounds`
 }
 
 /** *
