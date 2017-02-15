@@ -32,19 +32,18 @@ test('should create a course object containing attributes needed for creating th
     }
   ]
 
-  buildCanvasCourseObjects(courseRounds)
-  .then(result => {
-    const expected = [
-      {
-        course_id: 'abc123',
-        short_name: 'MJ2244',
-        long_name: 'Långt namn',
-        start_date: now,
-        account_id: 'sis account id',
-        status: 'active'
-      }
-    ]
+  const result = buildCanvasCourseObjects(courseRounds)
 
-    t.deepEqual(result, expected)
-  })
+  const expected = [
+    {
+      course_id: 'abc123',
+      short_name: 'MJ2244',
+      long_name: 'Långt namn',
+      start_date: now,
+      account_id: 'sis account id',
+      status: 'active'
+    }
+  ]
+
+  t.deepEqual(result, expected)
 })
