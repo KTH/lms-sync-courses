@@ -86,38 +86,40 @@ function buildCanvasCourseObjects (courseRounds) {
   // })
 }
 
-function writeCsvFile (canvasCourseObjects, fileName) {
-  const columns = [
-    'course_id',
-    'short_name',
-    'long_name',
-    'start_date',
-    'account_id',
-    'status']
-
-  function _writeLine ({course, sisAccountId, courseRound, shortName}) {
-    const lineArr = [
-      course.course.sis_course_id,
-      course.course.course_code,
-      `${course.course.course_code} ${shortName || ''} ${course.course.name}`,
-      course.course.start_at,
-      sisAccountId,
-      'active']
-
-    return csvFile.writeLine(lineArr, fileName)
-    .then(() => {
-      return {course, sisAccountId, courseRound, shortName}
-    })
-  }
-
-  function writeLinesForRounds (roundsForACourse) {
-    return Promise.map(roundsForACourse, _writeLine)
-  }
-
-  return fs.mkdirAsync('csv')
-  .catch(e => console.log('couldnt create csv folder. This is probably fine, just continue'))
-  .then(() => csvFile.writeLine(columns, fileName))
-  .then(() => Promise.map(canvasCourseObjects, writeLinesForRounds))
+function writeCsvFile (courseRounds, fileName) {
+  const arrayOfCanvasCourses = buildCanvasCourseObjects(courseRounds)
+  //
+  // const columns = [
+  //   'course_id',
+  //   'short_name',
+  //   'long_name',
+  //   'start_date',
+  //   'account_id',
+  //   'status']
+  //
+  // function _writeLine ({course, sisAccountId, courseRound, shortName}) {
+  //   const lineArr = [
+  //     course.course.sis_course_id,
+  //     course.course.course_code,
+  //     `${course.course.course_code} ${shortName || ''} ${course.course.name}`,
+  //     course.course.start_at,
+  //     sisAccountId,
+  //     'active']
+  //
+  //   return csvFile.writeLine(lineArr, fileName)
+  //   .then(() => {
+  //     return {course, sisAccountId, courseRound, shortName}
+  //   })
+  // }
+  //
+  // function writeLinesForRounds (roundsForACourse) {
+  //   return Promise.map(roundsForACourse, _writeLine)
+  // }
+  //
+  // return fs.mkdirAsync('csv')
+  // .catch(e => console.log('couldnt create csv folder. This is probably fine, just continue'))
+  // .then(() => csvFile.writeLine(columns, fileName))
+  // .then(() => Promise.map(canvasCourseObjects, writeLinesForRounds))
 }
 
 function deleteFile (fileName) {
@@ -188,7 +190,7 @@ module.exports = function ({term, year, period}) {
     //   return courseRounds
     // })
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
-    .then(filterByLogic)
+    // .then(filterByLogic)
     // TODO: writeCsvFile should call buildCanvasCourseObjects
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
     .catch(e => console.error(e))

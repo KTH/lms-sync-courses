@@ -3,7 +3,7 @@ const rewire = require('rewire')
 const createCoursesFile = rewire('../../../createCoursesFile.js')
 const filterCoursesDuringPeriod = createCoursesFile.__get__('filterCoursesDuringPeriod')
 
-test.only('should include course rounds if the has a period with number == the period argument', t => {
+test('should include a course round if it has a period with number == the period argument', t => {
   const courseRounds = [
     [
       {
