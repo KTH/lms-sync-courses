@@ -2,6 +2,7 @@ require('dotenv').config()
 const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const parseString = Promise.promisify(require('xml2js').parseString)
+const moment = require('moment')
 const {groupBy} = require('lodash')
 // const config = require('../server/init/configuration')
 const canvasUtilities = require('kth-canvas-utilities')
@@ -53,6 +54,11 @@ function groupRoundsByCourseCode (courseRounds) {
   const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
   return Object.getOwnPropertyNames(courseRoundsGrouped)
   .map(name => courseRoundsGrouped[name])
+}
+
+function calcStartDate (courseRound) {
+  const [year, weekNumber] = courseRound.startWeek.split('-')
+  return moment().year(year).isoWeek(weekNumber).isoWeekday(1).toISOString()
 }
 
 function buildCanvasCourseObjects (courseRounds) {

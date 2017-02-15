@@ -1,10 +1,14 @@
 const test = require('tape')
 const rewire = require('rewire')
 const createCoursesFile = rewire('../../../../createCoursesFile.js')
-const buildCanvasCourseObjects = createCoursesFile.__get__('buildCanvasCourseObjects')
+const calcStartDate = createCoursesFile.__get__('calcStartDate')
 const moment = require('moment')
 
-test('should do something', t => {
-  t.plan(1)
-  t.equal(1, 0)
+test.only('should do something', t => {
+  // moment().year(year).isoWeek(weekNumber).isoWeekday(1).toISOString()
+  const startDate = calcStartDate({
+    startWeek: '2017-03'
+  })
+  t.equal('2017-01-16T00:00:00.000Z', startDate)
+  t.end()
 })
