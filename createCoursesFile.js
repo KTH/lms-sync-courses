@@ -168,8 +168,8 @@ function getCourseRoundsPerCourseCode(termin){
   .then(groupRoundsByCourseCode)
 }
 
-function filterCoursesDuringPeriod (coursesWithPeriods, period) {
-  return coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period))
+function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
+  return arrayOfCourseRoundArrays.map(arrayOfCourseRounds => arrayOfCourseRounds.filter(({periods}) => periods && periods.find(({number}) => number === period)))
 }
 
 function filterByLogic (groupedCourses) {

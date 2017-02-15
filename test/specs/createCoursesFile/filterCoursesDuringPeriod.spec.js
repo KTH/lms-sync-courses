@@ -15,7 +15,7 @@ test.only('should include course rounds if the has a period with number == the p
             number: '1'
           }
         ]
-      },{
+      }, {
         courseCode: 'AL2141',
         roundId: '1',
         periods: [
@@ -30,16 +30,16 @@ test.only('should include course rounds if the has a period with number == the p
 
   const result = filterCoursesDuringPeriod(courseRounds, '1')
 
-  const expected = [
-    {
-      round: {courseCode: 'AL2140', roundId: '1'},
-      periods: [
-        {
-          term: '20171',
-          number: '1'
-        }
-      ]
-    }]
+  const expected = [[{
+    courseCode: 'AL2140',
+    roundId: '1',
+    periods: [
+      {
+        term: '20171',
+        number: '1'
+      }
+    ]
+  }]]
 
   t.deepEqual(result, expected)
   t.end()
