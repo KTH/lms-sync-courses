@@ -116,9 +116,9 @@ function writeCsvFile (courseRounds, fileName) {
   //   return Promise.map(roundsForACourse, _writeLine)
   // }
   //
-  // return fs.mkdirAsync('csv')
-  // .catch(e => console.log('couldnt create csv folder. This is probably fine, just continue'))
-  // .then(() => csvFile.writeLine(columns, fileName))
+  return fs.mkdirAsync('csv')
+  .catch(e => console.log('couldnt create csv folder. This is probably fine, just continue'))
+  .then(() => csvFile.writeLine(columns, fileName))
   // .then(() => Promise.map(canvasCourseObjects, writeLinesForRounds))
 }
 
