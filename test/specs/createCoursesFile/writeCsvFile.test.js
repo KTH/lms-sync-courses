@@ -36,7 +36,6 @@ test('should write a line for each course', t => {
 
   writeCsvFile(courseRounds, 'fileName').then(() => {
     const secondCallArgs = csvFile.writeLine.getCall(1).args[0]
-    console.log(secondCallArgs)
     t.deepEqual(secondCallArgs, ['1', 'shortName', 'longName', 'startDate', 'sisAccountId', 'active'])
   }).catch(e => console.error(e))
 })

@@ -35,9 +35,7 @@ function getSisAccountId (courseCode) {
 * {"round":{"courseCode":"MJ2244","startTerm":"20171","roundId":"1","xmlns":""},"periods":[{"term":"20171","number":"3"}]}
 */
 function addPeriods (courseRounds, termin) {
-  console.log('courseRounds', JSON.stringify(courseRounds, null, 4))
   function addInfoForCourseRound (round) {
-    console.log('about to get...')
     return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
     // return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
     .then(parseString)
@@ -52,7 +50,6 @@ function addPeriods (courseRounds, termin) {
 }
 
 function groupRoundsByCourseCode (courseRounds) {
-  console.log(JSON.stringify(courseRounds, null, 4))
   const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
   return Object.getOwnPropertyNames(courseRoundsGrouped)
   .map(name => courseRoundsGrouped[name])
@@ -98,7 +95,6 @@ function writeCsvFile (courseRounds, fileName) {
     'status']
 
   function writeLineForCourse ({sisCourseId, shortName, longName, startDate, sisAccountId}) {
-    console.log('-------')
     return csvFile.writeLine([
       sisCourseId,
         // ${course.course.course_code} ${shortName || ''} ${course.course.name}.course_code,
@@ -170,7 +166,6 @@ function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
 }
 
 function filterByLogic (groupedCourses) {
-  console.log('groupedCourses', JSON.stringify(groupedCourses, null, 4))
   return groupedCourses
 }
 
@@ -180,13 +175,8 @@ module.exports = function ({term, year, period}) {
 
   return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
-    // .then(courseRounds => {
-    //   console.log('courseRounds', JSON.stringify( courseRounds, null,2 ))
-    //   return courseRounds
-    // })
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     // .then(filterByLogic)
-    // TODO: writeCsvFile should call buildCanvasCourseObjects
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
     .catch(e => console.error(e))
 }
