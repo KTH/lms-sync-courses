@@ -88,15 +88,15 @@ function buildCanvasCourseObjects (courseRounds) {
 
 function writeCsvFile (courseRounds, fileName) {
   const arrayOfCanvasCourses = buildCanvasCourseObjects(courseRounds)
-  //
-  // const columns = [
-  //   'course_id',
-  //   'short_name',
-  //   'long_name',
-  //   'start_date',
-  //   'account_id',
-  //   'status']
-  //
+
+  const columns = [
+    'course_id',
+    'short_name',
+    'long_name',
+    'start_date',
+    'account_id',
+    'status']
+
   // function _writeLine ({course, sisAccountId, courseRound, shortName}) {
   //   const lineArr = [
   //     course.course.sis_course_id,
