@@ -58,7 +58,9 @@ function groupRoundsByCourseCode (courseRounds) {
 
 function calcStartDate (courseRound) {
   const [year, weekNumber] = courseRound.startWeek.split('-')
-  return moment().year(year).isoWeek(weekNumber).isoWeekday(1).toISOString()
+  const d = moment().year(year).isoWeek(weekNumber).isoWeekday(1)
+  d.set({hour:8,minute:0,second:0,millisecond:0})
+  return d.toISOString()
 }
 
 function buildCanvasCourseObjects (courseRounds) {
