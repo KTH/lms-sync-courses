@@ -26,15 +26,17 @@ test('should write a line with the headers', t => {
 
   writeCsvFile(courseRounds, 'fileName').then(() => {
     t.ok(csvFile.writeLine.calledWith(['course_id', 'short_name', 'long_name', 'start_date', 'account_id', 'status'], 'fileName'))
-  }).catch(e => console.error(e))
+  })
 })
 
-test('should write a line with the headers', t => {
+test('should write a line for each course', t => {
   t.plan(1)
-  createCoursesFile.__set__('buildCanvasCourseObjects', arg => [{courseId: '1', shortName: 'shortName', longName: 'longName', startDate: 'startDate', sisAccountId: 'sisAccountId', status: 'status'}])
+  createCoursesFile.__set__('buildCanvasCourseObjects', arg => [{sisCourseId: '1', shortName: 'shortName', longName: 'longName', startDate: 'startDate', sisAccountId: 'sisAccountId'}])
   const courseRounds = [[{ courseCode: 'AL0001'}]]
 
   writeCsvFile(courseRounds, 'fileName').then(() => {
-    t.ok(csvFile.writeLine.calledWith(['course_id', 'short_name', 'long_name', 'start_date', 'account_id', 'status'], 'fileName'))
+    const secondCallArgs = csvFile.writeLine.getCall(1).args[0]
+    console.log(secondCallArgs)
+    t.deepEqual(secondCallArgs, ['1', 'shortName', 'longName', 'startDate', 'sisAccountId', 'active'])
   }).catch(e => console.error(e))
 })

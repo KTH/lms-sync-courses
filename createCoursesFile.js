@@ -59,7 +59,7 @@ function groupRoundsByCourseCode (courseRounds) {
 }
 
 function buildCanvasCourseObjects (courseRounds) {
-  console.log('buildCanvasCourseObjects:',JSON.stringify(courseRounds, null, 4))
+  console.log('buildCanvasCourseObjects:', JSON.stringify(courseRounds, null, 4))
   const result = courseRounds.map(courseRound => {
     return {
       course_id: createSisCourseId(courseRound),
@@ -97,29 +97,24 @@ function writeCsvFile (courseRounds, fileName) {
     'account_id',
     'status']
 
-  // function _writeLine ({course, sisAccountId, courseRound, shortName}) {
-  //   const lineArr = [
-  //     course.course.sis_course_id,
-  //     course.course.course_code,
-  //     `${course.course.course_code} ${shortName || ''} ${course.course.name}`,
-  //     course.course.start_at,
-  //     sisAccountId,
-  //     'active']
-  //
-  //   return csvFile.writeLine(lineArr, fileName)
-  //   .then(() => {
-  //     return {course, sisAccountId, courseRound, shortName}
-  //   })
-  // }
-  //
-  // function writeLinesForRounds (roundsForACourse) {
-  //   return Promise.map(roundsForACourse, _writeLine)
-  // }
-  //
+  function writeLineForCourse ({sisCourseId, shortName, longName, startDate, sisAccountId}) {
+    console.log('-------')
+    return csvFile.writeLine([
+      sisCourseId,
+        // ${course.course.course_code} ${shortName || ''} ${course.course.name}.course_code,
+        // `${course.course.course_code} ${shortName || ''} ${course.course.name}`,
+      shortName,
+      longName,
+      startDate,
+      sisAccountId,
+      'active'], fileName)
+  }
+
   return fs.mkdirAsync('csv')
   .catch(e => console.log('couldnt create csv folder. This is probably fine, just continue'))
   .then(() => csvFile.writeLine(columns, fileName))
-  // .then(() => Promise.map(canvasCourseObjects, writeLinesForRounds))
+  .then(() => Promise.map(arrayOfCanvasCourses, writeLineForCourse)
+  )
 }
 
 function deleteFile (fileName) {
@@ -165,7 +160,7 @@ function getCourseRounds (termin) {
   .then(addTutoringLanguageAndStartDate)
 }
 
-function getCourseRoundsPerCourseCode(termin){
+function getCourseRoundsPerCourseCode (termin) {
   return getCourseRounds(termin)
   .then(groupRoundsByCourseCode)
 }
