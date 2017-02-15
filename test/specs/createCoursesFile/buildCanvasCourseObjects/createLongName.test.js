@@ -39,8 +39,7 @@ test('should use the swedish title', t => {
 
 test('should include the short name', t => {
   t.plan(1)
-  const courseRounds = [[
-    {
+  const courseRound = {
       courseCode: 'AL2140',
       startTerm: '20171',
       shortName: 'shortName',
@@ -51,8 +50,7 @@ test('should include the short name', t => {
         en: 'Cleaner Production'
       }
     }
-  ]
-  ]
-  const result = createLongName(courseRounds)
+
+  const result = createLongName(courseRound)
   t.equal(result, 'AL2140 shortName VT17-roundId Renare produktion')
 })
