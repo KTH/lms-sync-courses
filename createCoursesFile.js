@@ -143,14 +143,12 @@ function getCourseRounds (termin) {
   }
 
   function addTitles (courseRounds) {
-    return Promise.mapSeries(courseRounds, round => {
-      // TODO: use url from above
-      return get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`)
+    return Promise.mapSeries(courseRounds, round => get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`)
       .then(course => {
         round.title = course.title
         return round
       })
-    })
+    )
   }
 
   function addTutoringLanguageAndStartDate (courseRounds) {
