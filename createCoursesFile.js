@@ -52,13 +52,14 @@ function addPeriods (courseRounds, termin) {
 }
 
 function groupRoundsByCourseCode (courseRounds) {
-  // console.log(JSON.stringify(courseRounds.splice(0, 5), null, 4))
+  console.log(JSON.stringify(courseRounds, null, 4))
   const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
   return Object.getOwnPropertyNames(courseRoundsGrouped)
   .map(name => courseRoundsGrouped[name])
 }
 
 function buildCanvasCourseObjects (courseRounds) {
+  console.log('buildCanvasCourseObjects:',JSON.stringify(courseRounds, null, 4))
   const result = courseRounds.map(courseRound => {
     return {
       course_id: createSisCourseId(courseRound),
@@ -162,6 +163,11 @@ function getCourseRounds (termin) {
   .then(addTutoringLanguageAndStartDate)
 }
 
+function getCourseRoundsPerCourseCode(termin){
+  return getCourseRounds(termin)
+  .then(groupRoundsByCourseCode)
+}
+
 function filterCoursesDuringPeriod (coursesWithPeriods, period) {
   return coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period))
 }
@@ -176,11 +182,14 @@ module.exports = function ({term, year, period}) {
   const fileName = `csv/courses-${termin}-${period}.csv`
 
   return deleteFile(fileName)
-    .then(() => getCourseRounds(termin))
-    .then(coursesWithPeriods => filterCoursesDuringPeriod(coursesWithPeriods, period))
-    .then(groupRoundsByCourseCode)
+    .then(() => getCourseRoundsPerCourseCode(termin))
+    // .then(courseRounds => {
+    //   console.log('courseRounds', JSON.stringify( courseRounds, null,2 ))
+    //   return courseRounds
+    // })
+    .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     .then(filterByLogic)
-    .then(buildCanvasCourseObjects)
-    .then(canvasCourseObjects => writeCsvFile(canvasCourseObjects, fileName))
+    // TODO: writeCsvFile should call buildCanvasCourseObjects
+    .then(courseRounds => writeCsvFile(courseRounds, fileName))
     .catch(e => console.error(e))
 }
