@@ -3,7 +3,9 @@ const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const parseString = Promise.promisify(require('xml2js').parseString)
 const moment = require('moment')
-const {groupBy} = require('lodash')
+const terms = require('kth-canvas-utilities/terms')
+
+const {groupBy, findKey} = require('lodash')
 // const config = require('../server/init/configuration')
 const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init()
@@ -63,8 +65,13 @@ function calcStartDate (courseRound) {
   return d.toISOString()
 }
 
-function createLongName (courseRound) {
-  console.log('courseRound', courseRound)
+function createLongName (round) {
+  const termNum = round.startTerm[4]
+  const term = findKey(terms, _term => _term === parseInt(termNum))
+  const title = round.title[ round.lang === 'Swedish' ? 'sv' : 'en' ]
+  let result = round.courseCode
+  result += ` ${term}${round.startTerm.substring(2, 4)}-${round.roundId} ${title}`
+  return result
 }
 
 function createSisCourseId (courseRound) {

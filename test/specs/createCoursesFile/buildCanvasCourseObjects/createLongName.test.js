@@ -18,21 +18,41 @@ function _createTitle (courseObj, courseRoundObj, xmlLang) {
 
 ID1003VT172,ID1003,ID1003 TCOMK VT17-2 Project IT,2017-03-20T12:36:29.612Z,ICT - Imported course rounds,active
 */
-test.only('should use the swedish title', t => {
+test('should use the swedish title', t => {
+  t.plan(1)
+  const courseRound =
+    {
+      courseCode: 'AL2140',
+      startTerm: '20171',
+      roundId: 'roundId',
+      lang: 'Swedish',
+      title: {
+        sv: 'Renare produktion',
+        en: 'Cleaner Production'
+      }
+    }
+
+  const result = createLongName(courseRound)
+  t.equal(result, 'AL2140 VT17-roundId Renare produktion')
+})
+
+
+test('should include the short name', t => {
   t.plan(1)
   const courseRounds = [[
     {
-      'courseCode': 'AL2140',
-      'startTerm': '20171',
-      'roundId': 'roundId',
-      'lang': 'Swedish',
-      'title': {
-        'sv': 'Renare produktion',
-        'en': 'Cleaner Production'
+      courseCode: 'AL2140',
+      startTerm: '20171',
+      shortName: 'shortName',
+      roundId: 'roundId',
+      lang: 'Swedish',
+      title: {
+        sv: 'Renare produktion',
+        en: 'Cleaner Production'
       }
     }
   ]
   ]
   const result = createLongName(courseRounds)
-  t.equal(result, 'AL2140 VT17-roundId Renare produktion')
+  t.equal(result, 'AL2140 shortName VT17-roundId Renare produktion')
 })
