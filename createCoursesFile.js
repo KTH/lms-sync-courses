@@ -70,6 +70,9 @@ function createLongName (round) {
   const term = findKey(terms, _term => _term === parseInt(termNum))
   const title = round.title[ round.lang === 'Swedish' ? 'sv' : 'en' ]
   let result = round.courseCode
+  if(round.shortName){
+    result += ` ${round.shortName}`
+  }
   result += ` ${term}${round.startTerm.substring(2, 4)}-${round.roundId} ${title}`
   return result
 }
