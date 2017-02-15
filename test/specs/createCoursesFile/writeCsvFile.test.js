@@ -18,24 +18,14 @@ test('should call buildCanvasCourseObjects to rebuild the input to a format that
   t.ok(buildCanvasCourseObjects.calledWith(courseRounds))
 })
 
-test('should write a line with the headers', t => {
-  t.plan(1)
-  createCoursesFile.__set__('buildCanvasCourseObjects', arg => [])
-  const courseRounds = [[{ courseCode: 'AL0001'}]]
-  csvFile.writeLine = sinon.stub()
-
-  writeCsvFile(courseRounds, 'fileName').then(() => {
-    t.ok(csvFile.writeLine.calledWith(['course_id', 'short_name', 'long_name', 'start_date', 'account_id', 'status'], 'fileName'))
-  })
-})
-
-test('should write a line for each course', t => {
-  t.plan(1)
+test('should write a line with the headers, and one for each course', t => {
+  t.plan(2)
   createCoursesFile.__set__('buildCanvasCourseObjects', arg => [{sisCourseId: '1', shortName: 'shortName', longName: 'longName', startDate: 'startDate', sisAccountId: 'sisAccountId'}])
   const courseRounds = [[{ courseCode: 'AL0001'}]]
   csvFile.writeLine = sinon.stub()
 
   writeCsvFile(courseRounds, 'fileName').then(() => {
+    t.ok(csvFile.writeLine.calledWith(['course_id', 'short_name', 'long_name', 'start_date', 'account_id', 'status'], 'fileName'))
     t.ok(csvFile.writeLine.calledWith(['1', 'shortName', 'longName', 'startDate', 'sisAccountId', 'active'], 'fileName'))
   })
 })
