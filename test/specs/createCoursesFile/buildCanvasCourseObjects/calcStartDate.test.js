@@ -2,7 +2,6 @@ const test = require('tape')
 const rewire = require('rewire')
 const createCoursesFile = rewire('../../../../createCoursesFile.js')
 const calcStartDate = createCoursesFile.__get__('calcStartDate')
-const moment = require('moment')
 
 test('should create a date for the monday of the given start week', t => {
   const startDate = calcStartDate({

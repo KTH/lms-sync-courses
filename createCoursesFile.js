@@ -59,13 +59,24 @@ function groupRoundsByCourseCode (courseRounds) {
 function calcStartDate (courseRound) {
   const [year, weekNumber] = courseRound.startWeek.split('-')
   const d = moment().year(year).isoWeek(weekNumber).isoWeekday(1)
-  d.set({hour:8,minute:0,second:0,millisecond:0})
+  d.set({hour: 8, minute: 0, second: 0, millisecond: 0})
   return d.toISOString()
+}
+
+function createLongName (courseRound) {
+  console.log('courseRound', courseRound)
+}
+
+function createSisCourseId (courseRound) {
+  console.log('courseRound', courseRound)
 }
 
 function buildCanvasCourseObjects (courseRounds) {
   console.log('buildCanvasCourseObjects:', JSON.stringify(courseRounds, null, 4))
   const result = courseRounds.map(courseRound => {
+    if (!courseRound) {
+      return
+    }
     return {
       course_id: createSisCourseId(courseRound),
       short_name: courseRound.round.courseCode,
@@ -75,7 +86,7 @@ function buildCanvasCourseObjects (courseRounds) {
       status: 'active'
     }
   })
-  return Promise.resolve(result)
+  return result
 
   // return Promise.map(courseRounds, round => {
   //   // Add a ':' between year and term
@@ -125,25 +136,25 @@ function deleteFile (fileName) {
   return fs.unlinkAsync(fileName)
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
-/**
-@arg {string} termin example: '2017:1'
-* returns:
-    [
-      {"courseCode":"ML1000","startTerm":"20172","roundId":"1","xmlns":""},
-      {"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}, ...
-    ]
-*/
+
 function getCourseRounds (termin) {
   function extractRelevantData (courseRounds) {
     return courseRounds.courseRoundList.courseRound.map(round => round.$)
   }
 
-  /*
-  *  @param {array} arrayOfCourseRounds example: [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}]
-  * @return {array} arrayOfCourseRounds example: [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":"", tutoringLanguage: "Swedish"}]
-  */
+  function addTitles (courseRounds) {
+    return Promise.mapSeries(courseRounds, round => {
+      // TODO: use url from above
+      return get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`)
+      .then(course => {
+        round.title = course.title
+        return round
+      })
+    })
+  }
+
   function addTutoringLanguageAndStartDate (courseRounds) {
-    return Promise.map(courseRounds, round => {
+    return Promise.mapSeries(courseRounds, round => {
       return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
       .then(parseString)
       .then(({courseRound: {$: info, tutoringLanguage, periods}}) => {
@@ -160,8 +171,9 @@ function getCourseRounds (termin) {
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
-  .then(d => d.splice(0, 2))
+  .then(d => d.splice(0, 10))
   .then(addTutoringLanguageAndStartDate)
+  .then(addTitles)
 }
 
 function getCourseRoundsPerCourseCode (termin) {
