@@ -78,7 +78,7 @@ function createLongName (round) {
 }
 
 function createSisCourseId (courseRound) {
-  console.log('courseRound', courseRound)
+
 }
 
 function buildCanvasCourseObjects (courseRounds) {
@@ -89,7 +89,7 @@ function buildCanvasCourseObjects (courseRounds) {
     }
     return {
       course_id: createSisCourseId(courseRound),
-      short_name: courseRound.round.courseCode,
+      short_name: courseRound.courseCode,
       long_name: createLongName(courseRound),
       start_date: calcStartDate(courseRound),
       account_id: getSisAccountId(courseRound),
