@@ -36,7 +36,6 @@ test('should write a line for each course', t => {
   csvFile.writeLine = sinon.stub()
 
   writeCsvFile(courseRounds, 'fileName').then(() => {
-    const secondCallArgs = csvFile.writeLine.getCall(1).args[0]
-    t.deepEqual(secondCallArgs, ['1', 'shortName', 'longName', 'startDate', 'sisAccountId', 'active'])
-  }).catch(e => console.error(e))
+    t.ok(csvFile.writeLine.calledWith(['1', 'shortName', 'longName', 'startDate', 'sisAccountId', 'active'], 'fileName'))
+  })
 })
