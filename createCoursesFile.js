@@ -70,7 +70,7 @@ function createLongName (round) {
   const term = terms[termNum]
   const title = round.title[ round.lang === 'Swedish' ? 'sv' : 'en' ]
   let result = round.courseCode
-  if(round.shortName){
+  if (round.shortName) {
     result += ` ${round.shortName}`
   }
   result += ` ${term}${round.startTerm.substring(2, 4)}-${round.roundId} ${title}`
@@ -81,21 +81,21 @@ function createSisCourseId (courseRound) {
 
 }
 
-function buildCanvasCourseObjects (courseRounds) {
-  console.log('buildCanvasCourseObjects:', JSON.stringify(courseRounds, null, 4))
-  const result = courseRounds.map(courseRound => {
+function buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
+  console.log('buildCanvasCourseObjects:', JSON.stringify(twoDArrayOfCourseRounds, null, 4))
+  const result = twoDArrayOfCourseRounds.map(courseRounds =>  courseRounds.map(courseRound => {
     if (!courseRound) {
       return
     }
     return {
       course_id: createSisCourseId(courseRound),
-      short_name: courseRound.courseCode,
+      short_name: courseRound.shortName,
       long_name: createLongName(courseRound),
       start_date: calcStartDate(courseRound),
       account_id: getSisAccountId(courseRound),
       status: 'active'
     }
-  })
+  }))
   return result
 
   // return Promise.map(courseRounds, round => {
@@ -203,7 +203,15 @@ module.exports = function ({term, year, period}) {
 
   return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
+    .then(arg => {
+      console.log('arg', JSON.stringify( arg, null,2 ))
+      return arg
+    })
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
+    .then(arg2 => {
+      console.log('arg2', JSON.stringify( arg2, null,4 ))
+      return arg2
+    })
     // .then(filterByLogic)
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
     .catch(e => console.error(e))
