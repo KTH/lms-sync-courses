@@ -129,7 +129,7 @@ function addRoundInfo (round, termin) {
     if (courseRound.periods) {
       round.periods = courseRound.periods[0].period.map(period => period.$)
       round.startWeek = courseRound.$.startWeek
-      round.tutoringLanguage = courseRound.tutoringLanguage[0]
+      round.tutoringLanguage = courseRound.tutoringLanguage[0]._
     } else {
       round.periods = []
     }
@@ -155,7 +155,7 @@ function getCourseRounds (termin) {
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
-  .then(d => d.splice(0, 10))
+  .then(d => d.splice(0, 50))
   .then(courseRounds => courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
@@ -170,6 +170,7 @@ function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
 }
 
 function filterByLogic (groupedCourses) {
+  console.log(JSON.stringify(groupedCourses, null, 4))
   return groupedCourses
 }
 
@@ -180,7 +181,7 @@ module.exports = function ({term, year, period}) {
   return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
-    // .then(filterByLogic)
+    .then(filterByLogic)
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
     .catch(e => console.error(e))
 }

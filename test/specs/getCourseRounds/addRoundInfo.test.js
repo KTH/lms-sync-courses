@@ -5,9 +5,9 @@ const addRoundInfo = createCoursesFile.__get__('addRoundInfo')
 
 test('should just return courses with periods and language and startWeek', t => {
   const xmlForCourseRound = `
-  <courseRound startWeek="2017-44">
-    <tutoringLanguage>English</tutoringLanguage>
-    <periods>
+  <courseRound xmlns="http://www.kth.se/student/kurser" startWeek="2017-44">
+    <tutoringLanguage  xmlns="" xml:lang="en">English</tutoringLanguage>
+    <periods xmlns="">
       <period term="20172" number="2">true</period>
       <period term="20172" number="1">true</period>
     </periods>
@@ -28,7 +28,7 @@ test('should just return courses with periods and language and startWeek', t => 
 
 test('should just return courses with empty array if periods are undefined', t => {
   const xmlForCourseRound = `
-  <courseRound>
+  <courseRound xmlns="http://www.kth.se/student/kurser">
   </courseRound>
   `
   createCoursesFile.__set__('get', () => Promise.resolve(xmlForCourseRound))
