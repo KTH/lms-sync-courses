@@ -99,10 +99,14 @@ function buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
   return result
 }
 
+function flatten(twoDArrayOfCanvasCourses) {
+  return twoDArrayOfCanvasCourses
+}
+
 function writeCsvFile (courseRounds, fileName) {
   const twoDArrayOfCanvasCourses = buildCanvasCourseObjects(courseRounds)
   const arrayOfCanvasCourses = flatten(twoDArrayOfCanvasCourses)
-  
+
   const columns = [
     'course_id',
     'short_name',

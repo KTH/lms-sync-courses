@@ -4,7 +4,7 @@ const createCoursesFile = rewire('../../../../createCoursesFile.js')
 const buildCanvasCourseObjects = createCoursesFile.__get__('buildCanvasCourseObjects')
 const moment = require('moment')
 
-test.only('should not fail on empty arrays', t => {
+test('should not fail on empty arrays', t => {
   t.plan(1)
   const courseRounds = [[]]
 
