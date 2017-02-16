@@ -5,7 +5,7 @@ const parseString = Promise.promisify(require('xml2js').parseString)
 const moment = require('moment')
 const terms = require('kth-canvas-utilities/terms')
 
-const {groupBy, findKey} = require('lodash')
+const {groupBy} = require('lodash')
 // const config = require('../server/init/configuration')
 const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init()
@@ -67,7 +67,7 @@ function calcStartDate (courseRound) {
 
 function createLongName (round) {
   const termNum = round.startTerm[4]
-  const term = findKey(terms, _term => _term === parseInt(termNum))
+  const term = terms[termNum]
   const title = round.title[ round.lang === 'Swedish' ? 'sv' : 'en' ]
   let result = round.courseCode
   if(round.shortName){
