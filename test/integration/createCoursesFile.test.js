@@ -3,7 +3,7 @@ fs = require('fs-extra')
 
 const createCoursesFile = require('../../createCoursesFile.js')
 test('should create the file with correct name, headers, and a line including a sisCourseId', t => {
-  t.plan(2)
+  t.plan(3)
   fs.removeSync('csv')
   const fileName = 'csv/courses-2017:1-3.csv'
 
@@ -16,7 +16,7 @@ test('should create the file with correct name, headers, and a line including a 
     const [headers,line2] = fileContent.split('\n')
     t.equal(headers, 'course_id,short_name,long_name,start_date,account_id,status')
 
-    const [courseId] = line2.split(',')
-    t.ok(courseId !== 'undefined' && courseId.length === 6)
+    const [,courseCode] = line2.split(',')
+    t.ok(courseCode !== 'undefined' && courseCode.length === 6)
   })
 })
