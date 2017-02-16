@@ -87,6 +87,7 @@ function buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
     }
     return {
       sisCourseId: createSisCourseId(courseRound),
+      courseCode: courseRound.courseCode,
       shortName: courseRound.shortName,
       longName: createLongName(courseRound),
       startDate: calcStartDate(courseRound),
