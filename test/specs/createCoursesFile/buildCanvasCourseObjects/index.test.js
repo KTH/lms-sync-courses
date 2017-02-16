@@ -35,11 +35,11 @@ test('should create course objects containing attributes needed for creating the
 
   const expected = [[
     {
-      course_id: 'abc123',
-      short_name: 'shortName',
-      long_name: 'Långt namn',
-      start_date: aDate,
-      account_id: 'sis account id',
+      sisCourseId: 'abc123',
+      shortName: 'shortName',
+      longName: 'Långt namn',
+      startDate: aDate,
+      sisAccountId: 'sis account id',
       status: 'active'
     }
   ]]

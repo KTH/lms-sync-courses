@@ -86,11 +86,11 @@ function buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
       return
     }
     return {
-      course_id: createSisCourseId(courseRound),
-      short_name: courseRound.shortName,
-      long_name: createLongName(courseRound),
-      start_date: calcStartDate(courseRound),
-      account_id: getSisAccountId(courseRound),
+      sisCourseId: createSisCourseId(courseRound),
+      shortName: courseRound.shortName,
+      longName: createLongName(courseRound),
+      startDate: calcStartDate(courseRound),
+      sisAccountId: getSisAccountId(courseRound),
       status: 'active'
     }
   }))
