@@ -77,7 +77,6 @@ function createLongName (round) {
   return result
 }
 
-
 function createSisCourseId ({courseCode, startTerm, roundId}) {
   const termNum = startTerm[4]
   const shortYear = `${startTerm[2]}${startTerm[3]}`
@@ -200,15 +199,7 @@ module.exports = function ({term, year, period}) {
 
   return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
-    .then(arg => {
-      console.log('arg', JSON.stringify( arg, null,2 ))
-      return arg
-    })
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
-    .then(arg2 => {
-      console.log('arg2', JSON.stringify( arg2, null,4 ))
-      return arg2
-    })
     // .then(filterByLogic)
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
     .catch(e => console.error(e))
