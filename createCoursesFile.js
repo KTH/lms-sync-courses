@@ -140,7 +140,7 @@ function deleteFile (fileName) {
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
-function addTutoringLanguageAndStartDate (courseRounds) {
+function addTutoringLanguageAndStartDate (courseRounds, termin) {
   console.log('addTutoringLanguageAndStartDate', JSON.stringify(courseRounds, null, 4))
   return Promise.mapSeries(courseRounds, round => {
     console.log(JSON.stringify(round, null, 4))
@@ -177,7 +177,7 @@ function getCourseRounds (termin) {
   .then(parseString)
   .then(extractRelevantData)
   .then(d => d.splice(0, 10))
-  .then(addTutoringLanguageAndStartDate)
+  .then(courseRounds => addTutoringLanguageAndStartDate(courseRounds, termin))
   .then(addTitles)
 }
 
