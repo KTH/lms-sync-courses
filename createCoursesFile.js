@@ -77,8 +77,13 @@ function createLongName (round) {
   return result
 }
 
-function createSisCourseId (courseRound) {
 
+function createSisCourseId ({courseCode, startTerm, roundId}) {
+  const termNum = startTerm[4]
+  const shortYear = `${startTerm[2]}${startTerm[3]}`
+  const term = terms[termNum]
+
+  return `${courseCode}${term}${shortYear}${roundId}`
 }
 
 function buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
