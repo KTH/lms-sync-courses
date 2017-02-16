@@ -15,7 +15,7 @@ test('should skip empty arrays', t => {
   t.deepEqual(result, expected)
 })
 
-test.only('should create a flat array of course object containing attributes needed for creating the course in canvas ', t => {
+test.only('should create course objects containing attributes needed for creating the course in canvas ', t => {
   t.plan(1)
   const aDate = '2001-01-01'
 
@@ -33,7 +33,7 @@ test.only('should create a flat array of course object containing attributes nee
 
   const result = buildCanvasCourseObjects(courseRounds)
 
-  const expected = [
+  const expected = [[
     {
       course_id: 'abc123',
       short_name: 'shortName',
@@ -42,7 +42,7 @@ test.only('should create a flat array of course object containing attributes nee
       account_id: 'sis account id',
       status: 'active'
     }
-  ]
+  ]]
 
   t.deepEqual(result, expected)
 })
