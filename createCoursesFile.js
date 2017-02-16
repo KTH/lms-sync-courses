@@ -6,7 +6,6 @@ const moment = require('moment')
 const terms = require('kth-canvas-utilities/terms')
 
 const {groupBy} = require('lodash')
-// const config = require('../server/init/configuration')
 const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
@@ -30,20 +29,12 @@ function get (url) {
 
 function getSisAccountId ({courseCode}) {
   const firstChar = courseCode[0]
-  console.log(',,,,,,,,,,,,,,,,,,firstChar:', firstChar)
-  console.log(courseCode)
-  console.log(departmentCodeMapping[firstChar])
   return `${departmentCodeMapping[firstChar]} - Imported course rounds`
 }
 
-/** *
-* return example:
-* {"round":{"courseCode":"MJ2244","startTerm":"20171","roundId":"1","xmlns":""},"periods":[{"term":"20171","number":"3"}]}
-*/
 function addPeriods (courseRounds, termin) {
   function addInfoForCourseRound (round) {
     return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
-    // return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
     .then(parseString)
     .then(roundInfo => {
       const periods = roundInfo.courseRound.periods && roundInfo.courseRound.periods[0].period.map(period => period.$)
@@ -127,8 +118,6 @@ function writeCsvFile (courseRounds, fileName) {
   function writeLineForCourse ({sisCourseId, shortName, longName, startDate, sisAccountId}) {
     return csvFile.writeLine([
       sisCourseId,
-        // ${course.course.course_code} ${shortName || ''} ${course.course.name}.course_code,
-        // `${course.course.course_code} ${shortName || ''} ${course.course.name}`,
       shortName,
       longName,
       startDate,
