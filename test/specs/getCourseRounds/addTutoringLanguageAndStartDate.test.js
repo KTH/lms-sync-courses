@@ -9,7 +9,7 @@ test('should just return courses without any periods', t => {
     <periods></periods>
   </courseRound>
   `
-  createCoursesFile.__set__('get', ()=>Promise.resolve(xmlForCourseRound))
+  createCoursesFile.__set__('get', () => Promise.resolve(xmlForCourseRound))
   t.plan(1)
   const courseRounds = [
     {
@@ -17,9 +17,9 @@ test('should just return courses without any periods', t => {
       startTerm: '20172',
       roundId: '1'
     }]
-    addTutoringLanguageAndStartDate(courseRounds, '2017:1').then(result =>{
-        t.deepEqual(result, courseRounds)
-    })
+  addTutoringLanguageAndStartDate(courseRounds, '2017:1').then(result => {
+    t.deepEqual(result, courseRounds)
+  })
 })
 
 test.only('should just return courses where periods is undefined', t => {
@@ -27,15 +27,19 @@ test.only('should just return courses where periods is undefined', t => {
   <courseRound>
   </courseRound>
   `
-  createCoursesFile.__set__('get', ()=>Promise.resolve(xmlForCourseRound))
+  createCoursesFile.__set__('get', () => Promise.resolve(xmlForCourseRound))
   t.plan(1)
-  const courseRounds = [
-    {
+  const courseRound = {
+    courseCode: 'ML1000',
+    startTerm: '20172',
+    roundId: '1'
+  }
+  addTutoringLanguageAndStartDate(courseRound, '2017:1').then(result => {
+    t.deepEqual(result, {
       courseCode: 'ML1000',
       startTerm: '20172',
-      roundId: '1'
-    }]
-    addTutoringLanguageAndStartDate(courseRounds, '2017:1').then(result =>{
-        t.deepEqual(result, courseRounds)
+      roundId: '1',
+      periods: []
     })
+  })
 })
