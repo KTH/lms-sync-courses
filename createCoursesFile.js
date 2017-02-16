@@ -34,20 +34,6 @@ function getSisAccountId ({courseCode}) {
   return `${departmentCodeMapping[firstChar]} - Imported course rounds`
 }
 
-function addPeriods (courseRounds, termin) {
-  function addInfoForCourseRound (round) {
-    return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
-    .then(parseString)
-    .then(roundInfo => {
-      const periods = roundInfo.courseRound.periods && roundInfo.courseRound.periods[0].period.map(period => period.$)
-
-      return {round, periods}
-    })
-  }
-
-  return Promise.map(courseRounds, addInfoForCourseRound)
-}
-
 function groupRoundsByCourseCode (courseRounds) {
   const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
   return Object.getOwnPropertyNames(courseRoundsGrouped)
@@ -64,7 +50,7 @@ function calcStartDate (courseRound) {
 function createLongName (round) {
   const termNum = round.startTerm[4]
   const term = terms[termNum]
-  const title = round.title[ round.lang === 'Swedish' ? 'sv' : 'en' ]
+  const title = round.title[ round.tutoringLanguage === 'Swedish' ? 'sv' : 'en' ]
   let result = round.courseCode
   if (round.shortName) {
     result += ` ${round.shortName}`
@@ -82,7 +68,6 @@ function createSisCourseId ({courseCode, startTerm, roundId}) {
 }
 
 function buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
-  console.log('buildCanvasCourseObjects:', JSON.stringify(twoDArrayOfCourseRounds, null, 4))
   const result = twoDArrayOfCourseRounds.map(courseRounds => courseRounds.map(courseRound => {
     if (!courseRound) {
       return
@@ -105,11 +90,8 @@ function flatten (arr) {
 }
 
 function writeCsvFile (courseRounds, fileName) {
-  console.log('courseRounds:', JSON.stringify(courseRounds, null, 4))
   const twoDArrayOfCanvasCourses = buildCanvasCourseObjects(courseRounds)
   const arrayOfCanvasCourses = flatten(twoDArrayOfCanvasCourses)
-  console.log('arrayOfCanvasCourses:', JSON.stringify(arrayOfCanvasCourses, null, 4))
-
   const columns = [
     'course_id',
     'short_name',
@@ -140,31 +122,18 @@ function deleteFile (fileName) {
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
-function addPeriods (round, termin) {
-  console.log('addPeriods', JSON.stringify(round, null, 4))
+function addRoundInfo (round, termin) {
   return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
   .then(parseString)
   .then(({courseRound}) => {
     if (courseRound.periods) {
-      console.log(JSON.stringify(courseRound, null, 4))
-      // {
-    // "periods": [
-    //    {"period": [
-                // {
-                //     "_": "true",
-                //     "$": {
-                //         "term": "20172",
-                //         "number": "2"
       round.periods = courseRound.periods[0].period.map(period => period.$)
-      //round.startWeek = info.startWeek
-      //const [{_: lang}] = tutoringLanguage
-      // console.log('setting lang to ', lang)
-      //round.lang = lang
-      return round
+      round.startWeek = courseRound.$.startWeek
+      round.tutoringLanguage = courseRound.tutoringLanguage[0]
     } else {
       round.periods = []
-      return Promise.resolve(round)
     }
+    return round
   })
 }
 
@@ -187,7 +156,7 @@ function getCourseRounds (termin) {
   .then(parseString)
   .then(extractRelevantData)
   .then(d => d.splice(0, 10))
-  .then(courseRounds => addPeriods(courseRounds, termin))
+  .then(courseRounds => courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
 

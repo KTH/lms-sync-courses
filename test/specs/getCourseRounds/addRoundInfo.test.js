@@ -1,11 +1,12 @@
 const test = require('tape')
 const rewire = require('rewire')
 const createCoursesFile = rewire('../../../createCoursesFile.js')
-const addPeriods = createCoursesFile.__get__('addPeriods')
+const addRoundInfo = createCoursesFile.__get__('addRoundInfo')
 
-test.only('should just return courses with periods', t => {
+test('should just return courses with periods and language and startWeek', t => {
   const xmlForCourseRound = `
-  <courseRound>
+  <courseRound startWeek="2017-44">
+    <tutoringLanguage>English</tutoringLanguage>
     <periods>
       <period term="20172" number="2">true</period>
       <period term="20172" number="1">true</period>
@@ -16,8 +17,10 @@ test.only('should just return courses with periods', t => {
   t.plan(1)
   const courseRounds = {
   }
-  addPeriods(courseRounds).then(result => {
+  addRoundInfo(courseRounds).then(result => {
     t.deepEqual(result, {
+      startWeek: '2017-44',
+      tutoringLanguage: 'English',
       periods: [{term: '20172', number: '2'}, {term: '20172', number: '1'}]
     })
   })
@@ -32,7 +35,7 @@ test('should just return courses with empty array if periods are undefined', t =
   t.plan(1)
   const courseRound = {
   }
-  addPeriods(courseRound).then(result => {
+  addRoundInfo(courseRound).then(result => {
     t.deepEqual(result, {
       periods: []
     })
