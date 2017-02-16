@@ -28,8 +28,11 @@ function get (url) {
   })
 }
 
-function getSisAccountId (courseCode) {
+function getSisAccountId ({courseCode}) {
   const firstChar = courseCode[0]
+  console.log(',,,,,,,,,,,,,,,,,,firstChar:', firstChar)
+  console.log(courseCode)
+  console.log(departmentCodeMapping[firstChar])
   return `${departmentCodeMapping[firstChar]} - Imported course rounds`
 }
 
@@ -108,8 +111,10 @@ function flatten (arr) {
 }
 
 function writeCsvFile (courseRounds, fileName) {
+  console.log('courseRounds:',JSON.stringify(courseRounds, null, 4))
   const twoDArrayOfCanvasCourses = buildCanvasCourseObjects(courseRounds)
   const arrayOfCanvasCourses = flatten(twoDArrayOfCanvasCourses)
+  console.log('arrayOfCanvasCourses:',JSON.stringify(arrayOfCanvasCourses, null, 4))
 
   const columns = [
     'course_id',
