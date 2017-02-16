@@ -31,6 +31,6 @@ test('should write a line with the headers, and one for each course', t => {
 
   writeCsvFile(courseRounds, 'fileName').then(() => {
     t.ok(csvFile.writeLine.calledWith(['course_id', 'short_name', 'long_name', 'start_date', 'account_id', 'status'], 'fileName'))
-    t.ok(csvFile.writeLine.calledWith(['1', 'courseCode', 'longName', 'startDate', 'sisAccountId', 'active'], 'fileName'))
+    t.ok(csvFile.writeLine.calledWith(['sisCourseId', 'courseCode', 'longName', 'startDate', 'sisAccountId', 'active'], 'fileName'))
   })
 })
