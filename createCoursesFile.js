@@ -157,6 +157,7 @@ function getCourseRounds (termin) {
       return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
       .then(parseString)
       .then(({courseRound: {$: info, tutoringLanguage, periods}}) => {
+        console.log('periods for this courseRound:', periods)
         round.periods = periods[0].period.map(period => period.$)
         round.startWeek = info.startWeek
         const [{_: lang}] = tutoringLanguage
@@ -191,7 +192,7 @@ function filterByLogic (groupedCourses) {
 module.exports = function ({term, year, period}) {
   const termin = `${year}:${term}`
   const fileName = `csv/courses-${termin}-${period}.csv`
-
+  console.log('Using file name:', fileName)
   return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))

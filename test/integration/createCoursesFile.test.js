@@ -5,10 +5,9 @@ const createCoursesFile = require('../../createCoursesFile.js')
 test('should create the file with correct name, headers, and a line including a sisCourseId', t => {
   t.plan(3)
   fs.removeSync('csv')
-  const fileName = 'csv/courses-2017:1-3.csv'
+  const fileName = 'csv/courses-2017:2-1.csv'
 
-  // Choose autumn, but a period on the spring to get a smaller amount of courses
-  createCoursesFile({term: '1', year: '2017', period: '3'})
+  createCoursesFile({term: '2', year: '2017', period: '1'})
   .then(() => {
     t.ok(fs.existsSync(fileName))
 
