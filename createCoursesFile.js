@@ -99,8 +99,8 @@ function buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
   return result
 }
 
-function flatten(twoDArrayOfCanvasCourses) {
-  return twoDArrayOfCanvasCourses
+function flatten (arr) {
+  return [].concat.apply([], arr)
 }
 
 function writeCsvFile (courseRounds, fileName) {
