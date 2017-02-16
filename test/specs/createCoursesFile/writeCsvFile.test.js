@@ -4,8 +4,7 @@ const rewire = require('rewire')
 const createCoursesFile = rewire('../../../createCoursesFile.js')
 const writeCsvFile = createCoursesFile.__get__('writeCsvFile')
 const csvFile = createCoursesFile.__get__('csvFile')
-const fs = createCoursesFile.__get__('fs')
-fs.mkdirAsync = () => Promise.resolve()
+createCoursesFile.__set__('mkdirAsync', () => Promise.resolve())
 
 test('should call buildCanvasCourseObjects to rebuild the input to a format that is easier to handle', t => {
   t.plan(1)

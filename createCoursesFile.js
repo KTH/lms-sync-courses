@@ -13,7 +13,9 @@ const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canva
 const departmentCodeMapping = require('kth-canvas-utilities/departmentCodeMapping')
 
 const csvFile = require('./csvFile')
-const fs = Promise.promisifyAll(require('fs'))
+const {mkdir, unlink} = require('fs')
+let mkdirAsync = Promise.promisify(mkdir)
+let unlinkAsync = Promise.promisify(unlink)
 
 function get (url) {
   console.log(url)
@@ -126,7 +128,7 @@ function writeCsvFile (courseRounds, fileName) {
       'active'], fileName)
   }
 
-  return fs.mkdirAsync('csv')
+  return mkdirAsync('csv')
   .catch(e => console.log('couldnt create csv folder. This is probably fine, just continue'))
   .then(() => csvFile.writeLine(columns, fileName))
   .then(() => Promise.map(arrayOfCanvasCourses, writeLineForCourse)
@@ -134,8 +136,26 @@ function writeCsvFile (courseRounds, fileName) {
 }
 
 function deleteFile (fileName) {
-  return fs.unlinkAsync(fileName)
+  return unlinkAsync(fileName)
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
+}
+
+function addTutoringLanguageAndStartDate (courseRounds) {
+  console.log('addTutoringLanguageAndStartDate', JSON.stringify(courseRounds, null, 4))
+  return Promise.mapSeries(courseRounds, round => {
+    console.log(JSON.stringify(round, null, 4))
+    return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
+    .then(parseString)
+    .then(({courseRound: {$: info, tutoringLanguage, periods}}) => {
+      console.log('periods for this courseRound:', periods)
+      round.periods = periods[0].period.map(period => period.$)
+      round.startWeek = info.startWeek
+      const [{_: lang}] = tutoringLanguage
+      console.log('setting lang to ', lang)
+      round.lang = lang
+      return round
+    })
+  })
 }
 
 function getCourseRounds (termin) {
@@ -152,21 +172,6 @@ function getCourseRounds (termin) {
     )
   }
 
-  function addTutoringLanguageAndStartDate (courseRounds) {
-    return Promise.mapSeries(courseRounds, round => {
-      return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
-      .then(parseString)
-      .then(({courseRound: {$: info, tutoringLanguage, periods}}) => {
-        console.log('periods for this courseRound:', periods)
-        round.periods = periods[0].period.map(period => period.$)
-        round.startWeek = info.startWeek
-        const [{_: lang}] = tutoringLanguage
-        console.log('setting lang to ', lang)
-        round.lang = lang
-        return round
-      })
-    })
-  }
   console.log('TODO: remove the subsetting!')
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
