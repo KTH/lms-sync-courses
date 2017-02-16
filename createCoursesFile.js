@@ -116,6 +116,14 @@ function writeCsvFile (courseRounds, fileName) {
     'status']
 
   function writeLineForCourse ({sisCourseId, shortName, longName, startDate, sisAccountId}) {
+    console.log('write line for:',JSON.stringify({sisCourseId, shortName, longName, startDate, sisAccountId}, null, 4))
+    console.log('write line:', JSON.stringify([
+      sisCourseId,
+      shortName,
+      longName,
+      startDate,
+      sisAccountId,
+      'active'], null, 4))
     return csvFile.writeLine([
       sisCourseId,
       shortName,
