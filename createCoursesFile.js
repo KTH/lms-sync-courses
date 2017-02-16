@@ -140,17 +140,26 @@ function deleteFile (fileName) {
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
-function addTutoringLanguageAndStartDate (round, termin) {
-  console.log('addTutoringLanguageAndStartDate', JSON.stringify(round, null, 4))
+function addPeriods (round, termin) {
+  console.log('addPeriods', JSON.stringify(round, null, 4))
   return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
   .then(parseString)
-  .then(courseInfo => {
-    if (courseInfo.periods) {
-      // courseInfo.periods = periods[0].period.map(period => period.$)
-      // courseInfo.startWeek = info.startWeek
-      const [{_: lang}] = tutoringLanguage
-      console.log('setting lang to ', lang)
-      round.lang = lang
+  .then(({courseRound}) => {
+    if (courseRound.periods) {
+      console.log(JSON.stringify(courseRound, null, 4))
+      // {
+    // "periods": [
+    //    {"period": [
+                // {
+                //     "_": "true",
+                //     "$": {
+                //         "term": "20172",
+                //         "number": "2"
+      round.periods = courseRound.periods[0].period.map(period => period.$)
+      //round.startWeek = info.startWeek
+      //const [{_: lang}] = tutoringLanguage
+      // console.log('setting lang to ', lang)
+      //round.lang = lang
       return round
     } else {
       round.periods = []
@@ -178,7 +187,7 @@ function getCourseRounds (termin) {
   .then(parseString)
   .then(extractRelevantData)
   .then(d => d.splice(0, 10))
-  .then(courseRounds => addTutoringLanguageAndStartDate(courseRounds, termin))
+  .then(courseRounds => addPeriods(courseRounds, termin))
   .then(addTitles)
 }
 
