@@ -4,18 +4,18 @@ const createCoursesFile = rewire('../../../../createCoursesFile.js')
 const buildCanvasCourseObjects = createCoursesFile.__get__('buildCanvasCourseObjects')
 const moment = require('moment')
 
-test('should skip empty arrays', t => {
+test.only('should not fail on empty arrays', t => {
   t.plan(1)
   const courseRounds = [[]]
 
   const result = buildCanvasCourseObjects(courseRounds)
 
-  const expected = []
+  const expected = [[]]
 
   t.deepEqual(result, expected)
 })
 
-test.only('should create course objects containing attributes needed for creating the course in canvas ', t => {
+test('should create course objects containing attributes needed for creating the course in canvas ', t => {
   t.plan(1)
   const aDate = '2001-01-01'
 
