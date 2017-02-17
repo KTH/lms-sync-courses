@@ -9,7 +9,7 @@ const {groupBy} = require('lodash')
 const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
-
+const filterByLogic = require('./filterByLogic')
 const departmentCodeMapping = require('kth-canvas-utilities/departmentCodeMapping')
 
 const csvFile = require('./csvFile')
@@ -36,6 +36,7 @@ function getSisAccountId ({courseCode}) {
 
 function groupRoundsByCourseCode (courseRounds) {
   const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
+  console.log('courseRoundsGrouped', JSON.stringify(courseRoundsGrouped, null, 4))
   return Object.getOwnPropertyNames(courseRoundsGrouped)
   .map(name => courseRoundsGrouped[name])
 }
@@ -155,7 +156,7 @@ function getCourseRounds (termin) {
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
-  .then(d => d.splice(0, 50))
+  .then(d => d.splice(330, 360))
   .then(courseRounds => courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
@@ -167,11 +168,6 @@ function getCourseRoundsPerCourseCode (termin) {
 
 function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
   return arrayOfCourseRoundArrays.map(arrayOfCourseRounds => arrayOfCourseRounds.filter(({periods}) => periods && periods.find(({number}) => number === period)))
-}
-
-function filterByLogic (groupedCourses) {
-  console.log(JSON.stringify(groupedCourses, null, 4))
-  return groupedCourses
 }
 
 module.exports = function ({term, year, period}) {

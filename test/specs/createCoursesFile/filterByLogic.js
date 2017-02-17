@@ -1,17 +1,27 @@
 const test = require('tape')
 const rewire = require('rewire')
-const createCoursesFile = rewire('../../../createCoursesFile.js')
-const filterByLogic = createCoursesFile.__get__('filterByLogic')
+const filterByLogic = rewire('../../../filterByLogic.js')
 
 test('should include a course if it only has one course round', t => {
   const courseRounds = [
     [
       {
-        'course': {
-          'course': {}
-        },
-        'sisAccountId': 'ITM - Imported course rounds',
-        'courseRound': {}
+        'courseCode': 'SF1624',
+        'startTerm': '20171',
+        'roundId': '1',
+        'xmlns': '',
+        'periods': [
+          {
+            'term': '20171',
+            'number': '3'
+          }
+        ],
+        'startWeek': '2017-03',
+        'tutoringLanguage': 'Swedish',
+        'title': {
+          'sv': 'Algebra och geometri',
+          'en': 'Algebra and Geometry'
+        }
       }
     ]
   ]
@@ -28,12 +38,40 @@ test('should include a course if it has multiple rounds, each with different sta
   const courseRounds = [
     [
       {
-        course: {course: {}},
-        courseRound: {startWeek: '2017-03'}
+        'courseCode': 'SF1624',
+        'startTerm': '20171',
+        'roundId': '1',
+        'xmlns': '',
+        'periods': [
+          {
+            'term': '20171',
+            'number': '3'
+          }
+        ],
+        'startWeek': '2017-04',
+        'tutoringLanguage': 'Swedish',
+        'title': {
+          'sv': 'Algebra och geometri',
+          'en': 'Algebra and Geometry'
+        }
       },
       {
-        course: {course: {}},
-        courseRound: {startWeek: '2017-04'}
+        'courseCode': 'SF1624',
+        'startTerm': '20171',
+        'roundId': '2',
+        'xmlns': '',
+        'periods': [
+          {
+            'term': '20171',
+            'number': '3'
+          }
+        ],
+        'startWeek': '2017-03',
+        'tutoringLanguage': 'Swedish',
+        'title': {
+          'sv': 'Algebra och geometri',
+          'en': 'Algebra and Geometry'
+        }
       }
     ]
   ]
@@ -43,5 +81,105 @@ test('should include a course if it has multiple rounds, each with different sta
   const expected = courseRounds
 
   t.deepEqual(result, expected)
+  t.end()
+})
+
+test('should include a course if it has multiple rounds, each with different tutoringLanguage', t => {
+  const courseRounds = [
+    [
+      {
+        'courseCode': 'SF1624',
+        'startTerm': '20171',
+        'roundId': '1',
+        'xmlns': '',
+        'periods': [
+          {
+            'term': '20171',
+            'number': '3'
+          }
+        ],
+        'startWeek': '2017-03',
+        'tutoringLanguage': 'Swedish',
+        'title': {
+          'sv': 'Algebra och geometri',
+          'en': 'Algebra and Geometry'
+        }
+      },
+      {
+        'courseCode': 'SF1624',
+        'startTerm': '20171',
+        'roundId': '2',
+        'xmlns': '',
+        'periods': [
+          {
+            'term': '20171',
+            'number': '3'
+          }
+        ],
+        'startWeek': '2017-03',
+        'tutoringLanguage': 'English',
+        'title': {
+          'sv': 'Algebra och geometri',
+          'en': 'Algebra and Geometry'
+        }
+      }
+    ]
+  ]
+
+  const result = filterByLogic(courseRounds)
+
+  const expected = courseRounds
+
+  t.deepEqual(result, expected)
+  t.end()
+})
+
+test('should include a course if it has multiple rounds, each with the same tutoringLanguage and the same startWeek', t => {
+  const courseRounds = [
+    [
+      {
+        'courseCode': 'SF1624',
+        'startTerm': '20171',
+        'roundId': '1',
+        'xmlns': '',
+        'periods': [
+          {
+            'term': '20171',
+            'number': '3'
+          }
+        ],
+        'startWeek': '2017-03',
+        'tutoringLanguage': 'Swedish',
+        'title': {
+          'sv': 'Algebra och geometri',
+          'en': 'Algebra and Geometry'
+        }
+      },
+      {
+        'courseCode': 'SF1624',
+        'startTerm': '20171',
+        'roundId': '2',
+        'xmlns': '',
+        'periods': [
+          {
+            'term': '20171',
+            'number': '3'
+          }
+        ],
+        'startWeek': '2017-03',
+        'tutoringLanguage': 'English',
+        'title': {
+          'sv': 'Algebra och geometri',
+          'en': 'Algebra and Geometry'
+        }
+      }
+    ]
+  ]
+
+  const result = filterByLogic(courseRounds)
+
+  const expected = courseRounds
+
+  t.deepEqual(result, [[]])
   t.end()
 })
