@@ -1,4 +1,3 @@
-const {countBy, groupBy} = require('lodash')
 const filterYellowCourses = require('./filterYellowCourses')
 
 function filterByLogic (groupedCourses) {
