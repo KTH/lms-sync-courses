@@ -1,7 +1,7 @@
 const test = require('tape')
+const filterOneToOne = require('../../../filter/filterOneToOne')
 
 test('should include a course if it only has one course round', t => {
-  const filterOneToOne = require('../../../filter/filterOneToOne')
 
   const courseRounds = [
     [
