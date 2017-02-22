@@ -36,7 +36,6 @@ function getSisAccountId ({courseCode}) {
 
 function groupRoundsByCourseCode (courseRounds) {
   const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
-  console.log('courseRoundsGrouped', JSON.stringify(courseRoundsGrouped, null, 4))
   return Object.getOwnPropertyNames(courseRoundsGrouped)
   .map(name => courseRoundsGrouped[name])
 }

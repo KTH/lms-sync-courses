@@ -1,10 +1,10 @@
-const {count} = require('lodash')
+const {countBy} = require('lodash')
 
 function filterByLogic (groupedCourses) {
-  const greenCourses = groupedCourses.map(courseRounds => courseRounds.length === 1 ? courseRounds : [])
-  const yellowCoursesWeek = groupedCourses.map(courseRounds => count(courseRounds, round => { round.startWeek }))
-  console.log('greenCourses', JSON.stringify(greenCourses, null, 4))
-  return [...greenCourses]
+  const oneToOneCourses = groupedCourses.map(courseRounds => courseRounds.length === 1 ? courseRounds : [])
+  const yellowCoursesWeek = groupedCourses.map(courseRounds => countBy(courseRounds, round => { round.startWeek }))
+  // console.log('oneToOneCourses', JSON.stringify(oneToOneCourses, null, 4))
+  return [...oneToOneCourses]
 }
 
 module.exports = filterByLogic
