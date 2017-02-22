@@ -1,7 +1,8 @@
 const filterYellowCourses = require('./filterYellowCourses')
+const filterOneToOne = require('filterOneToOne')
 
 function filterByLogic (groupedCourses) {
-  const oneToOneCourses = groupedCourses.map(courseRounds => courseRounds.length === 1 ? courseRounds : [])
+  const oneToOneCourses = filterOneToOne(groupedCourses)
   const yellowCourses = filterYellowCourses(groupedCourses)
   return [...oneToOneCourses, ...yellowCourses]
 }
