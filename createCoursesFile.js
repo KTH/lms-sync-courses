@@ -9,7 +9,7 @@ const {groupBy} = require('lodash')
 const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
-const filterByLogic = require('./filterByLogic')
+const filterByLogic = require('./filter/filterByLogic')
 const departmentCodeMapping = require('kth-canvas-utilities/departmentCodeMapping')
 
 const csvFile = require('./csvFile')
@@ -176,7 +176,7 @@ module.exports = function ({term, year, period}) {
   return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
     .then(courses => {
-      console.log('courses', JSON.stringify( courses, null,4 ))
+      console.log('courses', JSON.stringify(courses, null, 4))
       return courses
     })
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))

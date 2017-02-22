@@ -1,7 +1,6 @@
 const test = require('tape')
 const rewire = require('rewire')
-const filterByLogic = rewire('../../../../filterByLogic.js')
-const includeRoundsIfDifferentStartWeekForEachRound = filterByLogic.__get__('includeRoundsIfDifferentStartWeekForEachRound')
+const filterByLogic = rewire('../../../filter/filterByLogic')
 
 test('should include all rounds if all the rounds has different startWeek', t => {
   const courseRounds = [
@@ -18,7 +17,7 @@ test('should include all rounds if all the rounds has different startWeek', t =>
   t.end()
 })
 
-test.only('should skip all rounds if any two rounds has the same startWeek', t => {
+test('should skip all rounds if any two rounds has the same startWeek', t => {
   const courseRounds = [
     {
       startWeek: '2017-03'
