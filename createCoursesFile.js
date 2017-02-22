@@ -155,7 +155,7 @@ function getCourseRounds (termin) {
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
-  .then(d => d.splice(330, 360))
+  // .then(d => d.splice(330, 360))
   .then(courseRounds => courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
@@ -175,6 +175,10 @@ module.exports = function ({term, year, period}) {
   console.log('Using file name:', fileName)
   return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
+    .then(courses => {
+      console.log('courses', JSON.stringify( courses, null,4 ))
+      return courses
+    })
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     .then(filterByLogic)
     .then(courseRounds => writeCsvFile(courseRounds, fileName))

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "tape \"test/specs/**/*.js\"",
+    "test:one": "tape \"test/specs/createCoursesFile/filterByLogic/**/*.js\"",
     "test:integration": "tape \"test/integration/**/*.js\"",
     "start": "node index.js",
     "create-courses-file": "node createCoursesFile.js"

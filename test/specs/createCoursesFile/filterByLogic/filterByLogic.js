@@ -1,6 +1,6 @@
 const test = require('tape')
 const rewire = require('rewire')
-const filterByLogic = rewire('../../../filterByLogic.js')
+const filterByLogic = rewire('../../../../filterByLogic.js')
 
 test('should include a course if it only has one course round', t => {
   const courseRounds = [
@@ -84,8 +84,28 @@ test('should include a course if it has multiple rounds, each with different sta
   t.end()
 })
 
-test('should include a course if it has multiple rounds, each with different tutoringLanguage', t => {
+test('should include a course if it has multiple rounds, each with different startWeek', t => {
   const courseRounds = [
+    [
+      {
+        'courseCode': 'SF1625',
+        'startTerm': '20171',
+        'roundId': '1',
+        'xmlns': '',
+        'periods': [
+          {
+            'term': '20171',
+            'number': '3'
+          }
+        ],
+        'startWeek': '2017-04',
+        'tutoringLanguage': 'Swedish',
+        'title': {
+          'sv': 'Algebra och geometri',
+          'en': 'Algebra and Geometry'
+        }
+      }
+    ],
     [
       {
         'courseCode': 'SF1624',
@@ -98,7 +118,7 @@ test('should include a course if it has multiple rounds, each with different tut
             'number': '3'
           }
         ],
-        'startWeek': '2017-03',
+        'startWeek': '2017-04',
         'tutoringLanguage': 'Swedish',
         'title': {
           'sv': 'Algebra och geometri',
@@ -117,7 +137,7 @@ test('should include a course if it has multiple rounds, each with different tut
           }
         ],
         'startWeek': '2017-03',
-        'tutoringLanguage': 'English',
+        'tutoringLanguage': 'Swedish',
         'title': {
           'sv': 'Algebra och geometri',
           'en': 'Algebra and Geometry'
@@ -134,7 +154,7 @@ test('should include a course if it has multiple rounds, each with different tut
   t.end()
 })
 
-test('should include a course if it has multiple rounds, each with the same tutoringLanguage and the same startWeek', t => {
+test('should skip a course if it has multiple rounds, each with the same startWeek and tutoringLanguage', t => {
   const courseRounds = [
     [
       {
@@ -149,7 +169,7 @@ test('should include a course if it has multiple rounds, each with the same tuto
           }
         ],
         'startWeek': '2017-03',
-        'tutoringLanguage': 'Swedish',
+        'tutoringLanguage': 'English',
         'title': {
           'sv': 'Algebra och geometri',
           'en': 'Algebra and Geometry'
