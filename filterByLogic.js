@@ -5,7 +5,7 @@ function includeRoundsIfDifferentStartWeekForEachRound (courseRounds) {
   let allRoundsHaveDifferentStartWeek = true
   console.log('roundsPerWeek', roundsPerWeek)
   for (let key in roundsPerWeek) {
-    if (roundsPerWeek[key] < 1) {
+    if (roundsPerWeek[key] > 1) {
       allRoundsHaveDifferentStartWeek = false
     }
   }

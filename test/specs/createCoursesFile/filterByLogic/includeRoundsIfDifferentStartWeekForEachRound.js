@@ -32,6 +32,6 @@ test.only('should skip all rounds if any two rounds has the same startWeek', t =
   ]
 
   const result = includeRoundsIfDifferentStartWeekForEachRound(courseRounds)
-  t.deepEqual(courseRounds, [])
+  t.deepEqual(result, [])
   t.end()
 })
