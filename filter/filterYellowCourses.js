@@ -9,7 +9,7 @@ function filterByStartWeek (courseRounds) {
       allRoundsHaveDifferentStartWeek = false
     }
     if (key === 'undefined') {
-      isDiffLang = false
+      allRoundsHaveDifferentStartWeek = false
     }
   }
   return allRoundsHaveDifferentStartWeek ? courseRounds : []
