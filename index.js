@@ -27,8 +27,6 @@ const terms = [
   }]
 const periods = ['1', '2', '3', '4', '5', '6']
 
-console.log(JSON.stringify(terms, null, 4))
-
 inquirer.prompt([
   {
     message: 'Välj år',
