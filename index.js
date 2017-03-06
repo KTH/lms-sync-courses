@@ -9,7 +9,7 @@ const createEnrollmentsFile = require('./createEnrollmentsFile.js')
 const {VT, HT} = require('kth-canvas-utilities/terms')
 console.log(`
   Detta är ett program för att ta
-  fram alla kurser och studenter under en
+  fram alla kurser och lärare under en
   viss period ur KTHs system
   och spara dem i csv-filer, för import till Canvas LMS`.greenBG)
 
