@@ -2,17 +2,23 @@ require('dotenv').config()
 const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const parseString = Promise.promisify(require('xml2js').parseString)
+const moment = require('moment')
+const terms = require('kth-canvas-utilities/terms')
+
 const {groupBy} = require('lodash')
-// const config = require('../server/init/configuration')
 const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
+const filterByLogic = require('./filter/filterByLogic')
+const departmentCodeMapping = require('kth-canvas-utilities/departmentCodeMapping')
+
 const csvFile = require('./csvFile')
-const fs = Promise.promisifyAll(require('fs'))
-let fileName
+const {mkdir, unlink} = require('fs')
+let mkdirAsync = Promise.promisify(mkdir)
+let unlinkAsync = Promise.promisify(unlink)
 
 function get (url) {
-  // console.log(url)
+  console.log(url)
   return rp({
     url,
     method: 'GET',
@@ -23,58 +29,69 @@ function get (url) {
   })
 }
 
-/** *
-* return example:
-* {"round":{"courseCode":"MJ2244","startTerm":"20171","roundId":"1","xmlns":""},"periods":[{"term":"20171","number":"3"}]}
-*/
-function addPeriods (courseRounds, termin) {
-  function addInfoForCourseRound ([round]) {
-    return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}`)
-    .then(parseString)
-    .then(roundInfo => {
-      const periods = roundInfo.courseRound.periods && roundInfo.courseRound.periods[0].period.map(period => period.$)
-
-      return {round, periods}
-    })
-  }
-
-  return Promise.map(courseRounds, addInfoForCourseRound)
+function getSisAccountId ({courseCode}) {
+  const firstChar = courseCode[0]
+  return `${departmentCodeMapping[firstChar]} - Imported course rounds`
 }
 
-function filterCoursesByCount (courseRounds, filterFn) {
-  const courseRoundsGrouped = groupBy(courseRounds, courseRound => courseRound.courseCode)
-
+function groupRoundsByCourseCode (courseRounds) {
+  const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
   return Object.getOwnPropertyNames(courseRoundsGrouped)
   .map(name => courseRoundsGrouped[name])
-  .filter(filterFn)
 }
 
-function extractRelevantData (courseRounds) {
-  return courseRounds.courseRoundList.courseRound.map(round => round.$)
+function calcStartDate (courseRound) {
+  const [year, weekNumber] = courseRound.startWeek.split('-')
+  const d = moment().year(year).isoWeek(weekNumber).isoWeekday(1)
+  d.set({hour: 8, minute: 0, second: 0, millisecond: 0})
+  return d.toISOString()
 }
 
-function buildCanvasCourseObjects (courseRounds) {
-  return Promise.map(courseRounds, ({round}) => {
-    // Add a ':' between year and term
-    const position = 4
-    const startTerm = [round.startTerm.slice(0, position), ':', round.startTerm.slice(position)].join('')
-    return getCourseAndCourseRoundFromKopps({courseCode: round.courseCode, startTerm, round: round.roundId})
-  })
-  .then(coursesAndCourseRounds => Promise.map(coursesAndCourseRounds, createSimpleCanvasCourseObject))
+function createLongName (round) {
+  const termNum = round.startTerm[4]
+  const term = terms[termNum]
+  const title = round.title[ round.tutoringLanguage === 'Swedish' ? 'sv' : 'en' ]
+  let result = round.courseCode
+  if (round.shortName) {
+    result += ` ${round.shortName}`
+  }
+  result += ` ${term}${round.startTerm.substring(2, 4)}-${round.roundId} ${title}`
+  return result
 }
 
-function writeCsvFile (canvasCourseObjects) {
-  /* {"course":{
-   * "course":{
-   * "name":"VT17-1 Practical Energy Related Project",
-   * "course_code":"MJ1432",
-   * "sis_course_id":"MJ1432VT171",
-   * "start_at":"2017-01-16T12:57:02.897Z"}},
-   * "sisAccountId":"ITM - Imported course rounds",
-   * "courseRound":{"courseCode":"MJ1432","startTerm":"20171","roundId":"1","startWeek":"2017-03","endWeek":"2017-23",
-   * "xmlns":"http://www.kth.se/student/kurser"}}
-   * */
+function createSisCourseId ({courseCode, startTerm, roundId}) {
+  const termNum = startTerm[4]
+  const shortYear = `${startTerm[2]}${startTerm[3]}`
+  const term = terms[termNum]
 
+  return `${courseCode}${term}${shortYear}${roundId}`
+}
+
+function buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
+  const result = twoDArrayOfCourseRounds.map(courseRounds => courseRounds.map(courseRound => {
+    if (!courseRound) {
+      return
+    }
+    return {
+      sisCourseId: createSisCourseId(courseRound),
+      courseCode: courseRound.courseCode,
+      shortName: courseRound.shortName,
+      longName: createLongName(courseRound),
+      startDate: calcStartDate(courseRound),
+      sisAccountId: getSisAccountId(courseRound),
+      status: 'active'
+    }
+  }))
+  return result
+}
+
+function flatten (arr) {
+  return [].concat.apply([], arr)
+}
+
+function writeCsvFile (courseRounds, fileName) {
+  const twoDArrayOfCanvasCourses = buildCanvasCourseObjects(courseRounds)
+  const arrayOfCanvasCourses = flatten(twoDArrayOfCanvasCourses)
   const columns = [
     'course_id',
     'short_name',
@@ -83,124 +100,87 @@ function writeCsvFile (canvasCourseObjects) {
     'account_id',
     'status']
 
-  function _writeLine ({course, sisAccountId, courseRound, shortName}) {
-    const lineArr = [
-      course.course.sis_course_id,
-      course.course.course_code,
-      `${course.course.course_code} ${shortName || ''} ${course.course.name}`,
-      course.course.start_at,
-      sisAccountId,
-      'active']
-
-    return csvFile.writeLine(lineArr, fileName)
-    .then(() => {
-      return {course, sisAccountId, courseRound, shortName}
-    })
+  function writeLineForCourse (course) {
+    return csvFile.writeLine([
+      course.sisCourseId,
+      course.courseCode,
+      course.longName,
+      course.startDate,
+      course.sisAccountId,
+      'active'], fileName)
   }
 
-  return fs.mkdirAsync('csv')
+  return mkdirAsync('csv')
   .catch(e => console.log('couldnt create csv folder. This is probably fine, just continue'))
   .then(() => csvFile.writeLine(columns, fileName))
-  .then(() => Promise.map(canvasCourseObjects, _writeLine))
+  .then(() => Promise.map(arrayOfCanvasCourses, writeLineForCourse)
+  )
 }
 
-function deleteFile () {
-  return fs.unlinkAsync(fileName)
+function deleteFile (fileName) {
+  return unlinkAsync(fileName)
       .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
-function getCourseRounds(termin){
+function addRoundInfo (round, termin) {
+  return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
+  .then(parseString)
+  .then(({courseRound}) => {
+    if (courseRound.periods) {
+      round.periods = courseRound.periods[0].period.map(period => period.$)
+      round.startWeek = courseRound.$.startWeek
+      round.tutoringLanguage = courseRound.tutoringLanguage[0]._
+    } else {
+      round.periods = []
+    }
+    return round
+  })
+}
+
+function getCourseRounds (termin) {
+  function extractRelevantData (courseRounds) {
+    return courseRounds.courseRoundList.courseRound.map(round => round.$)
+  }
+
+  function addTitles (courseRounds) {
+    return Promise.mapSeries(courseRounds, round => get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`)
+      .then(course => {
+        round.title = course.title
+        return round
+      })
+    )
+  }
+
+  console.log('TODO: remove the subsetting!')
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
+  // .then(d => d.splice(330, 360))
+  .then(courseRounds => courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
+  .then(addTitles)
 }
 
-function filterCoursesDuringPeriod(coursesWithPeriods, period){
-  return coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period))
+function getCourseRoundsPerCourseCode (termin) {
+  return getCourseRounds(termin)
+  .then(groupRoundsByCourseCode)
+}
+
+function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
+  return arrayOfCourseRoundArrays.map(arrayOfCourseRounds => arrayOfCourseRounds.filter(({periods}) => periods && periods.find(({number}) => number === period)))
 }
 
 module.exports = function ({term, year, period}) {
   const termin = `${year}:${term}`
-  fileName = `csv/courses-${termin}-${period}.csv`
-  console.log('filename:' + fileName)
-  return deleteFile()
-    .then(()=>getCourseRounds(termin))
-    .then(courseRounds => {
-      /*
-      [
-      {"courseCode":"ML1000","startTerm":"20172","roundId":"1","xmlns":""},
-      {"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}, ...
-    ]
-      */
-      // console.log('courseRounds', JSON.stringify( courseRounds ))
-      return courseRounds
+  const fileName = `csv/courses-${termin}-${period}.csv`
+  console.log('Using file name:', fileName)
+  return deleteFile(fileName)
+    .then(() => getCourseRoundsPerCourseCode(termin))
+    .then(courses => {
+      console.log('courses', JSON.stringify(courses, null, 4))
+      return courses
     })
-    .then(courseRounds => filterCoursesByCount(courseRounds, courses => courses.length === 1))
-    .then(courseRounds => {
-      /*
-      [
-      [{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""}],
-      [{"courseCode":"EH2720","startTerm":"20172","roundId":"1","xmlns":""}],
-      [{"courseCode":"EF2215","startTerm":"20172","roundId":"1","xmlns":""}], ...
-    ]
-      */
-      // console.log('courseRounds filtered', JSON.stringify( courseRounds ))
-      return courseRounds
-    })
-    .then(courseRounds => addPeriods(courseRounds, termin))
-    .then(courseRounds => {
-      /*
-       [
-      {
-        "round":{"courseCode":"EK2360","startTerm":"20172","roundId":"1","xmlns":""},
-        "periods":[{"term":"20172","number":"2"}]
-      },{
-        "round":{"courseCode":"EH2720","startTerm":"20172","roundId":"1","xmlns":""},
-        "periods":[{"term":"20172","number":"1"}]
-      },{
-        "round":{"courseCode":"EF2215","startTerm":"20172","roundId":"1","xmlns":""},
-        "periods":[{"term":"20172","number":"1"}]
-      },...
-    ]
-      */
-      // console.log('courseRounds with added periods', JSON.stringify( courseRounds ))
-      return courseRounds
-    })
-    .then(coursesWithPeriods =>filterCoursesDuringPeriod(coursesWithPeriods, period))
-    .then(courseRounds => {
-      /*
-      [
-      {
-        "round":{"courseCode":"DM2678","startTerm":"20172","roundId":"1","xmlns":""},
-        "periods":[
-            {"term":"20172","number":"1"},
-            {"term":"20172","number":"2"},
-            {"term":"20181","number":"3"},
-            {"term":"20181","number":"4"},
-      },...
-    ]
-      */
-      // console.log('filtered courses', JSON.stringify( courseRounds ))
-      return courseRounds
-    })
-    .then(coursesWithPeriods => coursesWithPeriods.filter(({periods}) => periods && periods.find(({number}) => number === period)))
-    .then(courseRounds => {
-      /*
-      [
-      {
-        "round":{"courseCode":"DM2678","startTerm":"20172","roundId":"1","xmlns":""},
-        "periods":[
-            {"term":"20172","number":"1"},
-            {"term":"20172","number":"2"},
-            {"term":"20181","number":"3"},
-            {"term":"20181","number":"4"},
-      },...
-    ]
-      */
-      console.log('filtered courses', JSON.stringify( courseRounds ))
-      return courseRounds
-    })
-    .then(buildCanvasCourseObjects)
-    .then(writeCsvFile)
+    .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
+    .then(filterByLogic)
+    .then(courseRounds => writeCsvFile(courseRounds, fileName))
     .catch(e => console.error(e))
 }
