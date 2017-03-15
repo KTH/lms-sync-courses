@@ -10,11 +10,11 @@ const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
 const filterByLogic = require('./filter/filterByLogic')
+const filterSelectedCourses = require('./filter/filterSelectedCourses')
 const departmentCodeMapping = require('kth-canvas-utilities/departmentCodeMapping')
 
 const csvFile = require('./csvFile')
 const {mkdir, unlink} = require('fs')
-const coursesToExclude=require('./RemoveThisCourses')
 let mkdirAsync = Promise.promisify(mkdir)
 let unlinkAsync = Promise.promisify(unlink)
 
@@ -172,27 +172,6 @@ function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
   return arrayOfCourseRoundArrays.map(arrayOfCourseRounds => arrayOfCourseRounds.filter(({periods}) => periods && periods.find(({number}) => number === period)))
 }
 
-//  "courseCode": "LT1018",
-function removeSelectedCourses(arrayOfArryOfCourseRounds){
-  if (coursesToExclude.filter.length === 0) {
-    console.log("All courses will pass, course filter is empty....")
-    return arrayOfArryOfCourseRounds
-  }
-  coursesToExclude.filter.map(filter=>
-    console.log("Filtering for Course Code: " + filter)
-  )
-
-  let result =  arrayOfArryOfCourseRounds.map(courseArray=>{
-      return courseArray.filter(courseObject=>{
-        let trueOrFalse = coursesToExclude.filter.map(filter=>courseObject.courseCode === filter)
-        .indexOf(true) < 0
-        console.log(trueOrFalse)
-        return trueOrFalse
-      })
-    })
-  console.log("Result = ",result)
-  return result
-}
 
 module.exports = function ({term, year, period}) {
   const termin = `${year}:${term}`
@@ -204,7 +183,7 @@ module.exports = function ({term, year, period}) {
       console.log('courses', JSON.stringify(courses, null, 4))
       return courses
     })
-    .then(courses=>removeSelectedCourses(courses))
+    .then(courses=>filterSelectedCourses(courses))
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     .then(filterByLogic)
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
