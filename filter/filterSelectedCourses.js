@@ -8,15 +8,13 @@ function filterSelectedCourses(arrayOfArryOfCourseRounds){
   removeTheseCourses.courseList.map(filter=>
     console.log("Filtering for Course Code: " + filter)
   )
-
-  let result =  arrayOfArryOfCourseRounds.map(courseArray=>{
+  return arrayOfArryOfCourseRounds.map(courseArray=>{
       return courseArray.filter(courseObject=>{
         let trueOrFalse = removeTheseCourses.courseList.map(filter=>courseObject.courseCode === filter)
         .indexOf(true) < 0
         return trueOrFalse
       })
     })
-  return result
 }
 
 
