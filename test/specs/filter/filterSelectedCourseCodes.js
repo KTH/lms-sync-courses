@@ -1,10 +1,9 @@
 const test = require('tape')
-const proxyquire = require('proxyquire')
+const rewire = require('rewire')
 
 test('should return empty array', t => {
-  const  filter = proxyquire ('../../../filter/filterSelectedCourses.js',{
-    './coursesToExclude': () => ["HL100X"]})
-
+  const filterSelectedCourses = rewire('../../../filter/filterSelectedCourses')
+  filterSelectedCourses.__set__('removeTheseCourses',{courseList: ['HL100X']})
   let courseList = [[
       {
           "courseCode": "HL100X",
@@ -44,18 +43,17 @@ test('should return empty array', t => {
       }
   ]]
 
-  let result = filter(courseList)
 
+  let result = filterSelectedCourses(courseList)
   const expected = [[]]
-
   t.deepEqual(result, expected)
   t.end()
 })
 
-test('should return the orginal Array', t => {
-  const  filter = proxyquire ('../../../filter/filterSelectedCourses.js',{
-    './coursesToExclude': () => []})
 
+test('should return original course list', t => {
+  const filterSelectedCourses = rewire('../../../filter/filterSelectedCourses')
+  filterSelectedCourses.__set__('removeTheseCourses',{courseList: []})
   let courseList = [[
       {
           "courseCode": "HL100X",
@@ -94,11 +92,8 @@ test('should return the orginal Array', t => {
           }
       }
   ]]
-
-  let result = filter(courseList)
-
+  let result = filterSelectedCourses(courseList)
   const expected = courseList
-
   t.deepEqual(result, expected)
   t.end()
 })

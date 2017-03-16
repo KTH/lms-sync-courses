@@ -1,17 +1,17 @@
-const coursesToExclude=require('../RemoveTheseCourses')
+var removeTheseCourses = require('../removeTheseCourses')
 //  "courseCode": "LT1018",
 function filterSelectedCourses(arrayOfArryOfCourseRounds){
-  if (coursesToExclude.filter.length === 0) {
+  if (removeTheseCourses.courseList.length === 0) {
     console.log("All courses will pass, course filter is empty....")
     return arrayOfArryOfCourseRounds
   }
-  coursesToExclude.filter.map(filter=>
+  removeTheseCourses.courseList.map(filter=>
     console.log("Filtering for Course Code: " + filter)
   )
 
   let result =  arrayOfArryOfCourseRounds.map(courseArray=>{
       return courseArray.filter(courseObject=>{
-        let trueOrFalse = coursesToExclude.filter.map(filter=>courseObject.courseCode === filter)
+        let trueOrFalse = removeTheseCourses.courseList.map(filter=>courseObject.courseCode === filter)
         .indexOf(true) < 0
         console.log(trueOrFalse)
         return trueOrFalse
