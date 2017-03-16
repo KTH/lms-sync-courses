@@ -97,3 +97,24 @@ test('should return original course list', t => {
   t.deepEqual(result, expected)
   t.end()
 })
+
+test('should return empty array', t => {
+  const filterSelectedCourses = rewire('../../../filter/filterSelectedCourses')
+  filterSelectedCourses.__set__('removeTheseCourses',{courseList: ['HL100X']})
+  let courseList = [[]]
+  let result = filterSelectedCourses(courseList)
+  const expected = [[]]
+  t.deepEqual(result, expected)
+  t.end()
+})
+
+
+test('should return empty array', t => {
+  const filterSelectedCourses = rewire('../../../filter/filterSelectedCourses')
+  filterSelectedCourses.__set__('removeTheseCourses',{courseList: []})
+  let courseList = [[]]
+  let result = filterSelectedCourses(courseList)
+  const expected = [[]]
+  t.deepEqual(result, expected)
+  t.end()
+})

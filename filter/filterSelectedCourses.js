@@ -13,11 +13,9 @@ function filterSelectedCourses(arrayOfArryOfCourseRounds){
       return courseArray.filter(courseObject=>{
         let trueOrFalse = removeTheseCourses.courseList.map(filter=>courseObject.courseCode === filter)
         .indexOf(true) < 0
-        console.log(trueOrFalse)
         return trueOrFalse
       })
     })
-  console.log("Result = ",result)
   return result
 }
 
