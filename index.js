@@ -6,10 +6,10 @@ const currentYear = moment().year()
 const years = []
 const createCoursesFile = require('./createCoursesFile.js')
 const createEnrollmentsFile = require('./createEnrollmentsFile.js')
-
+const {VT, HT} = require('kth-canvas-utilities/terms')
 console.log(`
   Detta är ett program för att ta
-  fram alla kurser och studenter under en
+  fram alla kurser och lärare under en
   viss period ur KTHs system
   och spara dem i csv-filer, för import till Canvas LMS`.greenBG)
 
@@ -20,10 +20,10 @@ for (var i = -2; i < 4; i++) {
 const terms = [
   {
     name: 'Hösttermin',
-    value: '1'},
+    value: HT},
   {
     name: 'Vårtermin',
-    value: '2'
+    value: VT
   }]
 const periods = ['1', '2', '3', '4', '5', '6']
 
@@ -54,7 +54,7 @@ inquirer.prompt([
     .then(() => {
       console.log('Och nu skapar vi fil med enrollments'.green)
       const {ugUsername, ugUrl, ugPwd} = process.env
-      if(!(ugUsername && ugUrl && ugPwd)){
+      if (!(ugUsername && ugUrl && ugPwd)) {
         console.log(`
           Kan inte skapa csvfil med alla användare i
           kurser (enrollments) eftersom alla hemligheter inte är angivna.
@@ -62,10 +62,10 @@ inquirer.prompt([
           Hoppar över att skapa denna fil.
           `.yellow)
         return Promise.resolve()
-      }else{
+      } else {
         return createEnrollmentsFile({ugUsername, ugUrl, ugPwd, year, term, period})
       }
     })
 })
-.then(()=>console.log('😀 Done!'.green))
+.then(() => console.log('😀 Done!'.green))
 .catch(e => console.error(e))
