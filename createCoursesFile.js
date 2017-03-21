@@ -18,8 +18,6 @@ const {mkdir, unlink} = require('fs')
 let mkdirAsync = Promise.promisify(mkdir)
 let unlinkAsync = Promise.promisify(unlink)
 
-
-
 function get (url) {
   console.log(url)
   return rp({
@@ -172,20 +170,21 @@ function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
   return arrayOfCourseRoundArrays.map(arrayOfCourseRounds => arrayOfCourseRounds.filter(({periods}) => periods && periods.find(({number}) => number === period)))
 }
 
-
-module.exports = function ({term, year, period}) {
-  const termin = `${year}:${term}`
-  const fileName = `csv/courses-${termin}-${period}.csv`
-  console.log('Using file name:', fileName)
-  return deleteFile(fileName)
+module.exports = {
+  buildCanvasCourseObjects,
+  createCoursesFile ({term, year, period}) {
+    const termin = `${year}:${term}`
+    const fileName = `csv/courses-${termin}-${period}.csv`
+    console.log('Using file name:', fileName)
+    return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
     .then(courses => {
       console.log('courses', JSON.stringify(courses, null, 4))
       return courses
     })
-    .then(courses=>filterSelectedCourses(courses))
+    .then(courses => filterSelectedCourses(courses))
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     .then(filterByLogic)
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
     .catch(e => console.error(e))
-}
+  }}

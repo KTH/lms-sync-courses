@@ -4,7 +4,7 @@ const Promise = require('bluebird')
 require('colors')
 const currentYear = moment().year()
 const years = []
-const createCoursesFile = require('./createCoursesFile.js')
+const {createCoursesFile} = require('./createCoursesFile.js')
 const createEnrollmentsFile = require('./createEnrollmentsFile.js')
 const {VT, HT} = require('kth-canvas-utilities/terms')
 console.log(`

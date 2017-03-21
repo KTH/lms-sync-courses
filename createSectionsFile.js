@@ -1,3 +1,3 @@
-module.exports = function functionName() {
-  return Promise.resolve()
+module.exports = function functionName(groupedCourses) {
+  return Promise.resolve(groupedCourses)
 }
