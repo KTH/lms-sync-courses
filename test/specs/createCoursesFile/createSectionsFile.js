@@ -15,21 +15,12 @@ const createSectionsFile = proxyquire('../../../createSectionsFile', {
   }
 })
 
-test.only('should write a file with a section for each course, and return the courses', t => {
-  // t.plan(2)
+test('should write a file with a section for each course, and return the courses', t => {
   t.plan(3)
   const courses = [
     [
       {
         courseCode: 'AL2140',
-        startTerm: '20171',
-        startWeek: '2017-03',
-        roundId: 'roundId',
-        tutoringLanguage: 'Swedish',
-        title: {
-          sv: 'Renare produktion',
-          en: 'Cleaner Production'
-        }
       }
     ]
   ]
