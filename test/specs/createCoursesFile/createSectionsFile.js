@@ -6,14 +6,18 @@ const writeLine = sinon.stub().returns(Promise.resolve())
 const createSectionsFile = proxyquire('../../../createSectionsFile', {
   './csvFile': {writeLine},
   './createCoursesFile':{
-    createSisCourseId:()=>'SIS_COURSE_ID',
-    createLongName:()=>'A LONG NAME'
+    buildCanvasCourseObjects(){
+      return [[{
+        sisCourseId:'SIS_COURSE_ID',
+        longName: 'A LONG NAME'
+      }]]
+    }
   }
 })
 
 test.only('should write a file with a section for each course, and return the courses', t => {
   // t.plan(2)
-  t.plan(2)
+  t.plan(3)
   const courses = [
     [
       {
@@ -34,7 +38,7 @@ test.only('should write a file with a section for each course, and return the co
     t.deepEqual([firstCallArgs[0], firstCallArgs[1]], [['section_id', 'course_id', 'name', 'status'], 'fileName.csv'])
 
     const secondCallArgs = writeLine.getCall(1).args
-    t.deepEqual([secondCallArgs[0], secondCallArgs[1]], [['SIS_COURSE_ID_DEFAULT_SECTION', 'SIS COURSE ID', `Default section for the course A LONG NAME`, 'active'], 'fileName.csv'])
+    t.deepEqual([secondCallArgs[0], secondCallArgs[1]], [['SIS_COURSE_ID_DEFAULT_SECTION', 'SIS_COURSE_ID', `Default section for the course A LONG NAME`, 'active'], 'fileName.csv'])
 
     t.deepEqual(result, courses)
   })
