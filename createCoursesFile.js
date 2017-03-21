@@ -172,6 +172,7 @@ function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
 
 module.exports = {
   buildCanvasCourseObjects,
+  flatten,
   createLongName,
   createCoursesFile ({term, year, period}) {
     const termin = `${year}:${term}`
