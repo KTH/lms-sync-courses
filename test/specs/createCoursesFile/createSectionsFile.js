@@ -15,7 +15,7 @@ const createSectionsFile = proxyquire('../../../createSectionsFile', {
   }
 })
 
-test('should write a file with a section for each course, and return the courses', t => {
+test.only('should write a file with a section for each course, and return the courses', t => {
   t.plan(3)
   const courses = [
     [
