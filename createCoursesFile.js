@@ -4,6 +4,7 @@ const Promise = require('bluebird') // use bluebird to get a little more promise
 const parseString = Promise.promisify(require('xml2js').parseString)
 const moment = require('moment')
 const terms = require('kth-canvas-utilities/terms')
+const {buildCanvasCourseObjects, flatten, createLongName, createSisCourseId} = require('./utils')
 
 const {groupBy} = require('lodash')
 const canvasUtilities = require('kth-canvas-utilities')
@@ -12,6 +13,7 @@ const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canva
 const filterByLogic = require('./filter/filterByLogic')
 const filterSelectedCourses = require('./filter/filterSelectedCourses')
 const departmentCodeMapping = require('kth-canvas-utilities/departmentCodeMapping')
+const createSectionsFile = require('./createSectionsFile')
 
 const csvFile = require('./csvFile')
 const {mkdir, unlink} = require('fs')
@@ -30,11 +32,6 @@ function get (url) {
   })
 }
 
-function getSisAccountId ({courseCode}) {
-  const firstChar = courseCode[0]
-  return `${departmentCodeMapping[firstChar]} - Imported course rounds`
-}
-
 function groupRoundsByCourseCode (courseRounds) {
   const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
   return Object.getOwnPropertyNames(courseRoundsGrouped)
@@ -46,48 +43,6 @@ function calcStartDate (courseRound) {
   const d = moment().year(year).isoWeek(weekNumber).isoWeekday(1)
   d.set({hour: 8, minute: 0, second: 0, millisecond: 0})
   return d.toISOString()
-}
-
-function createLongName (round) {
-  const termNum = round.startTerm[4]
-  const term = terms[termNum]
-  const title = round.title[ round.tutoringLanguage === 'Swedish' ? 'sv' : 'en' ]
-  let result = round.courseCode
-  if (round.shortName) {
-    result += ` ${round.shortName}`
-  }
-  result += ` ${term}${round.startTerm.substring(2, 4)}-${round.roundId} ${title}`
-  return result
-}
-
-function createSisCourseId ({courseCode, startTerm, roundId}) {
-  const termNum = startTerm[4]
-  const shortYear = `${startTerm[2]}${startTerm[3]}`
-  const term = terms[termNum]
-
-  return `${courseCode}${term}${shortYear}${roundId}`
-}
-
-function buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
-  const result = twoDArrayOfCourseRounds.map(courseRounds => courseRounds.map(courseRound => {
-    if (!courseRound) {
-      return
-    }
-    return {
-      sisCourseId: createSisCourseId(courseRound),
-      courseCode: courseRound.courseCode,
-      shortName: courseRound.shortName,
-      longName: createLongName(courseRound),
-      startDate: calcStartDate(courseRound),
-      sisAccountId: getSisAccountId(courseRound),
-      status: 'active'
-    }
-  }))
-  return result
-}
-
-function flatten (arr) {
-  return [].concat.apply([], arr)
 }
 
 function writeCsvFile (courseRounds, fileName) {
@@ -171,9 +126,6 @@ function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
 }
 
 module.exports = {
-  buildCanvasCourseObjects,
-  flatten,
-  createLongName,
   createCoursesFile ({term, year, period}) {
     const termin = `${year}:${term}`
     const fileName = `csv/courses-${termin}-${period}.csv`
@@ -187,6 +139,7 @@ module.exports = {
     .then(courses => filterSelectedCourses(courses))
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     .then(filterByLogic)
+    .then(createSectionsFile)
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
     .catch(e => console.error(e))
   }}

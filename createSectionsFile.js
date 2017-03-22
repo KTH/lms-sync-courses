@@ -1,6 +1,6 @@
 const csvFile = require('./csvFile')
 const Promise = require('bluebird')
-const {buildCanvasCourseObjects, flatten} =  require('./createCoursesFile');
+const {buildCanvasCourseObjects, flatten} =  require('./utils');
 
 const columns = ['section_id', 'course_id', 'name', 'status']
 
