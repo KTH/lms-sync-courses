@@ -7,7 +7,7 @@ test('should not fail on empty arrays', t => {
   t.plan(1)
   const courseRounds = [[]]
 
-  const result = buildCanvasCourseObjects(courseRounds)
+  const result = utils.buildCanvasCourseObjects(courseRounds)
 
   const expected = [[]]
 

@@ -3,7 +3,6 @@ const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const parseString = Promise.promisify(require('xml2js').parseString)
 const moment = require('moment')
-const terms = require('kth-canvas-utilities/terms')
 const {buildCanvasCourseObjects, flatten, createLongName, createSisCourseId} = require('./utils')
 
 const {groupBy} = require('lodash')
