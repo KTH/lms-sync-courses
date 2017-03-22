@@ -11,7 +11,6 @@ canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
 const filterByLogic = require('./filter/filterByLogic')
 const filterSelectedCourses = require('./filter/filterSelectedCourses')
-const departmentCodeMapping = require('kth-canvas-utilities/departmentCodeMapping')
 const createSectionsFile = require('./createSectionsFile')
 
 const csvFile = require('./csvFile')
