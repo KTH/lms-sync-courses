@@ -5,7 +5,7 @@ const sinon = require('sinon')
 const writeLine = sinon.stub().returns(Promise.resolve())
 const createSectionsFile = proxyquire('../../../createSectionsFile', {
   './csvFile': {writeLine},
-  './createCoursesFile':{
+  './utils':{
     buildCanvasCourseObjects(){
       return [[{
         sisCourseId:'SIS_COURSE_ID',
@@ -15,7 +15,7 @@ const createSectionsFile = proxyquire('../../../createSectionsFile', {
   }
 })
 
-test.only('should write a file with a section for each course, and return the courses', t => {
+test('should write a file with a section for each course, and return the courses', t => {
   t.plan(3)
   const courses = [
     [
