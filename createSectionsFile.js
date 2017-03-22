@@ -1,11 +1,12 @@
 const csvFile = require('./csvFile')
 const Promise = require('bluebird')
-const {buildCanvasCourseObjects, flatten} =  require('./utils');
+const {buildCanvasCourseObjects, flatten, deleteFile} =  require('./utils');
 
 const columns = ['section_id', 'course_id', 'name', 'status']
 
 module.exports = function (groupedCourses, fileName) {
-  return csvFile.writeLine(['section_id', 'course_id', 'name', 'status'], fileName)
+  return deleteFile(fileName)
+  .then(()=>csvFile.writeLine(['section_id', 'course_id', 'name', 'status'], fileName))
   .then(()=>buildCanvasCourseObjects(groupedCourses))
   .then(flatten)
   .then(arrayOfCourseRounds => Promise.map(
