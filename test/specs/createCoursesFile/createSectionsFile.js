@@ -29,7 +29,7 @@ test('should write a file with a section for each course, and return the courses
     t.deepEqual([firstCallArgs[0], firstCallArgs[1]], [['section_id', 'course_id', 'name', 'status'], 'fileName.csv'])
 
     const secondCallArgs = writeLine.getCall(1).args
-    t.deepEqual([secondCallArgs[0], secondCallArgs[1]], [['SIS_COURSE_ID_DEFAULT_SECTION', 'SIS_COURSE_ID', `Default section for the course A LONG NAME`, 'active'], 'fileName.csv'])
+    t.deepEqual([secondCallArgs[0], secondCallArgs[1]], [['SIS_COURSE_ID', 'SIS_COURSE_ID', `Section for the course A LONG NAME`, 'active'], 'fileName.csv'])
 
     t.deepEqual(result, courses)
   })

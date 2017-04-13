@@ -5,6 +5,7 @@ const {buildCanvasCourseObjects, flatten, deleteFile} =  require('./utils');
 const columns = ['section_id', 'course_id', 'name', 'status']
 
 module.exports = function (groupedCourses, fileName) {
+  console.log('writing sections file: ', fileName, JSON.stringify(groupedCourses, null, 4))
   return deleteFile(fileName)
   .then(()=>csvFile.writeLine(['section_id', 'course_id', 'name', 'status'], fileName))
   .then(()=>buildCanvasCourseObjects(groupedCourses))

@@ -100,7 +100,7 @@ function getCourseRounds (termin) {
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
-  .then(d => d.splice(0, 50))
+  // .then(d => d.splice(0, 50))
   .then(courseRounds => courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
