@@ -12,7 +12,7 @@ module.exports = function (groupedCourses, fileName) {
   .then(flatten)
   .then(arrayOfCourseRounds => Promise.map(
     arrayOfCourseRounds,
-    round => csvFile.writeLine([`${round.sisCourseId}_DEFAULT_SECTION`, round.sisCourseId, `Default section for the course ${round.longName}`, 'active'], fileName)))
+    round => csvFile.writeLine([round.sisCourseId, round.sisCourseId, `Section for the course ${round.longName}`, 'active'], fileName)))
   .then(()=>groupedCourses)
   .catch(e => console.error('An error occured',e))
 }
