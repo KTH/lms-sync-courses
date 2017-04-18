@@ -7,6 +7,10 @@ const years = []
 const {createCoursesFile} = require('./createCoursesFile.js')
 const createEnrollmentsFile = require('./createEnrollmentsFile.js')
 const {VT, HT} = require('kth-canvas-utilities/terms')
+const fs = require('fs')
+const path = require('path')
+const Zip = require('node-zip')
+
 console.log(`
   Detta är ett program för att ta
   fram alla kurser och lärare under en
@@ -50,8 +54,12 @@ inquirer.prompt([
 ])
 .then(({year, term, period}) => {
   console.log('ok, börjar med att skapa csvfil med kurserna...'.green)
+  let coursesFileName, sectionsFileName
   return createCoursesFile({year, term, period})
-    .then(() => {
+    .then(([_coursesFileName, _sectionsFileName]) => {
+      coursesFileName = _coursesFileName
+      sectionsFileName = _sectionsFileName
+
       console.log('Och nu skapar vi fil med enrollments'.green)
       const {ugUsername, ugUrl, ugPwd} = process.env
       if (!(ugUsername && ugUrl && ugPwd)) {
@@ -65,6 +73,17 @@ inquirer.prompt([
       } else {
         return createEnrollmentsFile({ugUsername, ugUrl, ugPwd, year, term, period})
       }
+    })
+    .then(enrollmentsFileName => {
+      console.log('Now: zip them up: ', coursesFileName, enrollmentsFileName, sectionsFileName)
+
+      const zip = new Zip()
+      zip.file('courses.csv', fs.readFileSync(path.join(__dirname, coursesFileName)))
+      zip.file('enrollments.csv', fs.readFileSync(path.join(__dirname, enrollmentsFileName)))
+      zip.file('sections.csv', fs.readFileSync(path.join(__dirname, sectionsFileName)))
+
+      const data = zip.generate({ base64: false, compression: 'DEFLATE' })
+      fs.writeFileSync(`csv/${year}:${term}-${period}.zip`, data, 'binary')
     })
 })
 .then(() => console.log('😀 Done!'.green))

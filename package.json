@@ -29,6 +29,7 @@
     "kth-canvas-utilities": "kth/kth-canvas-utilities",
     "ldapjs": "^1.0.1",
     "moment": "^2.17.1",
+    "node-zip": "^1.1.1",
     "proxyquire": "^1.7.11",
     "request": "^2.79.0",
     "request-promise": "^4.1.1",

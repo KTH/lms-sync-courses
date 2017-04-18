@@ -85,7 +85,7 @@ function addRoundInfo (round, termin) {
 
 function getCourseRounds (termin) {
   function extractRelevantData (courseRounds) {
-    return courseRounds.courseRoundList.courseRound.map(round => round.$)
+    return courseRounds.courseRoundList.courseRound && courseRounds.courseRoundList.courseRound.map(round => round.$)
   }
 
   function addTitles (courseRounds) {
@@ -118,13 +118,15 @@ module.exports = {
   createCoursesFile ({term, year, period}) {
     const termin = `${year}:${term}`
     const fileName = `csv/courses-${termin}-${period}.csv`
+    const enrollmentsFileName = `csv/sections-${termin}-${period}.csv`
     console.log('Using file name:', fileName)
     return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
     .then(courses => filterSelectedCourses(courses))
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     .then(filterByLogic)
-    .then(courseRounds => createSectionsFile(courseRounds, `csv/sections-${termin}-${period}.csv`))
+    .then(courseRounds => createSectionsFile(courseRounds, enrollmentsFileName))
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
+    .then(() => [fileName, enrollmentsFileName])
     .catch(e => console.error(e))
   }}
