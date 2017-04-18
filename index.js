@@ -76,14 +76,15 @@ inquirer.prompt([
     })
     .then(enrollmentsFileName => {
       console.log('Now: zip them up: ', coursesFileName, enrollmentsFileName, sectionsFileName)
-
+      const zipFileName = `csv/${year}:${term}-${period}.zip`
       const zip = new Zip()
       zip.file('courses.csv', fs.readFileSync(path.join(__dirname, coursesFileName)))
       zip.file('enrollments.csv', fs.readFileSync(path.join(__dirname, enrollmentsFileName)))
       zip.file('sections.csv', fs.readFileSync(path.join(__dirname, sectionsFileName)))
 
       const data = zip.generate({ base64: false, compression: 'DEFLATE' })
-      fs.writeFileSync(`csv/${year}:${term}-${period}.zip`, data, 'binary')
+      fs.writeFileSync(zipFileName, data, 'binary')
+      console.log(`The zip file ${zipFileName} is now created. Go to canvas and upload it in SIS Imports.`)
     })
 })
 .then(() => console.log('😀 Done!'.green))
