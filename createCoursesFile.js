@@ -89,7 +89,7 @@ function getCourseRounds (termin) {
   }
 
   function addTitles (courseRounds) {
-    return Promise.mapSeries(courseRounds, round => get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`)
+    return courseRounds && Promise.mapSeries(courseRounds, round => get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`)
       .then(course => {
         round.title = course.title
         return round
@@ -101,7 +101,7 @@ function getCourseRounds (termin) {
   .then(parseString)
   .then(extractRelevantData)
   // .then(d => d.splice(0, 50))
-  .then(courseRounds => courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
+  .then(courseRounds => courseRounds && courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
 

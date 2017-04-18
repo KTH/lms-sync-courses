@@ -6,7 +6,7 @@ require('colors')
 
 const attributes = ['ugKthid', 'name']
 const columns = [
-  'course_id',
+  'section_id',
   'user_id',
   'role',
   'status'
