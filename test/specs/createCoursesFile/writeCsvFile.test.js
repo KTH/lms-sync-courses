@@ -8,17 +8,7 @@ csvFile.writeLine = sinon.stub()
 
 createCoursesFile.__set__('mkdirAsync', () => Promise.resolve())
 
-test('should call buildCanvasCourseObjects to rebuild the input to a format that is easier to handle', t => {
-  t.plan(1)
-
-  const buildCanvasCourseObjects = sinon.stub()
-  createCoursesFile.__set__('buildCanvasCourseObjects', buildCanvasCourseObjects)
-  const courseRounds = [[{ courseCode: 'AL0001'}]]
-  writeCsvFile(courseRounds)
-  t.ok(buildCanvasCourseObjects.calledWith(courseRounds))
-})
-
-test('should write a line with the headers, and one for each course', t => {
+test.skip('should write a line with the headers, and one for each course', t => {
   t.plan(2)
   createCoursesFile.__set__('buildCanvasCourseObjects', arg => [
     {sisCourseId: 'sisCourseId',

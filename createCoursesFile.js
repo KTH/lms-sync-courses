@@ -2,8 +2,13 @@ require('dotenv').config()
 const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const parseString = Promise.promisify(require('xml2js').parseString)
-const moment = require('moment')
-const terms = require('kth-canvas-utilities/terms')
+const {
+  buildCanvasCourseObjects,
+  flatten,
+  createLongName,
+  createSisCourseId,
+  deleteFile
+} = require('./utils')
 
 const {groupBy} = require('lodash')
 const canvasUtilities = require('kth-canvas-utilities')
@@ -11,14 +16,11 @@ canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
 const filterByLogic = require('./filter/filterByLogic')
 const filterSelectedCourses = require('./filter/filterSelectedCourses')
-const departmentCodeMapping = require('kth-canvas-utilities/departmentCodeMapping')
+const createSectionsFile = require('./createSectionsFile')
 
 const csvFile = require('./csvFile')
-const {mkdir, unlink} = require('fs')
+const {mkdir} = require('fs')
 let mkdirAsync = Promise.promisify(mkdir)
-let unlinkAsync = Promise.promisify(unlink)
-
-
 
 function get (url) {
   console.log(url)
@@ -32,64 +34,10 @@ function get (url) {
   })
 }
 
-function getSisAccountId ({courseCode}) {
-  const firstChar = courseCode[0]
-  return `${departmentCodeMapping[firstChar]} - Imported course rounds`
-}
-
 function groupRoundsByCourseCode (courseRounds) {
   const courseRoundsGrouped = groupBy(courseRounds, (round) => round.courseCode)
   return Object.getOwnPropertyNames(courseRoundsGrouped)
   .map(name => courseRoundsGrouped[name])
-}
-
-function calcStartDate (courseRound) {
-  const [year, weekNumber] = courseRound.startWeek.split('-')
-  const d = moment().year(year).isoWeek(weekNumber).isoWeekday(1)
-  d.set({hour: 8, minute: 0, second: 0, millisecond: 0})
-  return d.toISOString()
-}
-
-function createLongName (round) {
-  const termNum = round.startTerm[4]
-  const term = terms[termNum]
-  const title = round.title[ round.tutoringLanguage === 'Swedish' ? 'sv' : 'en' ]
-  let result = round.courseCode
-  if (round.shortName) {
-    result += ` ${round.shortName}`
-  }
-  result += ` ${term}${round.startTerm.substring(2, 4)}-${round.roundId} ${title}`
-  return result
-}
-
-function createSisCourseId ({courseCode, startTerm, roundId}) {
-  const termNum = startTerm[4]
-  const shortYear = `${startTerm[2]}${startTerm[3]}`
-  const term = terms[termNum]
-
-  return `${courseCode}${term}${shortYear}${roundId}`
-}
-
-function buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
-  const result = twoDArrayOfCourseRounds.map(courseRounds => courseRounds.map(courseRound => {
-    if (!courseRound) {
-      return
-    }
-    return {
-      sisCourseId: createSisCourseId(courseRound),
-      courseCode: courseRound.courseCode,
-      shortName: courseRound.shortName,
-      longName: createLongName(courseRound),
-      startDate: calcStartDate(courseRound),
-      sisAccountId: getSisAccountId(courseRound),
-      status: 'active'
-    }
-  }))
-  return result
-}
-
-function flatten (arr) {
-  return [].concat.apply([], arr)
 }
 
 function writeCsvFile (courseRounds, fileName) {
@@ -118,11 +66,6 @@ function writeCsvFile (courseRounds, fileName) {
   .then(() => csvFile.writeLine(columns, fileName))
   .then(() => Promise.map(arrayOfCanvasCourses, writeLineForCourse)
   )
-}
-
-function deleteFile (fileName) {
-  return unlinkAsync(fileName)
-      .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
 function addRoundInfo (round, termin) {
@@ -154,11 +97,10 @@ function getCourseRounds (termin) {
     )
   }
 
-  console.log('TODO: remove the subsetting!')
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
-  // .then(d => d.splice(330, 360))
+  // .then(d => d.splice(0, 50))
   .then(courseRounds => courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
@@ -172,20 +114,17 @@ function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
   return arrayOfCourseRoundArrays.map(arrayOfCourseRounds => arrayOfCourseRounds.filter(({periods}) => periods && periods.find(({number}) => number === period)))
 }
 
-
-module.exports = function ({term, year, period}) {
-  const termin = `${year}:${term}`
-  const fileName = `csv/courses-${termin}-${period}.csv`
-  console.log('Using file name:', fileName)
-  return deleteFile(fileName)
+module.exports = {
+  createCoursesFile ({term, year, period}) {
+    const termin = `${year}:${term}`
+    const fileName = `csv/courses-${termin}-${period}.csv`
+    console.log('Using file name:', fileName)
+    return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
-    .then(courses => {
-      console.log('courses', JSON.stringify(courses, null, 4))
-      return courses
-    })
-    .then(courses=>filterSelectedCourses(courses))
+    .then(courses => filterSelectedCourses(courses))
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     .then(filterByLogic)
+    .then(courseRounds => createSectionsFile(courseRounds, `csv/sections-${termin}-${period}.csv`))
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
     .catch(e => console.error(e))
-}
+  }}

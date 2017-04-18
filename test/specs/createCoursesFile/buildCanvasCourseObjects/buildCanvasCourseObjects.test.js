@@ -1,14 +1,13 @@
 const test = require('tape')
 const rewire = require('rewire')
-const createCoursesFile = rewire('../../../../createCoursesFile.js')
-const buildCanvasCourseObjects = createCoursesFile.__get__('buildCanvasCourseObjects')
+const utils =  rewire('../../../../utils')
 const moment = require('moment')
 
 test('should not fail on empty arrays', t => {
   t.plan(1)
   const courseRounds = [[]]
 
-  const result = buildCanvasCourseObjects(courseRounds)
+  const result = utils.buildCanvasCourseObjects(courseRounds)
 
   const expected = [[]]
 
@@ -19,10 +18,10 @@ test('should create course objects containing attributes needed for creating the
   t.plan(1)
   const aDate = '2001-01-01'
 
-  createCoursesFile.__set__('createSisCourseId', () => 'abc123')
-  createCoursesFile.__set__('createLongName', () => 'Långt namn')
-  createCoursesFile.__set__('getSisAccountId', () => 'sis account id')
-  createCoursesFile.__set__('calcStartDate', () => aDate)
+  utils.__set__('createSisCourseId', () => 'abc123')
+  utils.__set__('createLongName', () => 'Långt namn')
+  utils.__set__('getSisAccountId', () => 'sis account id')
+  utils.__set__('calcStartDate', () => aDate)
 
   const courseRounds = [
     [
@@ -32,7 +31,7 @@ test('should create course objects containing attributes needed for creating the
       }
     ]]
 
-  const result = buildCanvasCourseObjects(courseRounds)
+  const result = utils.buildCanvasCourseObjects(courseRounds)
 
   const expected = [[
     {

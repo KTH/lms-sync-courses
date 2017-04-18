@@ -1,4 +1,4 @@
-let removeTheseCourses = require('../removeTheseCourses')
+let removeTheseCourses = require('../RemoveTheseCourses')
 //  "courseCode": "LT1018",
 function filterSelectedCourses(arrayOfArryOfCourseRounds){
   if (removeTheseCourses.courseList.length === 0) {
