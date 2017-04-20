@@ -1108,6 +1108,14 @@ kth-canvas-api@^0.4.1:
     request "^2.78.0"
     request-promise "^4.1.1"
 
+kth-canvas-api@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/kth-canvas-api/-/kth-canvas-api-0.7.0.tgz#547931aed4ac8a56f41237a1f4b7aacc40b7a2e9"
+  dependencies:
+    kth-console-log "1.x"
+    request "^2.78.0"
+    request-promise "^4.1.1"
+
 kth-canvas-utilities@kth/kth-canvas-utilities:
   version "1.14.0"
   resolved "https://codeload.github.com/kth/kth-canvas-utilities/tar.gz/2060937647e9a1d55ef96b826419761842410aae"
