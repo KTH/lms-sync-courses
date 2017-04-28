@@ -29,7 +29,7 @@ const terms = [
     name: 'Vårtermin',
     value: VT
   }]
-const periods = ['1', '2', '3', '4', '5', '6']
+const periods = ['0','1','2', '3', '4', '5']
 
 inquirer.prompt([
   {
