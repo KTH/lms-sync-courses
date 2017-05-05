@@ -120,6 +120,7 @@ function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
 }
 
 function filterNotCancelledCourses (arrayOfCourseRoundArrays) {
+  return arrayOfCourseRoundArrays.map(arrayOfCourseRounds => arrayOfCourseRounds.filter(({stateCode}) => !stateCode || stateCode !== 'CANCELLED'))
 }
 
 
