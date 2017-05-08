@@ -29,8 +29,12 @@ const terms = [
     name: 'Vårtermin',
     value: VT
   }]
-const periods = ['0','1','2', '3', '4', '5']
 
+const periods = {
+  [HT]:['0','1','2'],
+  [VT]:['3', '4', '5']}
+
+let year, term
 inquirer.prompt([
   {
     message: 'Välj år',
@@ -44,15 +48,22 @@ inquirer.prompt([
     name: 'term',
     choices: terms,
     type: 'list'
-  },
-  {
-    message: 'Välj period',
-    name: 'period',
-    choices: periods,
-    type: 'list'
   }
 ])
-.then(({year, term, period}) => {
+.then(answers=>{
+  year = answers.year
+  term = answers.term
+  console.log('term:', term)
+
+  return inquirer.prompt([
+    {
+      message: 'Välj period',
+      name: 'period',
+      choices: periods[term],
+      type: 'list'
+    }])
+})
+.then(({period}) => {
   console.log('ok, börjar med att skapa csvfil med kurserna...'.green)
   let coursesFileName, sectionsFileName
   return createCoursesFile({year, term, period})
