@@ -53,7 +53,6 @@ inquirer.prompt([
 .then(answers=>{
   year = answers.year
   term = answers.term
-  console.log('term:', term)
 
   return inquirer.prompt([
     {
