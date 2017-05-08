@@ -11,6 +11,8 @@ const fs = require('fs')
 const path = require('path')
 const Zip = require('node-zip')
 
+fs.mkdir('csv')
+
 console.log(`
   Detta är ett program för att ta
   fram alla kurser och lärare under en
