@@ -11,7 +11,11 @@ const fs = require('fs')
 const path = require('path')
 const Zip = require('node-zip')
 
-fs.mkdir('csv')
+try {
+  fs.mkdirSync('csv')
+} catch (e) {
+
+}
 
 console.log(`
   Detta är ett program för att ta
