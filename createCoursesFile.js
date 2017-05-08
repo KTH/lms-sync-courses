@@ -80,7 +80,6 @@ function addRoundInfo (round, termin) {
       round.periods = []
     }
     if(courseRound.stateCode){
-      console.log('setting stateCode for the course round', courseRound.stateCode)
       round.stateCode = courseRound.stateCode[0]._
     }
 
