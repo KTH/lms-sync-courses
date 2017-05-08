@@ -79,7 +79,7 @@ function addRoundInfo (round, termin) {
     } else {
       round.periods = []
     }
-    if(courseRound.stateCode){
+    if (courseRound.stateCode) {
       round.stateCode = courseRound.stateCode[0]._
     }
 
@@ -119,9 +119,14 @@ function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
 }
 
 function filterNotCancelledCourses (arrayOfCourseRoundArrays) {
-  return arrayOfCourseRoundArrays.map(arrayOfCourseRounds => arrayOfCourseRounds.filter(({stateCode}) => !stateCode || stateCode !== 'CANCELLED'))
+  return arrayOfCourseRoundArrays.map(arrayOfCourseRounds =>
+    arrayOfCourseRounds.filter(round => {
+      const cancelled = round.stateCode === 'CANCELLED'
+      if(cancelled) console.log('Course is cancelled: ', JSON.stringify(round, null, 4))
+      return !cancelled
+    })
+    )
 }
-
 
 module.exports = {
   createCoursesFile ({term, year, period}) {
