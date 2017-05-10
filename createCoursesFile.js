@@ -78,6 +78,10 @@ function addRoundInfo (round, termin) {
     } else {
       round.periods = []
     }
+    if (courseRound.stateCode) {
+      round.stateCode = courseRound.stateCode[0]._
+    }
+
     return round
   })
 }
@@ -113,6 +117,16 @@ function filterCoursesDuringPeriod (arrayOfCourseRoundArrays, period) {
   return arrayOfCourseRoundArrays.map(arrayOfCourseRounds => arrayOfCourseRounds.filter(({periods}) => periods && periods.find(({number}) => number === period)))
 }
 
+function filterNotCancelledCourses (arrayOfCourseRoundArrays) {
+  return arrayOfCourseRoundArrays.map(arrayOfCourseRounds =>
+    arrayOfCourseRounds.filter(round => {
+      const cancelled = round.stateCode === 'CANCELLED'
+      if(cancelled) console.log('Course is cancelled: ', JSON.stringify(round, null, 4))
+      return !cancelled
+    })
+    )
+}
+
 module.exports = {
   createCoursesFile ({term, year, period}) {
     const termin = `${year}:${term}`
@@ -121,7 +135,8 @@ module.exports = {
     console.log('Using file name:', fileName)
     return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
-    .then(courses => filterSelectedCourses(courses))
+    .then(filterSelectedCourses)
+    .then(filterNotCancelledCourses)
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     .then(courseRounds => createSectionsFile(courseRounds, enrollmentsFileName))
     .then(courseRounds => writeCsvFile(courseRounds, fileName))
