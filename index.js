@@ -92,7 +92,7 @@ inquirer.prompt([
     })
     .then(enrollmentsFileName => {
       console.log('Now: zip them up: ', coursesFileName, enrollmentsFileName, sectionsFileName)
-      const zipFileName = `csv/${year}:${term}-${period}.zip`
+      const zipFileName = `csv/${year}-${term}-${period}.zip`
       const zip = new Zip()
       zip.file('courses.csv', fs.readFileSync(path.join(__dirname, coursesFileName)))
       zip.file('sections.csv', fs.readFileSync(path.join(__dirname, sectionsFileName)))
