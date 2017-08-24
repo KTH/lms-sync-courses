@@ -103,7 +103,8 @@ function getCourseRounds (termin) {
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
-  // .then(d => d.splice(0, 50))
+  .then(coursRounds => coursRounds.filter(round => round.courseCode === 'SF1625'))
+  // .then(d => d.splice(0, 2))
   .then(courseRounds => courseRounds && courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
