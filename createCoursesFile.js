@@ -30,6 +30,9 @@ function get (url) {
     headers: {
       'content-type': 'application/json'
     }
+  }).then(res =>{
+    console.log(res)
+    return res
   })
 }
 
@@ -83,7 +86,7 @@ function addRoundInfo (round, termin) {
     }
 
     if(courseRound.shortName){
-      round.shortName = courseRound.shortName[0]
+      round.shortName = courseRound.shortName[0]._
     }
 
     return round
@@ -107,7 +110,7 @@ function getCourseRounds (termin) {
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
-  // .then(courseRounds => courseRounds.filter(round => round.courseCode === 'SF1625'))
+  .then(courseRounds => courseRounds.filter(round => round.courseCode === 'SF1625'))
   // .then(d => d.splice(0, 2))
   .then(courseRounds => courseRounds && courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)

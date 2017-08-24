@@ -26,10 +26,10 @@ test('should just return courses with periods and language and startWeek', t => 
   })
 })
 
-test('should add shortName', t => {
+test.only('should add shortName', t => {
   const xmlForCourseRound = `
-  <courseRound xmlns="http://www.kth.se/student/kurser" startWeek="2017-44">
-    <shortName>CDATE1 m.fl.</shortName>
+  <courseRound>
+    <shortName  xmlns="">CDATE1 m.fl.</shortName>
   </courseRound>
   `
   createCoursesFile.__set__('get', () => Promise.resolve(xmlForCourseRound))
