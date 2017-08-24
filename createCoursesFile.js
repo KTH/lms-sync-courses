@@ -83,7 +83,6 @@ function addRoundInfo (round, termin) {
     }
 
     if(courseRound.shortName){
-      console.log('yay!!!', courseRound.shortName[0])
       round.shortName = courseRound.shortName[0]
     }
 
