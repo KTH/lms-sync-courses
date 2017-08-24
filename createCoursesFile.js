@@ -82,6 +82,10 @@ function addRoundInfo (round, termin) {
       round.stateCode = courseRound.stateCode[0]._
     }
 
+    if(courseRound.shortName){
+      round.shortName = courseRound.shortName[0]._
+    }
+
     return round
   })
 }
