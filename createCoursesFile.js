@@ -21,15 +21,17 @@ const csvFile = require('./csvFile')
 const {mkdir} = require('fs')
 let mkdirAsync = Promise.promisify(mkdir)
 
-function get (url) {
+function get (url, json=false) {
   console.log(url)
+  const headers = {}
+  if(json){
+    headers['content-type']='application/json'
+  }
   return rp({
     url,
     method: 'GET',
-    json: true,
-    headers: {
-      'content-type': 'application/json'
-    }
+    json,
+    headers
   }).then(res =>{
     console.log(res)
     return res
@@ -99,7 +101,7 @@ function getCourseRounds (termin) {
   }
 
   function addTitles (courseRounds) {
-    return courseRounds && Promise.mapSeries(courseRounds, round => get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`)
+    return courseRounds && Promise.mapSeries(courseRounds, round => get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`, true)
       .then(course => {
         round.title = course.title
         return round
