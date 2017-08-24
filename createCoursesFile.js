@@ -32,9 +32,6 @@ function get (url, json=false) {
     method: 'GET',
     json,
     headers
-  }).then(res =>{
-    console.log(res)
-    return res
   })
 }
 
