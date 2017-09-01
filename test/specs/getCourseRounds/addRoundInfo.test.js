@@ -26,6 +26,21 @@ test('should just return courses with periods and language and startWeek', t => 
   })
 })
 
+test('should add shortName', t => {
+  const xmlForCourseRound = `
+  <courseRound>
+    <shortName xmlns="">CDATE1 m.fl.</shortName>
+  </courseRound>
+  `
+  createCoursesFile.__set__('get', () => Promise.resolve(xmlForCourseRound))
+  t.plan(1)
+  const courseRounds = {
+  }
+  addRoundInfo(courseRounds).then(result => {
+    t.equal(result.shortName, 'CDATE1 m.fl.')
+  })
+})
+
 test('should just return courses with empty array if periods are undefined', t => {
   const xmlForCourseRound = `
   <courseRound xmlns="http://www.kth.se/student/kurser">
