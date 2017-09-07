@@ -14,7 +14,6 @@ const {groupBy} = require('lodash')
 const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
-const filterSelectedCourses = require('./filter/filterSelectedCourses')
 const createSectionsFile = require('./createSectionsFile')
 
 const csvFile = require('./csvFile')
@@ -142,7 +141,6 @@ module.exports = {
     console.log('Using file name:', fileName)
     return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
-    .then(filterSelectedCourses)
     .then(filterNotCancelledCourses)
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     .then(courseRounds => createSectionsFile(courseRounds, enrollmentsFileName))
