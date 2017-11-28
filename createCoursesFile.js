@@ -14,22 +14,23 @@ const {groupBy} = require('lodash')
 const canvasUtilities = require('kth-canvas-utilities')
 canvasUtilities.init()
 const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
-const filterSelectedCourses = require('./filter/filterSelectedCourses')
 const createSectionsFile = require('./createSectionsFile')
 
 const csvFile = require('./csvFile')
 const {mkdir} = require('fs')
 let mkdirAsync = Promise.promisify(mkdir)
 
-function get (url) {
+function get (url, json=false) {
   console.log(url)
+  const headers = {}
+  if(json){
+    headers['content-type']='application/json'
+  }
   return rp({
     url,
     method: 'GET',
-    json: true,
-    headers: {
-      'content-type': 'application/json'
-    }
+    json,
+    headers
   })
 }
 
@@ -82,6 +83,10 @@ function addRoundInfo (round, termin) {
       round.stateCode = courseRound.stateCode[0]._
     }
 
+    if(courseRound.shortName){
+      round.shortName = courseRound.shortName[0]._
+    }
+
     return round
   })
 }
@@ -92,7 +97,7 @@ function getCourseRounds (termin) {
   }
 
   function addTitles (courseRounds) {
-    return courseRounds && Promise.mapSeries(courseRounds, round => get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`)
+    return courseRounds && Promise.mapSeries(courseRounds, round => get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`, true)
       .then(course => {
         round.title = course.title
         return round
@@ -103,7 +108,8 @@ function getCourseRounds (termin) {
   return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
-  // .then(d => d.splice(0, 50))
+  // .then(courseRounds => courseRounds.filter(round => round.courseCode === 'SF1625'))
+  // .then(d => d.splice(0, 2))
   .then(courseRounds => courseRounds && courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
@@ -135,7 +141,6 @@ module.exports = {
     console.log('Using file name:', fileName)
     return deleteFile(fileName)
     .then(() => getCourseRoundsPerCourseCode(termin))
-    .then(filterSelectedCourses)
     .then(filterNotCancelledCourses)
     .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
     .then(courseRounds => createSectionsFile(courseRounds, enrollmentsFileName))
