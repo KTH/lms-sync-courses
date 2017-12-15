@@ -82,9 +82,6 @@ async function run () {
 
   const [coursesFileName, sectionsFileName] = await createCoursesFile.createCoursesFile({year, term, period})
 
-  coursesFileName = _coursesFileName
-  sectionsFileName = _sectionsFileName
-
   console.log('Och nu skapar vi fil med enrollments'.green)
   const {ugUsername, ugUrl, ugPwd} = process.env
   if (!(ugUsername && ugUrl && ugPwd)) {
