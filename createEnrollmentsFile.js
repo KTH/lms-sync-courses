@@ -84,8 +84,11 @@ function addAdmittedStudents ([teachersMembers, assistantsMembers, courserespons
   const startTerm = termin.replace(':', '')
   const roundId = sisCourseId.substring(sisCourseId.length - 1, sisCourseId.length)
   const courseInitials = courseCode.substring(0, 2)
-  return searchGroup(`(&(objectClass=group)(CN=ladok2.kurser.${courseInitials}.${courseCode}.antagna_${startTerm}.${roundId}))`)
+  const courseCodeLast = courseCode.substring(2)
+  console.log(`(&(objectClass=group)(CN=ladok2.kurser.${courseInitials}.${courseCodeLast}.antagna_${startTerm}.${roundId}))`)
+  return searchGroup(`(&(objectClass=group)(CN=ladok2.kurser.${courseInitials}.${courseCodeLast}.antagna_${startTerm}.${roundId}))`)
   .then(admittedStudents => {
+    console.log("admitted!: ", admittedStudents)
     return [teachersMembers, assistantsMembers, courseresponsibleMembers, examinatorMembers, admittedStudents]
   })
 }
