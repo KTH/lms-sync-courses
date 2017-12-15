@@ -70,7 +70,7 @@ function writeCsvFile (courseRounds, fileName) {
 }
 
 function addRoundInfo (round, termin) {
-  return get(`${koppsBaseUrl}v11/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
+  return get(`${koppsBaseUrl}v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
   .then(parseString)
   .then(({courseRound}) => {
     if (courseRound.periods) {
@@ -92,7 +92,7 @@ function addRoundInfo (round, termin) {
   })
 }
 
-function getCourseRounds (termin) {
+async function getCourseRounds (termin) {
   function extractRelevantData (courseRounds) {
     return courseRounds.courseRoundList.courseRound && courseRounds.courseRoundList.courseRound.map(round => round.$)
   }
@@ -111,7 +111,7 @@ function getCourseRounds (termin) {
   .then(extractRelevantData)
   // .then(courseRounds => courseRounds.filter(round => round.courseCode === 'SF1625'))
   // .then(d => d.splice(0, 2))
-  .then(courseRounds => courseRounds && courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
+  .then(courseRounds => courseRounds && Promise.mapSeries(courseRounds, courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
 

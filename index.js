@@ -68,7 +68,7 @@ async function run () {
 
     const {koppsBaseUrl} = await inquirer.prompt(
         {
-          message: 'Vilken koppsmiljö?',
+          message: 'Sista frågan, vilken koppsmiljö ska vi hämta data från?',
           name: 'koppsBaseUrl',
           choices: [
             {name: 'prod', value: 'https://www.kth.se/api/kopps/'},
