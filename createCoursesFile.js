@@ -1,4 +1,5 @@
 require('dotenv').config()
+let koppsBaseUrl
 const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const parseString = Promise.promisify(require('xml2js').parseString)
@@ -69,7 +70,7 @@ function writeCsvFile (courseRounds, fileName) {
 }
 
 function addRoundInfo (round, termin) {
-  return get(`http://www.kth.se/api/kopps/v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
+  return get(`${koppsBaseUrl}v1/course/${round.courseCode}/round/${termin}/${round.roundId}/en`)
   .then(parseString)
   .then(({courseRound}) => {
     if (courseRound.periods) {
@@ -91,13 +92,13 @@ function addRoundInfo (round, termin) {
   })
 }
 
-function getCourseRounds (termin) {
+async function getCourseRounds (termin) {
   function extractRelevantData (courseRounds) {
     return courseRounds.courseRoundList.courseRound && courseRounds.courseRoundList.courseRound.map(round => round.$)
   }
 
   function addTitles (courseRounds) {
-    return courseRounds && Promise.mapSeries(courseRounds, round => get(`http://www.kth.se/api/kopps/v2/course/${round.courseCode}`, true)
+    return courseRounds && Promise.mapSeries(courseRounds, round => get(`${koppsBaseUrl}v2/course/${round.courseCode}`, true)
       .then(course => {
         round.title = course.title
         return round
@@ -105,12 +106,12 @@ function getCourseRounds (termin) {
     )
   }
 
-  return get(`http://www.kth.se/api/kopps/v1/courseRounds/${termin}`)
+  return get(`${koppsBaseUrl}v1/courseRounds/${termin}`)
   .then(parseString)
   .then(extractRelevantData)
   // .then(courseRounds => courseRounds.filter(round => round.courseCode === 'SF1625'))
   // .then(d => d.splice(0, 2))
-  .then(courseRounds => courseRounds && courseRounds.map(courseRound => addRoundInfo(courseRound, termin)))
+  .then(courseRounds => courseRounds && Promise.mapSeries(courseRounds, courseRound => addRoundInfo(courseRound, termin)))
   .then(addTitles)
 }
 
@@ -134,6 +135,9 @@ function filterNotCancelledCourses (arrayOfCourseRoundArrays) {
 }
 
 module.exports = {
+  set koppsBaseUrl(url){
+    koppsBaseUrl = url
+  },
   createCoursesFile ({term, year, period}) {
     const termin = `${year}:${term}`
     const fileName = `csv/courses-${termin}-${period}.csv`
