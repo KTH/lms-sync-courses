@@ -80,8 +80,9 @@ function addExaminators ([teachersMembers, assistantsMembers, courseresponsibleM
 * Fetch the members for the examinator group for this course.
 * Return a similar array as the in-parameter, with the examinators added
 */
-function addAdmittedStudents ([teachersMembers, assistantsMembers, courseresponsibleMembers, examinatorMembers], courseCode, startTerm, roundId) {
-
+function addAdmittedStudents ([teachersMembers, assistantsMembers, courseresponsibleMembers, examinatorMembers], courseCode, termin, sisCourseId) {
+  const startTerm = termin.replace(':', '')
+  const roundId = sisCourseId.substring(sisCourseId.length - 1, sisCourseId.length)
   const courseInitials = courseCode.substring(0, 2)
   return searchGroup(`(&(objectClass=group)(CN=ladok2.kurser.${courseInitials}.${courseCode}.antagna_${startTerm}.${roundId}))`)
   .then(admittedStudents => {
@@ -107,7 +108,7 @@ function writeUsersForCourse ([sisCourseId, courseCode, name]) {
     return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.${startTerm}.${roundId}.${type}))`)
   })
   .then(arrayOfMembers => addExaminators(arrayOfMembers, courseCode))
-  .then(arrayOfMembers => addAdmittedStudents(arrayOfMembers, courseCode, startTerm, roundId))
+  .then(arrayOfMembers => addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId))
   .then(arrayOfMembers => Promise.map(arrayOfMembers, getUsersForMembers))
   .then(([teachers, assistants, courseresponsible, examinators, admittedStudents]) => Promise.all([
     writeUsers(teachers, 'teacher'),
