@@ -1,5 +1,5 @@
 require('dotenv').config()
-const koppsBaseUrl = 'https://www-r.referens.sys.kth.se/api/kopps/'
+let koppsBaseUrl
 const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const parseString = Promise.promisify(require('xml2js').parseString)
@@ -135,6 +135,9 @@ function filterNotCancelledCourses (arrayOfCourseRoundArrays) {
 }
 
 module.exports = {
+  set koppsBaseUrl(url){
+    koppsBaseUrl = url
+  },
   createCoursesFile ({term, year, period}) {
     const termin = `${year}:${term}`
     const fileName = `csv/courses-${termin}-${period}.csv`
