@@ -19,7 +19,7 @@ try {
 
 console.log(`
   Detta är ett program för att ta
-  fram alla kurser och lärare under en
+  fram alla kurser, lärare och antagna studenter under en
   viss period ur KTHs system
   och spara dem i csv-filer, för import till Canvas LMS`.greenBG)
 
