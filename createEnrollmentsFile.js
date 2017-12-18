@@ -118,7 +118,7 @@ function writeUsersForCourse ([sisCourseId, courseCode, name]) {
     writeUsers(courseresponsible, 'Course Responsible'),
     writeUsers(assistants, 'ta'),
     writeUsers(examinators, 'Examiner'),
-    writeUsers(admittedStudents, 'Admitted/antagen student')
+    writeUsers(admittedStudents, 'Admitted not registered')
   ])
   )
 }
