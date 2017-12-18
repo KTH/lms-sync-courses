@@ -77,6 +77,21 @@ function addExaminators ([teachersMembers, assistantsMembers, courseresponsibleM
 }
 
 /*
+* Fetch the members for the examinator group for this course.
+* Return a similar array as the in-parameter, with the examinators added
+*/
+function addAdmittedStudents ([teachersMembers, assistantsMembers, courseresponsibleMembers, examinatorMembers], courseCode, termin, sisCourseId) {
+  const startTerm = termin.replace(':', '')
+  const roundId = sisCourseId.substring(sisCourseId.length - 1, sisCourseId.length)
+  const courseInitials = courseCode.substring(0, 2)
+  const courseCodeLast = courseCode.substring(2)
+  return searchGroup(`(&(objectClass=group)(CN=ladok2.kurser.${courseInitials}.${courseCodeLast}.antagna_${startTerm}.${roundId}))`)
+  .then(admittedStudents => {
+    return [teachersMembers, assistantsMembers, courseresponsibleMembers, examinatorMembers, admittedStudents]
+  })
+}
+
+/*
 * For the given course, fetch all user types from UG and add write all of them to the enrollments file
 */
 function writeUsersForCourse ([sisCourseId, courseCode, name]) {
@@ -94,12 +109,14 @@ function writeUsersForCourse ([sisCourseId, courseCode, name]) {
     return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.${startTerm}.${roundId}.${type}))`)
   })
   .then(arrayOfMembers => addExaminators(arrayOfMembers, courseCode))
+  .then(arrayOfMembers => addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId))
   .then(arrayOfMembers => Promise.map(arrayOfMembers, getUsersForMembers))
-  .then(([teachers, assistants, courseresponsible, examinators]) => Promise.all([
+  .then(([teachers, assistants, courseresponsible, examinators, admittedStudents]) => Promise.all([
     writeUsers(teachers, 'teacher'),
     writeUsers(courseresponsible, 'Course Responsible'),
     writeUsers(assistants, 'ta'),
-    writeUsers(examinators, 'Examiner')
+    writeUsers(examinators, 'Examiner'),
+    writeUsers(admittedStudents, 'Admitted not registered')
   ])
   )
 }
