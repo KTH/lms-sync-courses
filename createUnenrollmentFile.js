@@ -5,7 +5,7 @@ const csvFile = require('./csvFile')
 require('colors')
 const fs = require('fs')
 
-const sectionFileName = 'csv/unenrollObserversSections.csv'
+const sectionFileName = 'csv/unenroll-observers.csv'
 try {
   fs.mkdirSync('csv')
 } catch (e) {
@@ -57,7 +57,7 @@ async function createFile () {
         for (let enrollment of enrollments) {
           console.log(enrollment)
           // process.exit()
-          await csvFile.writeLine([enrollment.sis_section_id, enrollment.sis_user_id, enrollment.role, 'DELETE'], sectionFileName)
+          await csvFile.writeLine([enrollment.sis_section_id, enrollment.sis_user_id, enrollment.role, 'DELETED'], sectionFileName)
           // console.log('Unenroll the user with the old role (21)')
           // await canvasApi.requestUrl(`/courses/${enrollment.course_id}/enrollments/${enrollment.id}`, 'DELETE')
         }
