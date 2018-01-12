@@ -36,39 +36,14 @@ async function createFile () {
     type: 'string'
   })
 
-  const canvasApi = new CanvasApi(apiUrl, apiKey)
-  canvasApi.logger = {info () {
-    for (let arg of arguments) {
-      console.log(arg.yellow)
+  await csvFile.writeLine(['section_id', 'user_id', 'role', 'status'], sectionFileName)
+  const courses = await canvasApi.get(`/accounts/1/courses?per_page=100`)
+  for (let course of courses) {
+    const enrollments = await canvasApi.get(`/courses/${course.id}/enrollments?role[]=Admitted not registered&per_page=100`)
+    for (let enrollment of enrollments) {
+      await csvFile.writeLine([enrollment.sis_section_id, enrollment.sis_user_id, enrollment.role, 'DELETED'], sectionFileName)
     }
-  }}
-
-  try {
-    await csvFile.writeLine(['section_id', 'user_id', 'role', 'status'], sectionFileName)
-
-    // const courses = await canvasApi.get(`/accounts/1/courses?per_page=100`)
-    const courses = [{id:4027}]
-
-    // const allEnrollments = []
-    for (let course of courses) {
-      try {
-        const enrollments = await canvasApi.get(`/courses/${course.id}/enrollments?role[]=Admitted not registered&per_page=100`)
-        // allEnrollments.push(...enrollments)
-        for (let enrollment of enrollments) {
-          console.log(enrollment)
-          // process.exit()
-          await csvFile.writeLine([enrollment.sis_section_id, enrollment.sis_user_id, enrollment.role, 'DELETED'], sectionFileName)
-          // console.log('Unenroll the user with the old role (21)')
-          // await canvasApi.requestUrl(`/courses/${enrollment.course_id}/enrollments/${enrollment.id}`, 'DELETE')
-        }
-      } catch (e) {
-        console.log('an error occured, continue', e)
-      }
-    }
-    console.log('Done.'.green)
-    // console.log(JSON.stringify(allEnrollments, null, 4))
-  } catch (err) {
-    console.error(err)
   }
+  console.log('Done.'.green)
 }
 createFile()
