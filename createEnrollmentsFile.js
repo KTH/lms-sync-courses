@@ -109,14 +109,14 @@ function writeUsersForCourse ([sisCourseId, courseCode, name]) {
     return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.${startTerm}.${roundId}.${type}))`)
   })
   .then(arrayOfMembers => addExaminators(arrayOfMembers, courseCode))
-  .then(arrayOfMembers => addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId))
+ /* .then(arrayOfMembers => addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId)) */
   .then(arrayOfMembers => Promise.map(arrayOfMembers, getUsersForMembers))
-  .then(([teachers, assistants, courseresponsible, examinators, admittedStudents]) => Promise.all([
+  .then(([teachers, assistants, courseresponsible, examinators/*, admittedStudents */]) => Promise.all([
     writeUsers(teachers, 'teacher'),
     writeUsers(courseresponsible, 'Course Responsible'),
     writeUsers(assistants, 'ta'),
-    writeUsers(examinators, 'Examiner'),
-    writeUsers(admittedStudents, 'Admitted not registered')
+    writeUsers(examinators, 'Examiner')/*,
+    writeUsers(admittedStudents, 'Admitted not registered')*/
   ])
   )
 }
