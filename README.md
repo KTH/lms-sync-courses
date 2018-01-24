@@ -22,3 +22,5 @@ Logga in i Canvas som administratör, och importera dessa filer mha SIS IMPORT
 För att kunna komma åt information om personer i KTHs system måste man ange lösenord o dyl.
 
 En fil med namnet .env ska skapas som ska innehålla detta data. Se filen .env.in för exempel på hur den ska se ut.
+
+
