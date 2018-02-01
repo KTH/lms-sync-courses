@@ -138,17 +138,53 @@ module.exports = {
   set koppsBaseUrl(url){
     koppsBaseUrl = url
   },
-  createCoursesFile ({term, year, period}) {
-    const termin = `${year}:${term}`
+  async createCoursesFile ({term, year, period}) {
+    const termin = `${year}${term}`
     const fileName = `csv/courses-${termin}-${period}.csv`
     const enrollmentsFileName = `csv/sections-${termin}-${period}.csv`
     console.log('Using file name:', fileName)
-    return deleteFile(fileName)
-    .then(() => getCourseRoundsPerCourseCode(termin))
-    .then(filterNotCancelledCourses)
-    .then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
-    .then(courseRounds => createSectionsFile(courseRounds, enrollmentsFileName))
-    .then(courseRounds => writeCsvFile(courseRounds, fileName))
-    .then(() => [fileName, enrollmentsFileName])
-    .catch(e => console.error(e))
+    await deleteFile(fileName)
+    const res = await rp({
+      url: `${koppsBaseUrl}v2/courses/offerings?from=${termin}`,
+      method: 'GET',
+      json: true,
+      headers: {'content-type':'application/json'}
+    })
+
+    const courseOfferings = res
+    .filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
+    .filter(courseOffering => courseOffering.first_period === `${year}${term}P${period}`)
+
+    for (const courseOffering of courseOfferings) {
+      const courseRound = {}
+      
+      const course = {
+        sisCourseId: createSisCourseId(courseRound),
+        courseCode: courseRound.courseCode,
+        shortName: courseRound.shortName,
+        longName: createLongName(courseRound),
+        startDate: calcStartDate(courseRound),
+        sisAccountId: getSisAccountId(courseRound),
+        status: 'active'
+      }
+
+      await csvFile.writeLine([
+        course.sisCourseId,
+        course.courseCode,
+        course.longName,
+        course.startDate,
+        course.sisAccountId,
+        'active'], fileName)
+      //await writeCsvFile()
+    }    
+    console.log(courseOfferings)
+    return ['foo', 'bar']
+    // console.log("KURSER: ", courseOfferings)
+    //.then(() => getCourseRoundsPerCourseCode(termin))
+    //.then(filterNotCancelledCourses)
+    //.then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
+   // .then(courseRounds => createSectionsFile(courseRounds, enrollmentsFileName))
+    //.then(courseRounds => writeCsvFile(courseRounds, fileName))
+    //.then(() => [fileName, enrollmentsFileName])
+    //.catch(e => console.error(e))
   }}
