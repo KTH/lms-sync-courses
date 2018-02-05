@@ -5,6 +5,7 @@ const Promise = require('bluebird') // use bluebird to get a little more promise
 const parseString = Promise.promisify(require('xml2js').parseString)
 const {
   buildCanvasCourseObjects,
+  calcStartDate,
   flatten,
   createLongName,
   createSisCourseId,
@@ -159,28 +160,32 @@ module.exports = {
       //{"courseCode":"AL2140","startTerm":"20171","roundId":"1","xmlns":"",
       //"periods":[{"term":"20171","number":"4"}],
       //"startWeek":"2017-12","tutoringLanguage":"English","title":{"sv":"Cleaner Production","en":"Cleaner Production"}}
-
+      //"periods":[{"period":"P3","modules":["A1","B2","D1","F1","G2","H2","I2"]}]}]
       const courseRound = {
         courseCode: courseOffering.course_code,
         startTerm: courseOffering.first_yearsemester,
         roundId: courseOffering.offering_id,
         periods: courseOffering.periods,
-        startSemester: courseOffering.offered_semesters.filter(s => s.semester === courseOffering.first_yearsemester)[0],
-        startWeek: courseOffering.offered_semesters[0].start_week     
-        //shortName   
+        startSemester: courseOffering.offered_semesters.filter(s => s.semester === courseOffering.first_yearsemester)[0], //take start_Week for whole course
+        shortName: "", //TODO: To see what is shortname in kopps v2 api
+        tutoringLanguage: "English", // TODO: redo when kopps api will be updated with this parameter
+        title: {
+          sv: courseOffering.course_name,
+          en: courseOffering.course_name_en
+        }   
       }
 
-      console.log("PRINTA!!!! =>", courseRound)
+      //console.log("PRINTA!!!! =>", courseRound)
       
-      // const course = {
-      //   sisCourseId: createSisCourseId(courseRound),
-      //   courseCode: courseRound.courseCode,
-      //   shortName: courseRound.shortName,
-      //   longName: createLongName(courseRound),
-      //   startDate: calcStartDate(courseRound),
-      //   sisAccountId: getSisAccountId(courseRound),
-      //   status: 'active'
-      // }
+      const course = {
+        sisCourseId: createSisCourseId(courseRound),
+        courseCode: courseRound.courseCode,
+        // shortName: courseRound.shortName,
+        // longName: createLongName(courseRound),
+        startDate: calcStartDate(courseRound),
+        // sisAccountId: getSisAccountId(courseRound),
+        // status: 'active'
+      }
 
       // await csvFile.writeLine([
       //   course.sisCourseId,
