@@ -50,7 +50,6 @@ module.exports = {
   getSisAccountId,
   createLongName,
   createSisCourseId,
-  calcStartDate,
   buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
     const result = twoDArrayOfCourseRounds.map(courseRounds => courseRounds.map(courseRound => {
       if (!courseRound) {
