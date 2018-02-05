@@ -82,30 +82,30 @@ async function run () {
 
   const [coursesFileName, sectionsFileName] = await createCoursesFile.createCoursesFile({year, term, period})
 
-  // console.log('Och nu skapar vi fil med enrollments'.green)
-  // const {ugUsername, ugUrl, ugPwd} = process.env
-  // if (!(ugUsername && ugUrl && ugPwd)) {
-  //   console.log(`
-  //       Kan inte skapa csvfil med alla användare i
-  //       kurser (enrollments) eftersom alla hemligheter inte är angivna.
-  //       Jag behöver ugUsername, ugUrl och ugPwd i filen .env.
-  //       Hoppar över att skapa fil med enrollments.
-  //       `.yellow)
-  // } else {
-  //   const enrollmentsFileName = await createEnrollmentsFile({ugUsername, ugUrl, ugPwd, year, term, period, koppsBaseUrl})
-  //   console.log('Now: zip them up: ', coursesFileName, enrollmentsFileName, sectionsFileName)
-  //   const zipFileName = `csv/${year}-${term}-${period}.zip`
-  //   const zip = new Zip()
-  //   zip.file('courses.csv', fs.readFileSync(path.join(__dirname, coursesFileName)))
-  //   zip.file('sections.csv', fs.readFileSync(path.join(__dirname, sectionsFileName)))
-  //   if (enrollmentsFileName) {
-  //     zip.file('enrollments.csv', fs.readFileSync(path.join(__dirname, enrollmentsFileName)))
-  //   }
+  console.log('Och nu skapar vi fil med enrollments'.green)
+  const {ugUsername, ugUrl, ugPwd} = process.env
+  if (!(ugUsername && ugUrl && ugPwd)) {
+    console.log(`
+        Kan inte skapa csvfil med alla användare i
+        kurser (enrollments) eftersom alla hemligheter inte är angivna.
+        Jag behöver ugUsername, ugUrl och ugPwd i filen .env.
+        Hoppar över att skapa fil med enrollments.
+        `.yellow)
+  } else {
+    const enrollmentsFileName = await createEnrollmentsFile({ugUsername, ugUrl, ugPwd, year, term, period, koppsBaseUrl})
+    console.log('Now: zip them up: ', coursesFileName, enrollmentsFileName, sectionsFileName)
+    const zipFileName = `csv/${year}-${term}-${period}.zip`
+    const zip = new Zip()
+    zip.file('courses.csv', fs.readFileSync(path.join(__dirname, coursesFileName)))
+    zip.file('sections.csv', fs.readFileSync(path.join(__dirname, sectionsFileName)))
+    if (enrollmentsFileName) {
+      zip.file('enrollments.csv', fs.readFileSync(path.join(__dirname, enrollmentsFileName)))
+    }
 
-  //   const data = zip.generate({ base64: false, compression: 'DEFLATE' })
-  //   fs.writeFileSync(zipFileName, data, 'binary')
-  //   console.log(`The zip file ${zipFileName} is now created. Go to canvas and upload it in SIS Imports.`)
-  // }
+    const data = zip.generate({ base64: false, compression: 'DEFLATE' })
+    fs.writeFileSync(zipFileName, data, 'binary')
+    console.log(`The zip file ${zipFileName} is now created. Go to canvas and upload it in SIS Imports.`)
+  }
 
   console.log('😀 Done!'.green)
 }

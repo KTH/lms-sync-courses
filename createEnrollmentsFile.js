@@ -151,7 +151,7 @@ let fileName
 let coursesFileName
 let termin
 module.exports = function ({ugUsername, ugUrl, ugPwd, term, year, period}) {
-  termin = `${year}:${term}`
+  termin = `${year}${term}`
   fileName = `csv/enrollments-${termin}-${period}.csv`
   coursesFileName = `csv/courses-${termin}-${period}.csv`
 
