@@ -2,19 +2,15 @@ require('dotenv').config()
 let koppsBaseUrl
 const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
-const parseString = Promise.promisify(require('xml2js').parseString)
 const {
-  buildCanvasCourseObjects,
-  flatten,
-  createLongName,
-  createSisCourseId,
+  buildCanvasCourseObjectV2,
   deleteFile
 } = require('./utils')
 
 const {groupBy} = require('lodash')
-const canvasUtilities = require('kth-canvas-utilities')
-canvasUtilities.init()
-const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
+// const canvasUtilities = require('kth-canvas-utilities')
+// canvasUtilities.init()
+// const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
 const createSectionsFile = require('./createSectionsFile')
 
 const csvFile = require('./csvFile')
@@ -22,9 +18,7 @@ const {mkdir} = require('fs')
 let mkdirAsync = Promise.promisify(mkdir)
 
 
-function writeCsvFile (courseRounds, fileName) {
-  const twoDArrayOfCanvasCourses = buildCanvasCourseObjects(courseRounds)
-  const arrayOfCanvasCourses = flatten(twoDArrayOfCanvasCourses)
+function createCsvFile (fileName) {
   const columns = [
     'course_id',
     'short_name',
@@ -33,21 +27,10 @@ function writeCsvFile (courseRounds, fileName) {
     'account_id',
     'status']
 
-  function writeLineForCourse (course) {
-    return csvFile.writeLine([
-      course.sisCourseId,
-      course.courseCode,
-      course.longName,
-      course.startDate,
-      course.sisAccountId,
-      'active'], fileName)
-  }
-
   return mkdirAsync('csv')
   .catch(e => console.log('couldnt create csv folder. This is probably fine, just continue'))
   .then(() => csvFile.writeLine(columns, fileName))
-  .then(() => Promise.map(arrayOfCanvasCourses, writeLineForCourse)
-  )
+  //.then(() => Promise.map(arrayOfCanvasCourses, writeLineForCourse))
 }
 
 
@@ -61,6 +44,8 @@ module.exports = {
     const enrollmentsFileName = `csv/sections-${termin}-${period}.csv`
     console.log('Using file name:', fileName)
     await deleteFile(fileName)
+    await createCsvFile(fileName)
+    
     const res = await rp({
       url: `${koppsBaseUrl}v2/courses/offerings?from=${termin}`,
       method: 'GET',
@@ -89,31 +74,19 @@ module.exports = {
           en: courseOffering.course_name_en
         }   
       }
-
-      //console.log("PRINTA!!!! =>", courseRound)
       
-      const course = {
-        sisCourseId: createSisCourseId(courseRound),
-        courseCode: courseRound.courseCode,
-        // shortName: courseRound.shortName,
-        // longName: createLongName(courseRound),
-        //startDate: calcStartDate(courseRound),
-        // sisAccountId: getSisAccountId(courseRound),
-        // status: 'active'
-      }
+      const course = await buildCanvasCourseObjectV2(courseRound)
 
-      // await csvFile.writeLine([
-      //   course.sisCourseId,
-      //   course.courseCode,
-      //   course.longName,
-      //   course.startDate,
-      //   course.sisAccountId,
-      //   'active'], fileName)
-      // //await writeCsvFile()
+      await csvFile.writeLine([
+        course.sisCourseId,
+        course.courseCode,
+        course.longName,
+        course.startDate,
+        course.sisAccountId,
+        'active'], fileName)
     }    
-    //console.log(courseOfferings)
     return ['foo', 'bar']
-    // console.log("KURSER: ", courseOfferings)
+
     //.then(() => getCourseRoundsPerCourseCode(termin))
     //.then(filterNotCancelledCourses)
     //.then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))

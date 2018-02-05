@@ -68,6 +68,22 @@ module.exports = {
     return result
   },
 
+  buildCanvasCourseObjectV2 (courseRound) { //new for course from v2
+    if (!courseRound) {
+      return
+    }
+    return {
+      sisCourseId: createSisCourseId(courseRound),
+      courseCode: courseRound.courseCode,
+      shortName: courseRound.shortName,
+      longName: createLongName(courseRound),
+      startDate: calcStartDate(courseRound),
+      sisAccountId: getSisAccountId(courseRound),
+      status: 'active'
+    }
+    return result
+  },
+
   flatten (arr) {
     return [].concat.apply([], arr)
   }
