@@ -156,28 +156,42 @@ module.exports = {
     .filter(courseOffering => courseOffering.first_period === `${year}${term}P${period}`)
 
     for (const courseOffering of courseOfferings) {
-      const courseRound = {}
-      
-      const course = {
-        sisCourseId: createSisCourseId(courseRound),
-        courseCode: courseRound.courseCode,
-        shortName: courseRound.shortName,
-        longName: createLongName(courseRound),
-        startDate: calcStartDate(courseRound),
-        sisAccountId: getSisAccountId(courseRound),
-        status: 'active'
+      //{"courseCode":"AL2140","startTerm":"20171","roundId":"1","xmlns":"",
+      //"periods":[{"term":"20171","number":"4"}],
+      //"startWeek":"2017-12","tutoringLanguage":"English","title":{"sv":"Cleaner Production","en":"Cleaner Production"}}
+
+      const courseRound = {
+        courseCode: courseOffering.course_code,
+        startTerm: courseOffering.first_yearsemester,
+        roundId: courseOffering.offering_id,
+        periods: courseOffering.periods,
+        startSemester: courseOffering.offered_semesters.filter(s => s.semester === courseOffering.first_yearsemester)[0],
+        startWeek: courseOffering.offered_semesters[0].start_week     
+        //shortName   
       }
 
-      await csvFile.writeLine([
-        course.sisCourseId,
-        course.courseCode,
-        course.longName,
-        course.startDate,
-        course.sisAccountId,
-        'active'], fileName)
-      //await writeCsvFile()
+      console.log("PRINTA!!!! =>", courseRound)
+      
+      // const course = {
+      //   sisCourseId: createSisCourseId(courseRound),
+      //   courseCode: courseRound.courseCode,
+      //   shortName: courseRound.shortName,
+      //   longName: createLongName(courseRound),
+      //   startDate: calcStartDate(courseRound),
+      //   sisAccountId: getSisAccountId(courseRound),
+      //   status: 'active'
+      // }
+
+      // await csvFile.writeLine([
+      //   course.sisCourseId,
+      //   course.courseCode,
+      //   course.longName,
+      //   course.startDate,
+      //   course.sisAccountId,
+      //   'active'], fileName)
+      // //await writeCsvFile()
     }    
-    console.log(courseOfferings)
+    //console.log(courseOfferings)
     return ['foo', 'bar']
     // console.log("KURSER: ", courseOfferings)
     //.then(() => getCourseRoundsPerCourseCode(termin))

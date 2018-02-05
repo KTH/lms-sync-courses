@@ -37,7 +37,9 @@ function getSisAccountId ({courseCode}) {
 }
 
 function calcStartDate (courseRound) {
-  const [year, weekNumber] = courseRound.startWeek.split('-')
+  const year = courseRound.startSemester.semester
+  const weekNumber = courseRound.startSemester.start_week
+  //const [year, weekNumber] = courseRound.startWeek.split('-')
   const d = moment().year(year).isoWeek(weekNumber).isoWeekday(1)
   d.set({hour: 8, minute: 0, second: 0, millisecond: 0})
   return d.toISOString()
