@@ -6,13 +6,7 @@ const {
   buildCanvasCourseObjectV2,
   deleteFile
 } = require('./utils')
-
-const {groupBy} = require('lodash')
-// const canvasUtilities = require('kth-canvas-utilities')
-// canvasUtilities.init()
-// const {getCourseAndCourseRoundFromKopps, createSimpleCanvasCourseObject} = canvasUtilities
 const createSectionsFile = require('./createSectionsFile')
-
 const csvFile = require('./csvFile')
 const {mkdir} = require('fs')
 let mkdirAsync = Promise.promisify(mkdir)
@@ -57,6 +51,8 @@ module.exports = {
     .filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
     .filter(courseOffering => courseOffering.first_period === `${year}${term}P${period}`)
 
+    const canvasFormattedCourses = []
+
     for (const courseOffering of courseOfferings) {
       //{"courseCode":"AL2140","startTerm":"20171","roundId":"1","xmlns":"",
       //"periods":[{"term":"20171","number":"4"}],
@@ -76,6 +72,7 @@ module.exports = {
       }
       
       const course = await buildCanvasCourseObjectV2(courseRound)
+      canvasFormattedCourses.push(course)
 
       await csvFile.writeLine([
         course.sisCourseId,
@@ -84,9 +81,12 @@ module.exports = {
         course.startDate,
         course.sisAccountId,
         'active'], fileName)
-    }    
-    return ['foo', 'bar']
+    }   
+    
+    //START SECTIONS FILE
+    await createSectionsFile(canvasFormattedCourses, enrollmentsFileName)
 
+    return ['foo', 'bar']
     //.then(() => getCourseRoundsPerCourseCode(termin))
     //.then(filterNotCancelledCourses)
     //.then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
