@@ -16,14 +16,8 @@ module.exports = async function (groupedCourses, fileName) {
       'active'], fileName)
   }
 
-  return 
-  // return deleteFile(fileName)
-  // .then(()=>csvFile.writeLine(['section_id', 'course_id', 'name', 'status'], fileName))
-  // .then(()=>buildCanvasCourseObjects(groupedCourses))
-  // .then(flatten)
-  // .then(arrayOfCourseRounds => Promise.map(
-  //   arrayOfCourseRounds,
-  //   round => csvFile.writeLine([round.sisCourseId, round.sisCourseId, `Section for the course ${round.longName}`, 'active'], fileName)))
+  return groupedCourses //
+
   // .then(()=>groupedCourses)
   // .catch(e => console.error('An error occured',e))
 }

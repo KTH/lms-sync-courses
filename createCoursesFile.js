@@ -86,12 +86,7 @@ module.exports = {
     //START SECTIONS FILE
     await createSectionsFile(canvasFormattedCourses, enrollmentsFileName)
 
-    return ['foo', 'bar']
-    //.then(() => getCourseRoundsPerCourseCode(termin))
-    //.then(filterNotCancelledCourses)
-    //.then(courseRounds => filterCoursesDuringPeriod(courseRounds, period))
-   // .then(courseRounds => createSectionsFile(courseRounds, enrollmentsFileName))
-    //.then(courseRounds => writeCsvFile(courseRounds, fileName))
-    //.then(() => [fileName, enrollmentsFileName])
+    return [fileName, enrollmentsFileName]
+
     //.catch(e => console.error(e))
   }}
