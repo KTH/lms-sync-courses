@@ -5,7 +5,7 @@ const createCoursesFile = require('../../createCoursesFile.js')
 test('should create the file with correct name, headers, and a line including a sisCourseId', t => {
   t.plan(3)
   fs.removeSync('csv')
-  const fileName = 'csv/courses-2017:1-4.csv'
+  const fileName = 'csv/courses-20171-4.csv'
 
   createCoursesFile({term: '1', year: '2017', period: '3'})
   .then(() => {

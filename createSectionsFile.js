@@ -9,15 +9,10 @@ module.exports = async function (groupedCourses, fileName) {
   await csvFile.writeLine(['section_id', 'course_id', 'name', 'status'], fileName)
 
   for (const courseRound of groupedCourses) {
-    csvFile.writeLine([
+    await csvFile.writeLine([
       courseRound.sisCourseId, 
       courseRound.sisCourseId, 
       `Section for the course ${courseRound.longName}`, 
       'active'], fileName)
   }
-
-  return groupedCourses //
-
-  // .then(()=>groupedCourses)
-  // .catch(e => console.error('An error occured',e))
 }

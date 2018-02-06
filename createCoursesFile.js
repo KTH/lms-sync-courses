@@ -87,6 +87,5 @@ module.exports = {
     await createSectionsFile(canvasFormattedCourses, enrollmentsFileName)
 
     return [fileName, enrollmentsFileName]
-
-    //.catch(e => console.error(e))
+  
   }}
