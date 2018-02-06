@@ -39,7 +39,7 @@ function createCourseOfferingObj(courseOffering) {
     roundId: courseOffering.offering_id,
     startSemester: courseOffering.offered_semesters.filter(s => s.semester === courseOffering.first_yearsemester)[0], //take start_Week for whole course
     shortName: "", //TODO: To see what is shortname in kopps v2 api
-    tutoringLanguage: "English", // TODO: redo when kopps api will be updated with this parameter
+    tutoringLanguage: "Swedish", // TODO: redo when kopps api will be updated with this parameter
     title: {
       sv: courseOffering.course_name,
       en: courseOffering.course_name_en
