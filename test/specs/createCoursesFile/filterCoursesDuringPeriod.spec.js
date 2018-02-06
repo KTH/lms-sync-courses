@@ -3,17 +3,20 @@ const rewire = require('rewire')
 const createCoursesFile = rewire('../../../createCoursesFile.js')
 const filterCourseOfferings = createCoursesFile.__get__('filterCourseOfferings')
 
-test('should include a course round if it has a first_period with number == the period argument', t => {
+test('should include a course round if it has a first_period with number == the period argument and approved', t => {
   const courseOfferings = [
     {
       state: "Godkänt",
       first_period: "20172P2"
     },
-
     {
       state: "Godkänt",
       first_period: "20181P3",
-      }
+    },
+    {
+      state: "Cancelled",
+      first_period: "20181P3",
+    }
   ]
 
   const result = filterCourseOfferings(courseOfferings, '2018', '1', '3')
