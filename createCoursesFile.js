@@ -26,6 +26,26 @@ function createCsvFile (fileName) {
   .then(() => csvFile.writeLine(columns, fileName))
 }
 
+function filterCourseOfferings(res, year, term, period) {
+  return res
+    .filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
+    .filter(courseOffering => courseOffering.first_period === `${year}${term}P${period}`)
+}
+
+function createCourseOfferingObj(courseOffering) {
+  return {
+    courseCode: courseOffering.course_code,
+    startTerm: courseOffering.first_yearsemester,
+    roundId: courseOffering.offering_id,
+    startSemester: courseOffering.offered_semesters.filter(s => s.semester === courseOffering.first_yearsemester)[0], //take start_Week for whole course
+    shortName: "", //TODO: To see what is shortname in kopps v2 api
+    tutoringLanguage: "English", // TODO: redo when kopps api will be updated with this parameter
+    title: {
+      sv: courseOffering.course_name,
+      en: courseOffering.course_name_en
+    }   
+  }
+}
 
 module.exports = {
   set koppsBaseUrl(url){
@@ -46,9 +66,7 @@ module.exports = {
       headers: {'content-type':'application/json'}
     })
 
-    const courseOfferings = res
-    .filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
-    .filter(courseOffering => courseOffering.first_period === `${year}${term}P${period}`)
+    const courseOfferings = await filterCourseOfferings(res, year, term, period)
 
     const canvasFormattedCourses = []
 
@@ -57,18 +75,7 @@ module.exports = {
       //"periods":[{"term":"20171","number":"4"}],
       //"startWeek":"2017-12","tutoringLanguage":"English","title":{"sv":"Cleaner Production","en":"Cleaner Production"}}
 
-      const courseRound = {
-        courseCode: courseOffering.course_code,
-        startTerm: courseOffering.first_yearsemester,
-        roundId: courseOffering.offering_id,
-        startSemester: courseOffering.offered_semesters.filter(s => s.semester === courseOffering.first_yearsemester)[0], //take start_Week for whole course
-        shortName: "", //TODO: To see what is shortname in kopps v2 api
-        tutoringLanguage: "English", // TODO: redo when kopps api will be updated with this parameter
-        title: {
-          sv: courseOffering.course_name,
-          en: courseOffering.course_name_en
-        }   
-      }
+      const courseRound = await createCourseOfferingObj(courseOffering)
       
       const course = await buildCanvasCourseObjectV2(courseRound)
       canvasFormattedCourses.push(course)

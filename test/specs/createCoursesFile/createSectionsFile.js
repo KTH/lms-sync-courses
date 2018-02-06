@@ -6,7 +6,7 @@ const writeLine = sinon.stub().returns(Promise.resolve())
 const createSectionsFile = proxyquire('../../../createSectionsFile', {
   './csvFile': {writeLine},
   './utils':{
-    buildCanvasCourseObjects(){
+    buildCanvasCourseObjectV2(){
       return [[{
         sisCourseId:'SIS_COURSE_ID',
         longName: 'A LONG NAME'

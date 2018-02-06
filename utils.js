@@ -44,12 +44,15 @@ function calcStartDate (courseRound) {
   return d.toISOString()
 }
 
+function flatten (arr) {
+  return [].concat.apply([], arr)
+}
+
 
 module.exports = {
   deleteFile,
   getSisAccountId,
-  createLongName,
-  createSisCourseId,
+  flatten,
 
   buildCanvasCourseObjectV2 (courseRound) { //new for course from v2
     if (!courseRound) {
@@ -65,8 +68,4 @@ module.exports = {
       status: 'active'
     }
   },
-
-  flatten (arr) {
-    return [].concat.apply([], arr)
-  }
 }

@@ -1,7 +1,7 @@
 const test = require('tape')
 const rewire = require('rewire')
-const createCoursesFile = rewire('../../../../createCoursesFile.js')
-const createLongName = createCoursesFile.__get__('createLongName')
+const util = rewire('../../../../utils.js')
+const createLongName = util.__get__('createLongName')
 
 test('should use the swedish title', t => {
   t.plan(1)

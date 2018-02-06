@@ -5,9 +5,9 @@ const moment = require('moment')
 
 test('should not fail on empty arrays', t => {
   t.plan(1)
-  const courseRounds = [[]]
+  const courseRound = [[]]
 
-  const result = utils.buildCanvasCourseObjects(courseRounds)
+  const result = utils.buildCanvasCourseObjectV2(courseRound)
 
   const expected = [[]]
 
@@ -23,7 +23,7 @@ test('should create course objects containing attributes needed for creating the
   utils.__set__('getSisAccountId', () => 'sis account id')
   utils.__set__('calcStartDate', () => aDate)
 
-  const courseRounds = [
+  const courseRound = [
     [
       {
         courseCode: 'courseCode',
@@ -31,7 +31,7 @@ test('should create course objects containing attributes needed for creating the
       }
     ]]
 
-  const result = utils.buildCanvasCourseObjects(courseRounds)
+  const result = utils.buildCanvasCourseObjectV2(courseRound)
 
   const expected = [[
     {

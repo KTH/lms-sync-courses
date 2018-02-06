@@ -1,41 +1,33 @@
 const test = require('tape')
 const rewire = require('rewire')
 const createCoursesFile = rewire('../../../createCoursesFile.js')
-const filterNotCancelledCourses = createCoursesFile.__get__('filterNotCancelledCourses')
+const filterCourseOfferings = createCoursesFile.__get__('filterCourseOfferings')
 
-test('should remove courserounds that has stateCode: CANCELLED', t => {
-  const courseRounds = [
-    [
-      {stateCode: 'CANCELLED'},
-      {stateCode: 'FULL'}
-    ]
+test('should remove courserounds that has no state: Fullsatt', t => {
+  const courseOfferings = [
+      {state: 'CANCELLED'},
+      {state: 'Fullsatt'},
   ]
 
   const expected = [
-    [
-      {stateCode: 'FULL'}
-    ]
+      {state: 'Fullsatt'},
   ]
 
-  t.deepEqual(filterNotCancelledCourses(courseRounds), expected)
+  t.deepEqual(filterCourseOfferings(courseOfferings), expected)
   t.end()
 })
 
 
-test('should not remove courserounds that has no stateCode', t => {
-  const courseRounds = [
-    [
-      {stateCode: 'CANCELLED'},
-      {}
-    ]
+test('should not remove courserounds that has state: Godkänt', t => {
+  const courseOfferings = [
+      {state: 'CANCELLED'},
+      {state: 'Godkänt'}
   ]
 
   const expected = [
-    [
-      {}
-    ]
+      {state: 'Godkänt'}
   ]
 
-  t.deepEqual(filterNotCancelledCourses(courseRounds), expected)
+  t.deepEqual(filterCourseOfferings(courseOfferings), expected)
   t.end()
 })
