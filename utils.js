@@ -37,37 +37,35 @@ function getSisAccountId ({courseCode}) {
 }
 
 function calcStartDate (courseRound) {
-  const [year, weekNumber] = courseRound.startWeek.split('-')
+  const year = courseRound.startSemester.semester.slice(0,4)
+  const weekNumber = courseRound.startSemester.start_week
   const d = moment().year(year).isoWeek(weekNumber).isoWeekday(1)
   d.set({hour: 8, minute: 0, second: 0, millisecond: 0})
   return d.toISOString()
+}
+
+function flatten (arr) {
+  return [].concat.apply([], arr)
 }
 
 
 module.exports = {
   deleteFile,
   getSisAccountId,
-  createLongName,
-  createSisCourseId,
-  buildCanvasCourseObjects (twoDArrayOfCourseRounds) {
-    const result = twoDArrayOfCourseRounds.map(courseRounds => courseRounds.map(courseRound => {
-      if (!courseRound) {
-        return
-      }
-      return {
-        sisCourseId: createSisCourseId(courseRound),
-        courseCode: courseRound.courseCode,
-        shortName: courseRound.shortName,
-        longName: createLongName(courseRound),
-        startDate: calcStartDate(courseRound),
-        sisAccountId: getSisAccountId(courseRound),
-        status: 'active'
-      }
-    }))
-    return result
-  },
+  flatten,
 
-  flatten (arr) {
-    return [].concat.apply([], arr)
-  }
+  buildCanvasCourseObjectV2 (courseRound) { //new for course from v2
+    if (!courseRound) {
+      return
+    }
+    return {
+      sisCourseId: createSisCourseId(courseRound),
+      courseCode: courseRound.courseCode,
+      shortName: courseRound.shortName,
+      longName: createLongName(courseRound),
+      startDate: calcStartDate(courseRound),
+      sisAccountId: getSisAccountId(courseRound),
+      status: 'active'
+    }
+  },
 }

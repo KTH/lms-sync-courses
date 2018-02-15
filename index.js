@@ -71,8 +71,8 @@ async function run () {
           message: 'Sista frågan, vilken koppsmiljö ska vi hämta data från?',
           name: 'koppsBaseUrl',
           choices: [
-            {name: 'prod', value: 'https://www.kth.se/api/kopps/'},
-            {name: 'ref', value: 'https://www-r.referens.sys.kth.se/api/kopps/'}
+            {name: 'ref', value: 'https://www-r.referens.sys.kth.se/api/kopps/'},
+            {name: 'prod', value: 'https://www.kth.se/api/kopps/'}
           ],
           type: 'list'
         })

@@ -4,25 +4,17 @@ const sinon = require('sinon')
 
 const writeLine = sinon.stub().returns(Promise.resolve())
 const createSectionsFile = proxyquire('../../../createSectionsFile', {
-  './csvFile': {writeLine},
-  './utils':{
-    buildCanvasCourseObjects(){
-      return [[{
-        sisCourseId:'SIS_COURSE_ID',
-        longName: 'A LONG NAME'
-      }]]
-    }
-  }
+  './csvFile': {writeLine}
 })
 
-test('should write a file with a section for each course, and return the courses', t => {
-  t.plan(3)
+test('should write a file with a section for each course', t => {
+  t.plan(2)
   const courses = [
-    [
       {
+        sisCourseId:'SIS_COURSE_ID',
         courseCode: 'AL2140',
+        longName: 'A LONG NAME'
       }
-    ]
   ]
   createSectionsFile(courses, 'fileName.csv').then(result => {
     const firstCallArgs = writeLine.getCall(0).args
@@ -30,7 +22,5 @@ test('should write a file with a section for each course, and return the courses
 
     const secondCallArgs = writeLine.getCall(1).args
     t.deepEqual([secondCallArgs[0], secondCallArgs[1]], [['SIS_COURSE_ID', 'SIS_COURSE_ID', `Section for the course A LONG NAME`, 'active'], 'fileName.csv'])
-
-    t.deepEqual(result, courses)
   })
 })

@@ -3,18 +3,7 @@ const rewire = require('rewire')
 const utils =  rewire('../../../../utils')
 const moment = require('moment')
 
-test('should not fail on empty arrays', t => {
-  t.plan(1)
-  const courseRounds = [[]]
-
-  const result = utils.buildCanvasCourseObjects(courseRounds)
-
-  const expected = [[]]
-
-  t.deepEqual(result, expected)
-})
-
-test('should create course objects containing attributes needed for creating the course in canvas ', t => {
+test('should create course object containing attributes needed for creating the course in canvas ', t => {
   t.plan(1)
   const aDate = '2001-01-01'
 
@@ -23,18 +12,14 @@ test('should create course objects containing attributes needed for creating the
   utils.__set__('getSisAccountId', () => 'sis account id')
   utils.__set__('calcStartDate', () => aDate)
 
-  const courseRounds = [
-    [
-      {
+  const courseRound = {
         courseCode: 'courseCode',
         shortName: 'shortName'
       }
-    ]]
 
-  const result = utils.buildCanvasCourseObjects(courseRounds)
+  const result = utils.buildCanvasCourseObjectV2(courseRound)
 
-  const expected = [[
-    {
+  const expected = {
       sisCourseId: 'abc123',
       courseCode: 'courseCode',
       shortName: 'shortName',
@@ -43,7 +28,6 @@ test('should create course objects containing attributes needed for creating the
       sisAccountId: 'sis account id',
       status: 'active'
     }
-  ]]
 
   t.deepEqual(result, expected)
 })
