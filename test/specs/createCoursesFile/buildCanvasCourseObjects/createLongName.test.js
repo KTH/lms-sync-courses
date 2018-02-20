@@ -10,7 +10,7 @@ test('should use the swedish title', t => {
       courseCode: 'AL2140',
       startTerm: '20171',
       roundId: 'roundId',
-      tutoringLanguage: 'Swedish',
+      tutoringLanguage: 'Svenska',
       title: {
         sv: 'Renare produktion',
         en: 'Cleaner Production'
@@ -28,7 +28,7 @@ test('should include the short name', t => {
     startTerm: '20171',
     shortName: 'shortName',
     roundId: 'roundId',
-    tutoringLanguage: 'Swedish',
+    tutoringLanguage: 'Svenska',
     title: {
       sv: 'Renare produktion',
       en: 'Cleaner Production'
