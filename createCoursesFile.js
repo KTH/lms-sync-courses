@@ -38,8 +38,8 @@ function createCourseOfferingObj(courseOffering) {
     startTerm: courseOffering.first_yearsemester,
     roundId: courseOffering.offering_id,
     startSemester: courseOffering.offered_semesters.filter(s => s.semester === courseOffering.first_yearsemester)[0], //take start_Week for whole course
-    shortName: "", //TODO: To see what is shortname in kopps v2 api
-    tutoringLanguage: "Swedish", // TODO: redo when kopps api will be updated with this parameter
+    shortName: courseOffering.short_name,
+    tutoringLanguage: courseOffering.language,
     title: {
       sv: courseOffering.course_name,
       en: courseOffering.course_name_en
@@ -71,10 +71,6 @@ module.exports = {
     const canvasFormattedCourses = []
 
     for (const courseOffering of courseOfferings) {
-      //{"courseCode":"AL2140","startTerm":"20171","roundId":"1","xmlns":"",
-      //"periods":[{"term":"20171","number":"4"}],
-      //"startWeek":"2017-12","tutoringLanguage":"English","title":{"sv":"Cleaner Production","en":"Cleaner Production"}}
-
       const courseRound = await createCourseOfferingObj(courseOffering)
       
       const course = await buildCanvasCourseObjectV2(courseRound)

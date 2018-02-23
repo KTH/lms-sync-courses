@@ -17,7 +17,7 @@ test('should include a course if it only has one course round', t => {
           }
         ],
         'startWeek': '2017-03',
-        'tutoringLanguage': 'Swedish',
+        'tutoringLanguage': 'Svenska',
         'title': {
           'sv': 'Algebra och geometri',
           'en': 'Algebra and Geometry'

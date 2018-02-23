@@ -14,7 +14,7 @@ function deleteFile (fileName) {
 function createLongName (round) {
   const termNum = round.startTerm[4]
   const term = terms[termNum]
-  const title = round.title[ round.tutoringLanguage === 'Swedish' ? 'sv' : 'en' ]
+  const title = round.title[ round.tutoringLanguage === 'Svenska' ? 'sv' : 'en' ]
   let result = round.courseCode
   if (round.shortName) {
     result += ` ${round.shortName}`

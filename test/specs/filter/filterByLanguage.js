@@ -6,10 +6,10 @@ const filterByLanguage = filterYellowCourses.__get__('filterByTutoringLanguage')
 test('should exclude courses with multiple rounds where more than 1 course round have the same tutoringLanguage', t => {
   const courseRounds = [
     {
-      'tutoringLanguage': 'Swedish'
+      'tutoringLanguage': 'Svenska'
     },
     {
-      'tutoringLanguage': 'Swedish'
+      'tutoringLanguage': 'Svenska'
     }
   ]
 
@@ -24,7 +24,7 @@ test('should exclude courses with multiple rounds where more than 1 course round
 test('should exclude courses where at least one round has no tutoringLanguage', t => {
   const courseRounds = [
     {
-      'tutoringLanguage': 'Swedish'
+      'tutoringLanguage': 'Svenska'
     },
     {
     }
