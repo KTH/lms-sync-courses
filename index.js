@@ -66,16 +66,16 @@ async function run () {
       type: 'list'
     }])
 
-    const {koppsBaseUrl} = await inquirer.prompt(
-        {
-          message: 'Sista frågan, vilken koppsmiljö ska vi hämta data från?',
-          name: 'koppsBaseUrl',
-          choices: [
+  const {koppsBaseUrl} = await inquirer.prompt(
+    {
+      message: 'Sista frågan, vilken koppsmiljö ska vi hämta data från?',
+      name: 'koppsBaseUrl',
+      choices: [
             {name: 'ref', value: 'https://www-r.referens.sys.kth.se/api/kopps/'},
             {name: 'prod', value: 'https://www.kth.se/api/kopps/'}
-          ],
-          type: 'list'
-        })
+      ],
+      type: 'list'
+    })
 
   createCoursesFile.koppsBaseUrl = koppsBaseUrl
   console.log('ok, börjar med att skapa csvfil med kurserna...'.green)
@@ -94,7 +94,7 @@ async function run () {
   } else {
     const enrollmentsFileName = await createEnrollmentsFile({ugUsername, ugUrl, ugPwd, year, term, period, koppsBaseUrl})
     console.log('Now: zip them up: ', coursesFileName, enrollmentsFileName, sectionsFileName)
-    const zipFileName = `csv/${year}-${term}-${period}.zip`
+    const zipFileName = `csv/${year}-${term}-${period}-${moment().format('YYYYMMDD')}.zip`
     const zip = new Zip()
     zip.file('courses.csv', fs.readFileSync(path.join(__dirname, coursesFileName)))
     zip.file('sections.csv', fs.readFileSync(path.join(__dirname, sectionsFileName)))
