@@ -16,7 +16,7 @@ try {
 } catch (e) {
 }
 
-async function createFile () {
+module.exports = async function createFile () {
   const {api} = await inquirer.prompt(
     {
       message: 'Vilken miljö?',
@@ -35,6 +35,7 @@ async function createFile () {
     name: 'apiKey',
     type: 'string'
   })
+  const canvasApi = new CanvasApi(apiUrl, apiKey)
 
   await csvFile.writeLine(['section_id', 'user_id', 'role', 'status'], sectionFileName)
   const courses = await canvasApi.get(`/accounts/1/courses?per_page=100`)
@@ -46,4 +47,3 @@ async function createFile () {
   }
   console.log('Done.'.green)
 }
-createFile()
