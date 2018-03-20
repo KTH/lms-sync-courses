@@ -1,0 +1,23 @@
+{
+  "//": "The production flag is added in the jenkins build script.",
+  "name": "lms-sync-courses",
+  "version": "0.1.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "NODE_ENV=production nodemon app.js",
+    "start-dev": "cross-env NODE_ENV=development nodemon app.js"
+  },
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "express": "^4.14.0",
+    "bunyan": "^1.8.12",
+    "kth-node-server": "^3.0.3"
+  },
+  "optionalDependencies": {},
+  "devDependencies": {
+    "cross-env": "^5.1.4",
+    "nodemon": "^1.17.2",
+    "standard": "^11.0.1"
+  }
+}
