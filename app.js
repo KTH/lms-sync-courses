@@ -3,7 +3,7 @@
 const app = require('kth-node-server')
 const config = require('./config/serverSettings')
 const logger = require('./server/logger')
-
+const runPeriodically = require('./run-periodically');
 app.use('/api/lms-sync-courses/', require('./server/systemroutes'))
 
 app.start({
@@ -11,15 +11,4 @@ app.start({
   logger
 })
 
-console.log(`
-
-
-  ::::::::::::
-
-  App is started. You can verify that it works by browsing to
-  http://localhost:${config.port}/api/lms-sync-courses/_about
-
-  ::::::::::
-
-
-  `)
+runPeriodically.start()
