@@ -2,7 +2,6 @@ const Promise = require('bluebird')
 const ldap = require('ldapjs')
 const fs = Promise.promisifyAll(require('fs'))
 const csvFile = require('./csvFile')
-require('colors')
 
 const attributes = ['ugKthid', 'name']
 const columns = [
@@ -127,7 +126,7 @@ function writeUsersForCourse ([sisCourseId, courseCode, name]) {
 */
 function getAllCoursesAsLinesArrays () {
   return fs.readFileAsync(coursesFileName, 'utf8')
-  .catch(e => console.error('Could not read the courses file. Have you run the npm script for creating the courses csv file? '.red, e))
+  .catch(e => console.error('Could not read the courses file. Have you run the npm script for creating the courses csv file? ', e))
   .then(fileContentStr => fileContentStr.split('\n')) // one string per line
   .then(lines => lines.splice(1, lines.length - 2)) // first line is columns, last is new empty line. Ignore them
   .then(lines => lines.map(line => line.split(','))) // split into values per column
@@ -150,10 +149,10 @@ let ldapClient
 let fileName
 let coursesFileName
 let termin
-module.exports = function ({ugUsername, ugUrl, ugPwd, term, year, period}) {
+module.exports = function ({ugUsername, ugUrl, ugPwd, term, year, period, csvDir = 'csv'}) {
   termin = `${year}${term}`
-  fileName = `csv/enrollments-${termin}-${period}.csv`
-  coursesFileName = `csv/courses-${termin}-${period}.csv`
+  fileName = `${csvDir}/enrollments-${termin}-${period}.csv`
+  coursesFileName = `${csvDir}/courses-${termin}-${period}.csv`
 
   ldapClient = Promise.promisifyAll(ldap.createClient({
     url: ugUrl
@@ -164,7 +163,7 @@ module.exports = function ({ugUsername, ugUrl, ugPwd, term, year, period}) {
   .then(createFileAndWriteHeadlines)
   .then(getAllCoursesAsLinesArrays)
   .then(linesArrays => Promise.mapSeries(linesArrays, writeUsersForCourse)) // write all users for each course to the file
-  .then(() => console.log('Done!'.green))
+  .then(() => console.log('Done!'))
   .then(() => fileName)
   .catch(e => console.error(e))
   .finally(() => ldapClient.unbindAsync())
