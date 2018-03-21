@@ -8,7 +8,7 @@ const period = '3'
 
 async function syncCourses(){
   createCoursesFile.koppsBaseUrl = serverSettings.koppsBaseUrl
-  await createCoursesFile.createCoursesFile({term, year, period})
+  await createCoursesFile.createCoursesFile({term, year, period, csvDir:serverSettings.csvDir})
 }
 
 module.exports = {

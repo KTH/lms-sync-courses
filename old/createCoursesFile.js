@@ -12,7 +12,7 @@ const {mkdir} = require('fs')
 let mkdirAsync = Promise.promisify(mkdir)
 
 
-function createCsvFile (fileName) {
+async function createCsvFile (fileName) {
   const columns = [
     'course_id',
     'short_name',
@@ -21,9 +21,7 @@ function createCsvFile (fileName) {
     'account_id',
     'status']
 
-  return mkdirAsync('csv')
-  .catch(e => console.log('couldnt create csv folder. This is probably fine, just continue'))
-  .then(() => csvFile.writeLine(columns, fileName))
+  return await csvFile.writeLine(columns, fileName)
 }
 
 function filterCourseOfferings(res, year, term, period) {
@@ -51,10 +49,10 @@ module.exports = {
   set koppsBaseUrl(url){
     koppsBaseUrl = url
   },
-  async createCoursesFile ({term, year, period}) {
+  async createCoursesFile ({term, year, period, csvDir = 'csv'}) {
     const termin = `${year}${term}`
-    const fileName = `csv/courses-${termin}-${period}.csv`
-    const enrollmentsFileName = `csv/sections-${termin}-${period}.csv`
+    const fileName = `${csvDir}/courses-${termin}-${period}.csv`
+    const enrollmentsFileName = `${csvDir}/sections-${termin}-${period}.csv`
     console.log('Using file name:', fileName)
     await deleteFile(fileName)
     await createCsvFile(fileName)
