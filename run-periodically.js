@@ -26,10 +26,10 @@ async function syncCourses(){
   console.log('Now: zip them up: ', coursesFileName, enrollmentsFileName, sectionsFileName)
   const zipFileName = `${serverSettings.csvDir}/${year}-${term}-${period}.zip`
   const zip = new Zip()
-  zip.file('courses.csv', fs.readFileSync(path.join(__dirname, coursesFileName)))
-  zip.file('sections.csv', fs.readFileSync(path.join(__dirname, sectionsFileName)))
+  zip.file('courses.csv', fs.readFileSync(coursesFileName))
+  zip.file('sections.csv', fs.readFileSync(sectionsFileName))
   if (enrollmentsFileName) {
-    zip.file('enrollments.csv', fs.readFileSync(path.join(__dirname, enrollmentsFileName)))
+    zip.file('enrollments.csv', fs.readFileSync(enrollmentsFileName))
   }
 
   const data = zip.generate({ base64: false, compression: 'DEFLATE' })

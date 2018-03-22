@@ -51,8 +51,8 @@ module.exports = {
   },
   async createCoursesFile ({term, year, period, csvDir = 'csv'}) {
     const termin = `${year}${term}`
-    const fileName = `${csvDir}/courses-${termin}-${period}.csv`
-    const enrollmentsFileName = `${csvDir}/sections-${termin}-${period}.csv`
+    const fileName = `${csvDir}courses-${termin}-${period}.csv`
+    const enrollmentsFileName = `${csvDir}sections-${termin}-${period}.csv`
     console.log('Using file name:', fileName)
     await deleteFile(fileName)
     await createCsvFile(fileName)

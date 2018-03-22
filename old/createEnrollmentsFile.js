@@ -151,13 +151,11 @@ let coursesFileName
 let termin
 module.exports = function ({ugUsername, ugUrl, ugPwd, term, year, period, csvDir = 'csv'}) {
   termin = `${year}${term}`
-  fileName = `${csvDir}/enrollments-${termin}-${period}.csv`
-  coursesFileName = `${csvDir}/courses-${termin}-${period}.csv`
-
+  fileName = `${csvDir}enrollments-${termin}-${period}.csv`
+  coursesFileName = `${csvDir}courses-${termin}-${period}.csv`
   ldapClient = Promise.promisifyAll(ldap.createClient({
     url: ugUrl
   }))
-
   return deleteFile()
   .then(() => bindLdapClient(ugUsername, ugPwd))
   .then(createFileAndWriteHeadlines)
