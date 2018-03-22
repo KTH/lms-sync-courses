@@ -1,7 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const config = require('../config/serverSettings')
-
 const version = require('../config/version')
 const packageFile = require('../package.json')
 const log = require('./logger')
