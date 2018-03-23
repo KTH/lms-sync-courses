@@ -1,10 +1,6 @@
 const logger = require('./server/logger')
 const createCoursesFile = require('./old/createCoursesFile')
 const createEnrollmentsFile = require('./old/createEnrollmentsFile')
-const Zip = require('node-zip')
-const fs = require('fs')
-const path = require('path')
-
 const year = '2018'
 const term = '1'
 const period = '5'
@@ -36,24 +32,16 @@ async function syncCourses(){
     period, 
     csvDir:process.env.csvDir
   })
-  console.log('Now: zip them up: ', coursesFileName, enrollmentsFileName, sectionsFileName)
-  const zipFileName = `${process.env.csvDir}/${year}-${term}-${period}.zip`
   
-  // TODO: Async
-  const zip = new Zip()
-  zip.file('courses.csv', fs.readFileSync(coursesFileName))
-  zip.file('sections.csv', fs.readFileSync(sectionsFileName))
-  if (enrollmentsFileName) {
-    zip.file('enrollments.csv', fs.readFileSync(enrollmentsFileName))
-  }
+  const canvasReturnCourse = await canvasApi.sendCsvFile(coursesFileName, true)
+  console.log("Done sending courses", canvasReturnCourse)
 
-  const data = zip.generate({ base64: false, compression: 'DEFLATE' })
-  // TODO: Async!
-  fs.writeFileSync(zipFileName, data, 'binary')
-  console.log(`The zip file ${zipFileName} is now created. Prepared to be sent to canvas.`)
+  const canvasReturnSection = await canvasApi.sendCsvFile(sectionsFileName, true)
+  console.log("Done sending sections", canvasReturnSection)
 
-  const canvasReturnValue = await canvasApi.sendCsvFile(zipFileName, true)
-  console.log("Done sending", canvasReturnValue)
+  const canvasReturnEnroll = await canvasApi.sendCsvFile(enrollmentsFileName, true)
+  console.log("Done sending enrollments", canvasReturnEnroll)
+
 }
 
 module.exports = {

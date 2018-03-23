@@ -23,7 +23,7 @@ async function createCsvFile (fileName) {
 
   return await csvFile.writeLine(columns, fileName)
 }
-
+//TODO TA BORT PERIODS
 function filterCourseOfferings(res, year, term, period) {
   return res
     .filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
