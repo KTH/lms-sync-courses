@@ -10,6 +10,8 @@ const {VT, HT} = require('kth-canvas-utilities/terms')
 const fs = require('fs')
 const path = require('path')
 const Zip = require('node-zip')
+const logger = require('../server/logger')
+
 
 try {
   fs.mkdirSync('csv')
@@ -17,7 +19,7 @@ try {
 
 }
 
-console.log(`
+logger.info(`
   Detta är ett program för att ta
   fram alla kurser, lärare och antagna studenter under en
   viss period ur KTHs system
@@ -78,14 +80,14 @@ module.exports = async function () {
         })
 
   createCoursesFile.koppsBaseUrl = koppsBaseUrl
-  console.log('ok, börjar med att skapa csvfil med kurserna...'.green)
+  logger.info('ok, börjar med att skapa csvfil med kurserna...'.green)
 
   const [coursesFileName, sectionsFileName] = await createCoursesFile.createCoursesFile({year, term, period})
 
-  console.log('Och nu skapar vi fil med enrollments'.green)
+  logger.info('Och nu skapar vi fil med enrollments'.green)
   const {ugUsername, ugUrl, ugPwd} = process.env
   if (!(ugUsername && ugUrl && ugPwd)) {
-    console.log(`
+    logger.info(`
         Kan inte skapa csvfil med alla användare i
         kurser (enrollments) eftersom alla hemligheter inte är angivna.
         Jag behöver ugUsername, ugUrl och ugPwd i filen .env.
@@ -93,7 +95,7 @@ module.exports = async function () {
         `.yellow)
   } else {
     const enrollmentsFileName = await createEnrollmentsFile({ugUsername, ugUrl, ugPwd, year, term, period, koppsBaseUrl})
-    console.log('Now: zip them up: ', coursesFileName, enrollmentsFileName, sectionsFileName)
+    logger.info('Now: zip them up: ', coursesFileName, enrollmentsFileName, sectionsFileName)
     const zipFileName = `csv/${year}-${term}-${period}.zip`
     const zip = new Zip()
     zip.file('courses.csv', fs.readFileSync(path.join(__dirname, coursesFileName)))
@@ -104,8 +106,8 @@ module.exports = async function () {
 
     const data = zip.generate({ base64: false, compression: 'DEFLATE' })
     fs.writeFileSync(zipFileName, data, 'binary')
-    console.log(`The zip file ${zipFileName} is now created. Go to canvas and upload it in SIS Imports.`)
+    logger.info(`The zip file ${zipFileName} is now created. Go to canvas and upload it in SIS Imports.`)
   }
 
-  console.log('😀 Done!'.green)
+  logger.info('😀 Done!'.green)
 }

@@ -9,6 +9,8 @@ const {
 const createSectionsFile = require('./createSectionsFile')
 const csvFile = require('./csvFile')
 const {mkdir} = require('fs')
+const logger = require('../server/logger')
+
 let mkdirAsync = Promise.promisify(mkdir)
 
 
@@ -53,7 +55,7 @@ module.exports = {
     const termin = `${year}${term}`
     const fileName = `${csvDir}courses-${termin}-${period}.csv`
     const enrollmentsFileName = `${csvDir}sections-${termin}-${period}.csv`
-    console.log('Using file name:', fileName)
+    logger.info('Using file name:', fileName)
     await deleteFile(fileName)
     await createCsvFile(fileName)
     

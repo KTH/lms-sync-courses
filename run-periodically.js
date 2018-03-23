@@ -6,17 +6,18 @@ const term = '1'
 const period = '5'
 const CanvasApi = require('kth-canvas-api')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
+canvasApi.logger = logger
 
 async function runCourseSync() {
   try {
-    console.log('sync...')
+    logger.info('sync...')
     await syncCourses()
   }
   catch(e) {
-    console.log("Nånting är tråsig", e)
+    logger.info("Nånting är tråsig", e)
   }
   finally {
-    console.log('schedule a sync in a while...')
+    logger.info('schedule a sync in a while...')
     setTimeout(runCourseSync, 6000)
   }
 }
@@ -34,13 +35,13 @@ async function syncCourses(){
   })
   
   const canvasReturnCourse = await canvasApi.sendCsvFile(coursesFileName, true)
-  console.log("Done sending courses", canvasReturnCourse)
+  logger.info("Done sending courses", canvasReturnCourse)
 
   const canvasReturnSection = await canvasApi.sendCsvFile(sectionsFileName, true)
-  console.log("Done sending sections", canvasReturnSection)
+  logger.info("Done sending sections", canvasReturnSection)
 
   const canvasReturnEnroll = await canvasApi.sendCsvFile(enrollmentsFileName, true)
-  console.log("Done sending enrollments", canvasReturnEnroll)
+  logger.info("Done sending enrollments", canvasReturnEnroll)
 
 }
 

@@ -2,6 +2,8 @@ const Promise = require('bluebird')
 const ldap = require('ldapjs')
 const fs = Promise.promisifyAll(require('fs'))
 const csvFile = require('./csvFile')
+const logger = require('../server/logger')
+
 
 const attributes = ['ugKthid', 'name']
 const columns = [
@@ -94,7 +96,7 @@ function addAdmittedStudents ([teachersMembers, assistantsMembers, courserespons
 * For the given course, fetch all user types from UG and add write all of them to the enrollments file
 */
 function writeUsersForCourse ([sisCourseId, courseCode, name]) {
-  console.log('writing users for course', courseCode)
+  logger.info('writing users for course', courseCode)
 
   function writeUsers (users, role) {
     return Promise.map(users, user => csvFile.writeLine([sisCourseId, user.ugKthid, role, 'active'], fileName))
@@ -134,7 +136,7 @@ function getAllCoursesAsLinesArrays () {
 
 function deleteFile () {
   return fs.unlinkAsync(fileName)
-      .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
+      .catch(e => logger.info("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
 function bindLdapClient (username, password) {
@@ -161,7 +163,7 @@ module.exports = function ({ugUsername, ugUrl, ugPwd, term, year, period, csvDir
   .then(createFileAndWriteHeadlines)
   .then(getAllCoursesAsLinesArrays)
   .then(linesArrays => Promise.mapSeries(linesArrays, writeUsersForCourse)) // write all users for each course to the file
-  .then(() => console.log('Done!'))
+  .then(() => logger.info('Done!'))
   .then(() => fileName)
   .catch(e => console.error(e))
   .finally(() => ldapClient.unbindAsync())
