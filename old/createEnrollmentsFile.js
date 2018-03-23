@@ -165,6 +165,5 @@ module.exports = function ({ugUsername, ugUrl, ugPwd, term, year, period, csvDir
   .then(linesArrays => Promise.mapSeries(linesArrays, writeUsersForCourse)) // write all users for each course to the file
   .then(() => logger.info('Done!'))
   .then(() => fileName)
-  .catch(e => console.error(e))
   .finally(() => ldapClient.unbindAsync())
 }

@@ -29,7 +29,7 @@ async function createCsvFile (fileName) {
 function filterCourseOfferings(res, year, term, period) {
   return res
     .filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
-    .filter(courseOffering => courseOffering.first_period === `${year}${term}P${period}`)
+    //.filter(courseOffering => courseOffering.first_period === `${year}${term}P${period}`)
 }
 
 function createCourseOfferingObj(courseOffering) {

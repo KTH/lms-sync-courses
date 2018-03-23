@@ -18,12 +18,20 @@ async function runCourseSync() {
   }
   finally {
     logger.info('schedule a sync in a while...')
-    setTimeout(runCourseSync, 6000)
+    setTimeout(runCourseSync, 1000 * 60 * 10)
   }
 }
 async function syncCourses(){
   createCoursesFile.koppsBaseUrl = process.env.koppsBaseUrl
   const [coursesFileName, sectionsFileName] = await createCoursesFile.createCoursesFile({term, year, period, csvDir:process.env.csvDir})
+  
+  // Courses and sections files are complete, send them to canvas regardless of if we can create enrollmentsfile or not.
+  const canvasReturnCourse = await canvasApi.sendCsvFile(coursesFileName, true)
+  logger.info("Done sending courses", canvasReturnCourse)
+
+  const canvasReturnSection = await canvasApi.sendCsvFile(sectionsFileName, true)
+  logger.info("Done sending sections", canvasReturnSection)  
+  
   const enrollmentsFileName = await createEnrollmentsFile({
     ugUsername:process.env.ugUsername, 
     ugUrl:process.env.ugUrl, 
@@ -34,12 +42,6 @@ async function syncCourses(){
     csvDir:process.env.csvDir
   })
   
-  const canvasReturnCourse = await canvasApi.sendCsvFile(coursesFileName, true)
-  logger.info("Done sending courses", canvasReturnCourse)
-
-  const canvasReturnSection = await canvasApi.sendCsvFile(sectionsFileName, true)
-  logger.info("Done sending sections", canvasReturnSection)
-
   const canvasReturnEnroll = await canvasApi.sendCsvFile(enrollmentsFileName, true)
   logger.info("Done sending enrollments", canvasReturnEnroll)
 
