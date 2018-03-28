@@ -15,6 +15,4 @@ typings.json
 # Dependency directory for NPM
 node_modules/*
 
-# Docker
-docker-compose*.yml
 *.env
