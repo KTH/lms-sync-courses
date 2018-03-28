@@ -15,9 +15,13 @@ RUN cp -a /npm/node_modules /application && \
 
 # Copy files
 COPY ["config", "config"]
+COPY ["config", "config"]
 COPY ["package.json", "package.json"]
 COPY ["app.js", "app.js"]
 COPY ["server", "server"]
+COPY ["old", "old"]
+COPY ["run-periodically.js", "run-periodically.js"]
+
 
 EXPOSE 3000 3000
 

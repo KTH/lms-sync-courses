@@ -4,10 +4,19 @@ services:
   api:
     # Existing image in repository
     # image: kthse/docker pull kthse/kth-nodejs-api:13.37
-
+    env_file:
+      - .env
     # Build from Dockerfile in current directory
     build: .
 
     # Port published from inside the Docker image
     ports:
       - 3000
+
+
+      
+      
+      
+      
+      
+      
