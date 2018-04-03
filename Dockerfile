@@ -15,7 +15,6 @@ RUN cp -a /npm/node_modules /application && \
 
 # Copy files
 COPY ["config", "config"]
-COPY ["config", "config"]
 COPY ["package.json", "package.json"]
 COPY ["app.js", "app.js"]
 COPY ["server", "server"]
