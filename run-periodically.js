@@ -8,8 +8,7 @@ const CanvasApi = require('kth-canvas-api')
 const schedule = require('node-schedule')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
 canvasApi.logger = logger
-const cronTime = '5 * * * * *'
-
+const cronTime = '2 * * *'
 
 async function runCourseSync(job) {
   job.cancel()
@@ -20,7 +19,9 @@ async function runCourseSync(job) {
   }
   catch(e) {
     logger.info("Nånting är trasigt, try again", e)
-    job.reschedule('4 * * * * *')
+    // IN case of error, run more often until it's successful
+    job.reschedule('1 * * * *')
+
   }
 }
 async function syncCourses(){
