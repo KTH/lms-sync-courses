@@ -6,23 +6,21 @@ const term = '1'
 const period = '5'
 const CanvasApi = require('kth-canvas-api')
 const schedule = require('node-schedule')
-const Promise = require('bluebird')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
 canvasApi.logger = logger
+const cronTime = '5 * * * * *'
 
 
-async function runCourseSync() {
+async function runCourseSync(job) {
+  job.cancel()
   try {
     logger.info('sync...')
     await syncCourses()
+    job.reschedule(cronTime)
   }
   catch(e) {
     logger.info("Nånting är trasigt, try again", e)
-    //setTimeout(runCourseSync, 1000 * 6 * 10) // Try again in a while
-    //delay 1 minute
-    // return try again
-    await Promise.delay(10000)
-    return await runCourseSync()
+    job.reschedule('4 * * * * *')
   }
 }
 async function syncCourses(){
@@ -53,7 +51,6 @@ async function syncCourses(){
 
 module.exports = {
   async start () {
-    const cronTime = '* * * * * *'
     const job = schedule.scheduleJob(cronTime, async function(){
       console.log(`
 
@@ -66,9 +63,8 @@ module.exports = {
 
 
         `)
-      job.cancel() // Run once, to avoid multiple parallell jobs
-      await runCourseSync() // Retries until successful
-      job.reschedule(cronTime)
+      await runCourseSync(job)
+
     })
   }
 }
