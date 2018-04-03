@@ -58,6 +58,7 @@ module.exports = {
     logger.info('Using file name:', fileName)
     await deleteFile(fileName)
     await createCsvFile(fileName)
+    logger.info('Calling kopps...')
     
     const res = await rp({
       url: `${koppsBaseUrl}v2/courses/offerings?from=${termin}`,
@@ -66,6 +67,8 @@ module.exports = {
       headers: {'content-type':'application/json'}
     })
 
+    logger.info('got response from kopps')
+    
     const courseOfferings = await filterCourseOfferings(res, year, term, period)
 
     const canvasFormattedCourses = []
