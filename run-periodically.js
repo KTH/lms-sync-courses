@@ -53,19 +53,7 @@ async function syncCourses(){
 module.exports = {
   async start () {
     const job = schedule.scheduleJob(cronTime, async function(){
-      console.log(`
-
-
-
-        ---------------------
-
-
-
-
-
-        `)
       await runCourseSync(job)
-
     })
   }
 }
