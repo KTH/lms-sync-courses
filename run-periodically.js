@@ -19,7 +19,7 @@ async function runCourseSync (job) {
   } catch (e) {
     logger.error('Nånting är trasigt, try again', e)
     // IN case of error, run more often until it's successful
-    job.reschedule('1 * * * *')
+    job.reschedule('15 * * * *')
   }
 }
 async function syncCourses () {
