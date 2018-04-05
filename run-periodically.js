@@ -3,13 +3,13 @@ const createCoursesFile = require('./old/createCoursesFile')
 const createEnrollmentsFile = require('./old/createEnrollmentsFile')
 const year = '2018'
 const term = '1'
-const period = '5'
+const period = '1'
 const CanvasApi = require('kth-canvas-api')
 const schedule = require('node-schedule')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
 canvasApi.logger = logger
-const cronTime = '2 * * *'
 
+const cronTime = '2 * * *'
 async function runCourseSync (job) {
   job.cancel()
   try {
