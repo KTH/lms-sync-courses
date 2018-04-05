@@ -9,7 +9,8 @@ const schedule = require('node-schedule')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
 canvasApi.logger = logger
 
-const cronTime = '2 * * *'
+const cronTime = process.env.successfulSchedule || '2 * * *'
+
 async function runCourseSync (job) {
   job.cancel()
   try {
@@ -18,8 +19,8 @@ async function runCourseSync (job) {
     job.reschedule(cronTime)
   } catch (e) {
     logger.error('Nånting är trasigt, try again', e)
-    // IN case of error, run more often until it's successful
-    job.reschedule('15 * * * *')
+    // In case of error, run more often until it's successful
+    job.reschedule(process.env.errorSchedule || '15 * * * *')
   }
 }
 async function syncCourses () {

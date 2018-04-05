@@ -13,7 +13,6 @@ const logger = require('../server/logger')
 
 let mkdirAsync = Promise.promisify(mkdir)
 
-
 async function createCsvFile (fileName) {
   const columns = [
     'course_id',
@@ -25,7 +24,7 @@ async function createCsvFile (fileName) {
 
   return await csvFile.writeLine(columns, fileName)
 }
-//TODO TA BORT PERIODS
+
 function filterCourseOfferings(res, year, term, period) {
   return res
     .filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
@@ -43,7 +42,7 @@ function createCourseOfferingObj(courseOffering) {
     title: {
       sv: courseOffering.course_name,
       en: courseOffering.course_name_en
-    }   
+    }
   }
 }
 
@@ -59,7 +58,7 @@ module.exports = {
     await deleteFile(fileName)
     await createCsvFile(fileName)
     logger.info('Calling kopps...')
-    
+
     const res = await rp({
       url: `${koppsBaseUrl}v2/courses/offerings?from=${termin}`,
       method: 'GET',
@@ -68,15 +67,15 @@ module.exports = {
     })
 
     logger.info('got response from kopps')
-    
-    const courseOfferings = await filterCourseOfferings(res, year, term, period)
+
+    const courseOfferings = filterCourseOfferings(res, year, term, period)
 
     const canvasFormattedCourses = []
 
     for (const courseOffering of courseOfferings) {
-      const courseRound = await createCourseOfferingObj(courseOffering)
-      
-      const course = await buildCanvasCourseObjectV2(courseRound)
+      const courseRound = createCourseOfferingObj(courseOffering)
+
+      const course = buildCanvasCourseObjectV2(courseRound)
       canvasFormattedCourses.push(course)
 
       await csvFile.writeLine([
@@ -86,11 +85,11 @@ module.exports = {
         course.startDate,
         course.sisAccountId,
         'active'], fileName)
-    }   
-    
+    }
+
     //START SECTIONS FILE
     await createSectionsFile(canvasFormattedCourses, enrollmentsFileName)
 
     return [fileName, enrollmentsFileName]
-  
+
   }}
