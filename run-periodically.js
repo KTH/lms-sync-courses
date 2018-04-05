@@ -27,7 +27,8 @@ async function syncCourses () {
   createCoursesFile.koppsBaseUrl = process.env.koppsBaseUrl
   const [coursesFileName, sectionsFileName] = await createCoursesFile.createCoursesFile({term, year, period, csvDir: process.env.csvDir})
 
-  // Courses and sections files are complete, send them to canvas regardless of if we can create enrollmentsfile or not.
+  // Courses and sections files are com
+  logger.info('About to send the first csv file, courses')
   const canvasReturnCourse = await canvasApi.sendCsvFile(coursesFileName, true)
   logger.info('Done sending courses', canvasReturnCourse)
 
