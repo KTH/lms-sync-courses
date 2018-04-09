@@ -1,4 +1,3 @@
-require('dotenv').config()
 let koppsBaseUrl
 const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
