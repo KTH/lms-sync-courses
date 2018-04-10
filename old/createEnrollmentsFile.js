@@ -2,7 +2,8 @@ const Promise = require('bluebird')
 const ldap = require('ldapjs')
 const fs = Promise.promisifyAll(require('fs'))
 const csvFile = require('./csvFile')
-require('colors')
+const logger = require('../server/logger')
+
 
 const attributes = ['ugKthid', 'name']
 const columns = [
@@ -95,7 +96,7 @@ function addAdmittedStudents ([teachersMembers, assistantsMembers, courserespons
 * For the given course, fetch all user types from UG and add write all of them to the enrollments file
 */
 function writeUsersForCourse ([sisCourseId, courseCode, name]) {
-  console.log('writing users for course', courseCode)
+  logger.info('writing users for course', courseCode)
 
   function writeUsers (users, role) {
     return Promise.map(users, user => csvFile.writeLine([sisCourseId, user.ugKthid, role, 'active'], fileName))
@@ -109,14 +110,14 @@ function writeUsersForCourse ([sisCourseId, courseCode, name]) {
     return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.${startTerm}.${roundId}.${type}))`)
   })
   .then(arrayOfMembers => addExaminators(arrayOfMembers, courseCode))
-  .then(arrayOfMembers => addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId))
+  // .then(arrayOfMembers => addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId))
   .then(arrayOfMembers => Promise.map(arrayOfMembers, getUsersForMembers))
-  .then(([teachers, assistants, courseresponsible, examinators, admittedStudents]) => Promise.all([
+  .then(([teachers, assistants, courseresponsible, examinators, /*admittedStudents*/]) => Promise.all([
     writeUsers(teachers, 'teacher'),
     writeUsers(courseresponsible, 'Course Responsible'),
     writeUsers(assistants, 'ta'),
     writeUsers(examinators, 'Examiner'),
-    writeUsers(admittedStudents, 'Admitted not registered')
+    // writeUsers(admittedStudents, 'Admitted not registered')
   ])
   )
 }
@@ -127,7 +128,7 @@ function writeUsersForCourse ([sisCourseId, courseCode, name]) {
 */
 function getAllCoursesAsLinesArrays () {
   return fs.readFileAsync(coursesFileName, 'utf8')
-  .catch(e => console.error('Could not read the courses file. Have you run the npm script for creating the courses csv file? '.red, e))
+  .catch(e => console.error('Could not read the courses file. Have you run the npm script for creating the courses csv file? ', e))
   .then(fileContentStr => fileContentStr.split('\n')) // one string per line
   .then(lines => lines.splice(1, lines.length - 2)) // first line is columns, last is new empty line. Ignore them
   .then(lines => lines.map(line => line.split(','))) // split into values per column
@@ -135,7 +136,7 @@ function getAllCoursesAsLinesArrays () {
 
 function deleteFile () {
   return fs.unlinkAsync(fileName)
-      .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
+      .catch(e => logger.info("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
 
 function bindLdapClient (username, password) {
@@ -150,22 +151,19 @@ let ldapClient
 let fileName
 let coursesFileName
 let termin
-module.exports = function ({ugUsername, ugUrl, ugPwd, term, year, period}) {
+module.exports = function ({ugUsername, ugUrl, ugPwd, term, year, period, csvDir = 'csv'}) {
   termin = `${year}${term}`
-  fileName = `csv/enrollments-${termin}-${period}.csv`
-  coursesFileName = `csv/courses-${termin}-${period}.csv`
-
+  fileName = `${csvDir}enrollments-${termin}-${period}.csv`
+  coursesFileName = `${csvDir}courses-${termin}-${period}.csv`
   ldapClient = Promise.promisifyAll(ldap.createClient({
     url: ugUrl
   }))
-
   return deleteFile()
   .then(() => bindLdapClient(ugUsername, ugPwd))
   .then(createFileAndWriteHeadlines)
   .then(getAllCoursesAsLinesArrays)
   .then(linesArrays => Promise.mapSeries(linesArrays, writeUsersForCourse)) // write all users for each course to the file
-  .then(() => console.log('Done!'.green))
+  .then(() => logger.info('Done!'))
   .then(() => fileName)
-  .catch(e => console.error(e))
   .finally(() => ldapClient.unbindAsync())
 }
