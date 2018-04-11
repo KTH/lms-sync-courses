@@ -6,6 +6,9 @@ const schedule = require('node-schedule')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
 canvasApi.logger = logger
 const moment = require('moment')
+
+const cronTime = process.env.successfulSchedule || '2 * * *'
+
 async function runCourseSync (job) {
   job.cancel()
   try {
@@ -57,8 +60,6 @@ async function syncCourses () {
 
 module.exports = {
   async start () {
-    const cronTime = process.env.successfulSchedule || '2 * * *'
-
     logger.info('scheduling job with interval: ', cronTime)
     const job = schedule.scheduleJob(cronTime, async function () {
       await runCourseSync(job)

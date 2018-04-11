@@ -4,7 +4,6 @@ const fs = Promise.promisifyAll(require('fs'))
 const csvFile = require('./csvFile')
 const logger = require('../server/logger')
 
-
 const attributes = ['ugKthid', 'name']
 const columns = [
   'section_id',
@@ -96,8 +95,6 @@ function addAdmittedStudents ([teachersMembers, assistantsMembers, courserespons
 * For the given course, fetch all user types from UG and add write all of them to the enrollments file
 */
 function writeUsersForCourse ([sisCourseId, courseCode, name]) {
-  logger.info('writing users for course', courseCode)
-
   function writeUsers (users, role) {
     return Promise.map(users, user => csvFile.writeLine([sisCourseId, user.ugKthid, role, 'active'], fileName))
   }
@@ -112,11 +109,11 @@ function writeUsersForCourse ([sisCourseId, courseCode, name]) {
   .then(arrayOfMembers => addExaminators(arrayOfMembers, courseCode))
   // .then(arrayOfMembers => addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId))
   .then(arrayOfMembers => Promise.map(arrayOfMembers, getUsersForMembers))
-  .then(([teachers, assistants, courseresponsible, examinators, /*admittedStudents*/]) => Promise.all([
+  .then(([teachers, assistants, courseresponsible, examinators /* admittedStudents */]) => Promise.all([
     writeUsers(teachers, 'teacher'),
     writeUsers(courseresponsible, 'Course Responsible'),
     writeUsers(assistants, 'ta'),
-    writeUsers(examinators, 'Examiner'),
+    writeUsers(examinators, 'Examiner')
     // writeUsers(admittedStudents, 'Admitted not registered')
   ])
   )
