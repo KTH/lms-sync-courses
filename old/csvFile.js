@@ -14,7 +14,7 @@ function escapeCsvData (str) {
 
 function writeLine (strArr, fileName) {
   const line = createLine(strArr)
-  logger.info('writing line: ', line)
+  logger.info(`writing line: ${line} to file ${fileName}`)
   return fs.appendFileAsync(fileName, line)
 }
 
