@@ -19,6 +19,7 @@ async function runCourseSync (job) {
     const errorCronTime = process.env.errorSchedule || '15 * * * *'
     logger.error(`Something broke, try again with schedule ${errorCronTime}`, e)
     // In case of error, run more often until it's successful
+    job.reschedule(errorCronTime)
   }
 }
 async function syncCourses () {
