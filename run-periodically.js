@@ -10,6 +10,8 @@ const moment = require('moment')
 const cronTime = process.env.successfulSchedule || '2 * * *'
 
 async function runCourseSync (job) {
+  // Cancel, because we only want this job to run once.
+  // Then if it fails, we can reschedule to run more often.
   job.cancel()
   try {
     logger.info('sync...')
@@ -27,16 +29,11 @@ async function syncCourses () {
 
   const currentYear = moment().year()
   for (let year of [currentYear, currentYear + 1]) {
-    // [HT]: ['0', '1', '2'],
-    // [VT]: ['3', '4', '5']\
-    // 'VT':1,
-    // 'HT':2,
     for (let {term, period} of [{term: 1, period: 3}, {term: 2, period: 0}]) {
       logger.info(`creating sis files for year: ${year}, term: ${term}, period: ${period}`)
 
       const [coursesFileName, sectionsFileName] = await createCoursesFile.createCoursesFile({term, year, period, csvDir: process.env.csvDir})
 
-      // Courses and sections files are com
       logger.info('About to send the first csv file, courses')
       const canvasReturnCourse = await canvasApi.sendCsvFile(coursesFileName, true)
       logger.info('Done sending courses', canvasReturnCourse)
