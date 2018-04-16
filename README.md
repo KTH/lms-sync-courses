@@ -1,2 +1,1 @@
 ## lms-sync-courses
-//
