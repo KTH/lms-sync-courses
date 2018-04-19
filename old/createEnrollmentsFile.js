@@ -3,7 +3,7 @@ const ldap = require('ldapjs')
 const fs = Promise.promisifyAll(require('fs'))
 const csvFile = require('./csvFile')
 const logger = require('../server/logger')
-const {deleteFile} = require('./utils');
+const {deleteFile} = require('./utils')
 const attributes = ['ugKthid', 'name']
 
 /*
@@ -24,7 +24,7 @@ function getUsersForMembers (members, ldapClient) {
     })
       .then(res => new Promise((resolve, reject) => {
         const users = []
-        res.on('searchEntry', ({object}) => users.push(object))
+        res.on('searchEntry', entry => users.push(entry.object))
         res.on('end', () => resolve(users))
         res.on('error', reject)
       }))
@@ -45,17 +45,21 @@ async function searchGroup (filter, ldapClient) {
   })
 
   const member = await new Promise((resolve, reject) => {
-      res.on('searchEntry', ({object}) => resolve(object.member)) // We will get one result for the group where querying for
-      res.on('end', ({object}) => resolve(object && object.member))
-      res.on('error', reject)
-    })
+    res.on('searchEntry', entry => resolve(entry.object.member)) // We will get one result for the group where querying for
+    res.on('end', entry => resolve(entry.object && entry.object.member))
+    res.on('error', reject)
+  })
 
       // Always use arrays as result
-        if (Array.isArray(member)) {
-          return member
-        } else {
-          return [member] || []
-      }
+  if (Array.isArray(member)) {
+    return member
+  } else {
+    if (member) {
+      return [member]
+    } else {
+      return []
+    }
+  }
 }
 
 /*
@@ -67,6 +71,10 @@ async function getExaminatorMembers (courseCode, ldapClient) {
 }
 
 async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}) {
+  const courseInitials = canvasCourse.courseCode.substring(0, 2)
+  const startTerm = termin.replace(':', '')
+  const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
+
   async function writeUsers (users, role) {
     for (let user of users) {
       await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, role, 'active'], fileName)
@@ -74,13 +82,13 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
   }
 
   for (let type of ['teachers', 'assistants', 'courseresponsible']) {
-    const courseInitials = canvasCourse.courseCode.substring(0, 2)
-    const startTerm = termin.replace(':', '')
-    const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
-
-    const arrayOfMembers = await searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${canvasCourse.roundId}.${type}))`, ldapClient)
+    const arrayOfMembers = await searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${startTerm}.${roundId}.${type}))`, ldapClient)
     const examinators = await getExaminatorMembers(canvasCourse.courseCode, ldapClient)
+    console.log('examinatorsMembers:', examinators)
+    console.log('arrayOfMembers:', arrayOfMembers)
+
     for (let members of [...arrayOfMembers, ...examinators]) {
+      console.log('members:', members)
       const [
         teachers,
         assistants,
