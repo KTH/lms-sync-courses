@@ -3,7 +3,7 @@ const ldap = require('ldapjs')
 const fs = Promise.promisifyAll(require('fs'))
 const csvFile = require('./csvFile')
 const logger = require('../server/logger')
-
+const {deleteFile} = require('./utils');
 const attributes = ['ugKthid', 'name']
 const columns = [
   'section_id',
@@ -42,7 +42,7 @@ function flatten (arr) {
   return [].concat.apply([], arr)
 }
 
-function searchGroup (filter) {
+function searchGroup (filter, ldapClient) {
   return ldapClient.searchAsync('OU=UG,DC=ug,DC=kth,DC=se', {
     scope: 'sub',
     filter,
@@ -68,9 +68,9 @@ function searchGroup (filter) {
 * Fetch the members for the examinator group for this course.
 * Return a similar array as the in-parameter, with the examinators added
 */
-function addExaminators ([teachersMembers, assistantsMembers, courseresponsibleMembers], courseCode) {
+function addExaminators ([teachersMembers, assistantsMembers, courseresponsibleMembers], courseCode, ldapClient) {
   const courseInitials = courseCode.substring(0, 2)
-  return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`)
+  return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`, ldapClient)
     .then(examinatorMembers => {
       return [teachersMembers, assistantsMembers, courseresponsibleMembers, examinatorMembers]
     })
@@ -94,21 +94,21 @@ function addAdmittedStudents ([teachersMembers, assistantsMembers, courserespons
 /*
 * For the given course, fetch all user types from UG and add write all of them to the enrollments file
 */
-function writeUsersForCourse ([sisCourseId, courseCode, name]) {
+function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}) {
   function writeUsers (users, role) {
-    return Promise.map(users, user => csvFile.writeLine([sisCourseId, user.ugKthid, role, 'active'], fileName))
+    return Promise.map(users, user => csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, role, 'active'], fileName))
   }
 
   return Promise.map(['teachers', 'assistants', 'courseresponsible'], type => {
-    const courseInitials = courseCode.substring(0, 2)
+    const courseInitials = canvasCourse.courseCode.substring(0, 2)
     const startTerm = termin.replace(':', '')
-    const roundId = sisCourseId.substring(sisCourseId.length - 1, sisCourseId.length)
+    const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
 
-    return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.${startTerm}.${roundId}.${type}))`)
+    return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${canvasCourse.roundId}.${type}))`, ldapClient)
   })
-    .then(arrayOfMembers => addExaminators(arrayOfMembers, courseCode))
+    .then(arrayOfMembers => addExaminators(arrayOfMembers, canvasCourse.courseCode, ldapClient))
   // .then(arrayOfMembers => addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId))
-    .then(arrayOfMembers => Promise.map(arrayOfMembers, getUsersForMembers))
+    .then(arrayOfMembers => Promise.map(arrayOfMembers, members => getUsersForMembers(members, ldapClient)))
     .then(([teachers, assistants, courseresponsible, examinators /* admittedStudents */]) => Promise.all([
       writeUsers(teachers, 'teacher'),
       writeUsers(courseresponsible, 'Course Responsible'),
@@ -131,28 +131,23 @@ function getAllCoursesAsLinesArrays () {
     .then(lines => lines.map(line => line.split(','))) // split into values per column
 }
 
-function deleteFile () {
-  return fs.unlinkAsync(fileName)
-    .catch(e => logger.info("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
-}
-
-function createFileAndWriteHeadlines () {
+function createFileAndWriteHeadlines (fileName) {
   return csvFile.writeLine(columns, fileName)
 }
 
-module.exports = async function ({term, year, period, sisCourseIds}) {
+module.exports = async function ({term, year, period, canvasCourses}) {
   const ldapClient = Promise.promisifyAll(ldap.createClient({
     url: process.env.ugUrl
   }))
-  await ldapClient.bindAsync(username, password)
+  await ldapClient.bindAsync(process.env.ugUsername, process.env.ugPwd)
 
   const termin = `${year}${term}`
   const fileName = `${process.env.csvDir}enrollments-${termin}-${period}.csv`
-  const coursesFileName = `${csvDir}courses-${termin}-${period}.csv`
-  await deleteFile()
-  await createFileAndWriteHeadlines()
-  for (let sisCourseId of sisCourseIds) {
-    await writeUsersForCourse(sisCourseId, ldapClient)
+  await deleteFile(fileName)
+  await createFileAndWriteHeadlines(fileName)
+  for (let canvasCourse of canvasCourses) {
+    await writeUsersForCourse({canvasCourse, ldapClient, termin, fileName})
   }
   await ldapClient.unbindAsync()
+  return fileName
 }
