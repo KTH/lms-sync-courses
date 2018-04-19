@@ -1,4 +1,3 @@
-let koppsBaseUrl
 const rp = require('request-promise')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const {
@@ -39,10 +38,6 @@ function createCourseOfferingObj (courseOffering) {
 }
 
 module.exports = {
-  set koppsBaseUrl (url) {
-    koppsBaseUrl = url
-  },
-
   async prepareCoursesForCanvas(courseOfferings){
     // Re-map the objects from Kopps to objects more similar to CanvasApi
     const courseOfferingObjects = courseOfferings.map(createCourseOfferingObj)
@@ -53,7 +48,7 @@ module.exports = {
 
   async getCourseOfferings({term, year}){
     const res = await rp({
-      url: `${koppsBaseUrl}v2/courses/offerings?from=${year}${term}`,
+      url: `${process.env.koppsBaseUrl}v2/courses/offerings?from=${year}${term}`,
       method: 'GET',
       json: true,
       headers: {'content-type': 'application/json'}
