@@ -17,7 +17,8 @@ async function runCourseSync (job) {
   try {
     logger.info('~~~~~~~~~~~~~~~~~~~~~~~ sync ~~~~~~~~~~~~~~~~~~~~~~~')
     await syncCourses()
-    job.reschedule(cronTime)
+    console.log('TODO: reschedule!')
+    // job.reschedule(cronTime)
     logger.info('^^^^^^^^^^^^^^^^ finished with syncing courses ^^^^^^^^^^^^^^^^^^^')
   } catch (e) {
     const errorCronTime = process.env.errorSchedule || '15 * * * *'
@@ -44,14 +45,14 @@ async function syncCourses () {
       const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
       logger.info('Done sending courses', coursesResponse)
 
-      const sectionsFileName = await createCoursesFile.createSectionsFile(canvasCourses)
-      const sectionsResponse = await canvasApi.sendCsvFile(sectionsFileName, true)
-      logger.info('Done sending sections', sectionsResponse)
-
-      const enrollmentsFileName = await createEnrollmentsFile(canvasCourses)
-
-      const enrollResponse = await canvasApi.sendCsvFile(enrollmentsFileName, true)
-      logger.info('Done sending enrollments', enrollResponse)
+      // const sectionsFileName = await createCoursesFile.createSectionsFile(canvasCourses)
+      // const sectionsResponse = await canvasApi.sendCsvFile(sectionsFileName, true)
+      // logger.info('Done sending sections', sectionsResponse)
+      //
+      // const enrollmentsFileName = await createEnrollmentsFile(canvasCourses)
+      //
+      // const enrollResponse = await canvasApi.sendCsvFile(enrollmentsFileName, true)
+      // logger.info('Done sending enrollments', enrollResponse)
     }
   }
 }
