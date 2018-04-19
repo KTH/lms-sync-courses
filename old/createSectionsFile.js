@@ -1,6 +1,6 @@
 const csvFile = require('./csvFile')
 const Promise = require('bluebird')
-const {deleteFile} =  require('./utils');
+const {deleteFile} = require('./utils')
 
 const columns = ['section_id', 'course_id', 'name', 'status']
 
@@ -10,9 +10,9 @@ module.exports = async function (groupedCourses, fileName) {
 
   for (const courseRound of groupedCourses) {
     await csvFile.writeLine([
-      courseRound.sisCourseId, 
-      courseRound.sisCourseId, 
-      `Section for the course ${courseRound.longName}`, 
+      courseRound.sisCourseId,
+      courseRound.sisCourseId,
+      `Section for the course ${courseRound.longName}`,
       'active'], fileName)
   }
 }

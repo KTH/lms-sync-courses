@@ -7,9 +7,8 @@ let unlinkAsync = Promise.promisify(unlink)
 
 function deleteFile (fileName) {
   return unlinkAsync(fileName)
-      .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
+    .catch(e => console.log("couldn't delete file. It probably doesn't exist. This is fine, let's continue"))
 }
-
 
 function createLongName (round) {
   const termNum = round.startTerm[4]
@@ -37,7 +36,7 @@ function getSisAccountId ({courseCode}) {
 }
 
 function calcStartDate (courseRound) {
-  const year = courseRound.startSemester.semester.slice(0,4)
+  const year = courseRound.startSemester.semester.slice(0, 4)
   const weekNumber = courseRound.startSemester.start_week
   const d = moment().year(year).isoWeek(weekNumber).isoWeekday(1)
   d.set({hour: 8, minute: 0, second: 0, millisecond: 0})
@@ -48,13 +47,12 @@ function flatten (arr) {
   return [].concat.apply([], arr)
 }
 
-
 module.exports = {
   deleteFile,
   getSisAccountId,
   flatten,
 
-  buildCanvasCourseObjectV2 (courseRound) { //new for course from v2
+  buildCanvasCourseObjectV2 (courseRound) { // new for course from v2
     if (!courseRound) {
       return
     }
@@ -67,5 +65,5 @@ module.exports = {
       sisAccountId: getSisAccountId(courseRound),
       status: 'active'
     }
-  },
+  }
 }

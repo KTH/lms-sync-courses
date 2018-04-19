@@ -12,7 +12,6 @@ const path = require('path')
 const Zip = require('node-zip')
 const logger = require('../server/logger')
 
-
 try {
   fs.mkdirSync('csv')
 } catch (e) {
@@ -68,16 +67,16 @@ module.exports = async function () {
       type: 'list'
     }])
 
-    const {koppsBaseUrl} = await inquirer.prompt(
-        {
-          message: 'Sista frågan, vilken koppsmiljö ska vi hämta data från?',
-          name: 'koppsBaseUrl',
-          choices: [
-            {name: 'ref', value: 'https://www-r.referens.sys.kth.se/api/kopps/'},
-            {name: 'prod', value: 'https://www.kth.se/api/kopps/'}
-          ],
-          type: 'list'
-        })
+  const {koppsBaseUrl} = await inquirer.prompt(
+    {
+      message: 'Sista frågan, vilken koppsmiljö ska vi hämta data från?',
+      name: 'koppsBaseUrl',
+      choices: [
+        {name: 'ref', value: 'https://www-r.referens.sys.kth.se/api/kopps/'},
+        {name: 'prod', value: 'https://www.kth.se/api/kopps/'}
+      ],
+      type: 'list'
+    })
 
   createCoursesFile.koppsBaseUrl = koppsBaseUrl
   logger.info('ok, börjar med att skapa csvfil med kurserna...'.green)

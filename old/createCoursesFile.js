@@ -9,7 +9,6 @@ const createSectionsFile = require('./createSectionsFile')
 const csvFile = require('./csvFile')
 const {mkdir} = require('fs')
 const logger = require('../server/logger')
-
 let mkdirAsync = Promise.promisify(mkdir)
 
 async function createCsvFile (fileName) {
@@ -24,18 +23,12 @@ async function createCsvFile (fileName) {
   return await csvFile.writeLine(columns, fileName)
 }
 
-function filterCourseOfferings(res, year, term, period) {
-  return res
-    .filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
-    //.filter(courseOffering => courseOffering.first_period === `${year}${term}P${period}`)
-}
-
-function createCourseOfferingObj(courseOffering) {
+function createCourseOfferingObj (courseOffering) {
   return {
     courseCode: courseOffering.course_code,
     startTerm: courseOffering.first_yearsemester,
     roundId: courseOffering.offering_id,
-    startSemester: courseOffering.offered_semesters.filter(s => s.semester === courseOffering.first_yearsemester)[0], //take start_Week for whole course
+    startSemester: courseOffering.offered_semesters.filter(s => s.semester === courseOffering.first_yearsemester)[0], // take start_Week for whole course
     shortName: courseOffering.short_name,
     tutoringLanguage: courseOffering.language,
     title: {
@@ -46,49 +39,47 @@ function createCourseOfferingObj(courseOffering) {
 }
 
 module.exports = {
-  set koppsBaseUrl(url){
+  set koppsBaseUrl (url) {
     koppsBaseUrl = url
   },
-  async createCoursesFile ({term, year, period, csvDir = 'csv'}) {
-    const termin = `${year}${term}`
-    const fileName = `${csvDir}courses-${termin}-${period}.csv`
-    const enrollmentsFileName = `${csvDir}sections-${termin}-${period}.csv`
-    logger.info('Using file name:', fileName)
-    await deleteFile(fileName)
-    await createCsvFile(fileName)
-    logger.info('Calling kopps...')
 
+  async prepareCoursesForCanvas(courseOfferings){
+    // Re-map the objects from Kopps to objects more similar to CanvasApi
+    const courseOfferingObjects = courseOfferings.map(createCourseOfferingObj)
+
+    // Create a new object with sis_id, long name and short name
+    return courseOfferingObjects.map(buildCanvasCourseObjectV2)
+  },
+
+  async getCourseOfferings({term, year}){
     const res = await rp({
-      url: `${koppsBaseUrl}v2/courses/offerings?from=${termin}`,
+      url: `${koppsBaseUrl}v2/courses/offerings?from=${year}${term}`,
       method: 'GET',
       json: true,
-      headers: {'content-type':'application/json'}
+      headers: {'content-type': 'application/json'}
     })
 
-    logger.info('got response from kopps')
+    return res.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
+  },
 
-    const courseOfferings = filterCourseOfferings(res, year, term, period)
+  async createCoursesFile ({term, year, period, canvasCourses}) {
+    const csvDir = process.env.csvDir
+    const termin = `${year}${term}`
+    const coursesFileName = `${csvDir}courses-${termin}-${period}.csv`
+    logger.info('Using file name:', coursesFileName)
+    await deleteFile(coursesFileName)
+    await createCsvFile(coursesFileName)
+    logger.info('Calling kopps...')
 
-    const canvasFormattedCourses = []
-
-    for (const courseOffering of courseOfferings) {
-      const courseRound = createCourseOfferingObj(courseOffering)
-
-      const course = buildCanvasCourseObjectV2(courseRound)
-      canvasFormattedCourses.push(course)
-
+    for (const course of canvasCourse) {
       await csvFile.writeLine([
         course.sisCourseId,
         course.courseCode,
         course.longName,
         course.startDate,
         course.sisAccountId,
-        'active'], fileName)
+        'active'], coursesFileName)
     }
 
-    //START SECTIONS FILE
-    await createSectionsFile(canvasFormattedCourses, enrollmentsFileName)
-
-    return [fileName, enrollmentsFileName]
-
+    return coursesFileName
   }}

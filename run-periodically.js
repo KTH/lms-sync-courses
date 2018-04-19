@@ -6,6 +6,7 @@ const schedule = require('node-schedule')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
 canvasApi.logger = logger
 const moment = require('moment')
+const {deleteFile} = require('./old/utils')
 
 const cronTime = process.env.successfulSchedule || '2 * * *'
 
@@ -25,35 +26,37 @@ async function runCourseSync (job) {
     job.reschedule(errorCronTime)
   }
 }
-async function syncCourses () {
-  createCoursesFile.koppsBaseUrl = process.env.koppsBaseUrl
 
+function prepareCoursesForCanvas(courses) {
+
+}
+
+async function syncCourses () {
   const currentYear = moment().year()
   for (let year of [currentYear, currentYear + 1]) {
     for (let {term, period} of [{term: 1, period: 3}, {term: 2, period: 0}]) {
       logger.info(`creating sis files for year: ${year}, term: ${term}, period: ${period}`)
 
-      const [coursesFileName, sectionsFileName] = await createCoursesFile.createCoursesFile({term, year, period, csvDir: process.env.csvDir})
+      const courseOfferings = await createCoursesFile.getCourseOfferings({term, year})
+      const canvasCourses = createCoursesFile.prepareCoursesForCanvas(courseOfferings)
+      const coursesFileName = await createCoursesFile.createCoursesFile(canvasCourses)
+      const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
+      logger.info('Done sending courses', coursesResponse)
 
-      logger.info('About to send the first csv file, courses')
-      const canvasReturnCourse = await canvasApi.sendCsvFile(coursesFileName, true)
-      logger.info('Done sending courses', canvasReturnCourse)
+      const sectionsFileName = await createCoursesFile.createSectionsFile(canvasCourses)
+      const sectionsResponse = await canvasApi.sendCsvFile(sectionsFileName, true)
+      logger.info('Done sending sections', sectionsResponse)
 
-      const canvasReturnSection = await canvasApi.sendCsvFile(sectionsFileName, true)
-      logger.info('Done sending sections', canvasReturnSection)
+      // const enrollmentsFileName = await createEnrollmentsFile({
+      //   canvasCourses,
+      //   term,
+      //   year,
+      //   period
+      // })
+      const enrollmentsFileName = await createEnrollmentsFile(canvasCourses)
 
-      const enrollmentsFileName = await createEnrollmentsFile({
-        ugUsername: process.env.ugUsername,
-        ugUrl: process.env.ugUrl,
-        ugPwd: process.env.ugPwd,
-        term,
-        year,
-        period,
-        csvDir: process.env.csvDir
-      })
-
-      const canvasReturnEnroll = await canvasApi.sendCsvFile(enrollmentsFileName, true)
-      logger.info('Done sending enrollments', canvasReturnEnroll)
+      const enrollResponse = await canvasApi.sendCsvFile(enrollmentsFileName, true)
+      logger.info('Done sending enrollments', enrollResponse)
     }
   }
 }

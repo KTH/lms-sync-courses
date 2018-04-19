@@ -10,11 +10,11 @@ const createSectionsFile = proxyquire('../../../createSectionsFile', {
 test('should write a file with a section for each course', t => {
   t.plan(2)
   const courses = [
-      {
-        sisCourseId:'SIS_COURSE_ID',
-        courseCode: 'AL2140',
-        longName: 'A LONG NAME'
-      }
+    {
+      sisCourseId: 'SIS_COURSE_ID',
+      courseCode: 'AL2140',
+      longName: 'A LONG NAME'
+    }
   ]
   createSectionsFile(courses, 'fileName.csv').then(result => {
     const firstCallArgs = writeLine.getCall(0).args
