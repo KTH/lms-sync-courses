@@ -38,7 +38,7 @@ function createCourseOfferingObj (courseOffering) {
 }
 
 module.exports = {
-  async prepareCoursesForCanvas(courseOfferings){
+  prepareCoursesForCanvas(courseOfferings){
     // Re-map the objects from Kopps to objects more similar to CanvasApi
     const courseOfferingObjects = courseOfferings.map(createCourseOfferingObj)
 
