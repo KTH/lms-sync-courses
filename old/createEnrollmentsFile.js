@@ -75,31 +75,22 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
   const startTerm = termin.replace(':', '')
   const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
 
-  async function writeUsers (users, role) {
-    for (let user of users) {
-      await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, role, 'active'], fileName)
-    }
-  }
-
   for (let type of ['teachers', 'assistants', 'courseresponsible']) {
-    const arrayOfMembers = await searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${startTerm}.${roundId}.${type}))`, ldapClient)
-    const examinators = await getExaminatorMembers(canvasCourse.courseCode, ldapClient)
-    console.log('examinatorsMembers:', examinators)
-    console.log('arrayOfMembers:', arrayOfMembers)
-
-    for (let members of [...arrayOfMembers, ...examinators]) {
-      console.log('members:', members)
-      const [
-        teachers,
-        assistants,
-        courseresponsible,
-        examinators] = await getUsersForMembers(members, ldapClient)
-      await writeUsers(teachers, 'teacher')
-      await writeUsers(courseresponsible, 'Course Responsible')
-      await writeUsers(assistants, 'ta')
-      await writeUsers(examinators, 'Examiner')
+    const courseInitials = canvasCourse.courseCode.substring(0, 2)
+    const startTerm = termin.replace(':', '')
+    const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
+  //
+    const members = await searchGroup(
+      `(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${startTerm}.${roundId}.${type}))`,
+      ldapClient
+    )
+    const users = await getUsersForMembers(members, ldapClient)
+    for (let user of users) {
+      await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, type, 'active'], fileName)
     }
   }
+
+  // TODO: examinators
 }
 
 module.exports = async function ({term, year, period, canvasCourses}) {
