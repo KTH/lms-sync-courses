@@ -39,7 +39,7 @@ async function syncCourses () {
 
       const courseOfferings = await createCoursesFile.getCourseOfferings({term, year})
       const canvasCourses = createCoursesFile.prepareCoursesForCanvas(courseOfferings)
-      const coursesFileName = await createCoursesFile.createCoursesFile(canvasCourses)
+      const coursesFileName = await createCoursesFile.createCoursesFile({term, year, period, canvasCourses})
       const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
       logger.info('Done sending courses', coursesResponse)
 

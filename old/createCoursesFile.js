@@ -66,7 +66,7 @@ module.exports = {
     await createCsvFile(coursesFileName)
     logger.info('Calling kopps...')
 
-    for (const course of canvasCourse) {
+    for (const course of canvasCourses) {
       await csvFile.writeLine([
         course.sisCourseId,
         course.courseCode,
