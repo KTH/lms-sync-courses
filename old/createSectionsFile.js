@@ -4,15 +4,19 @@ const {deleteFile} = require('./utils')
 
 const columns = ['section_id', 'course_id', 'name', 'status']
 
-module.exports = async function (groupedCourses, fileName) {
+module.exports = async function ({canvasCourses, term, year, period}) {
+  const fileName = `${process.env.csvDir}sections-${year}${term}-${period}.csv`
+
   await deleteFile(fileName)
   await csvFile.writeLine(['section_id', 'course_id', 'name', 'status'], fileName)
 
-  for (const courseRound of groupedCourses) {
+  for (const canvasCourse of canvasCourses) {
     await csvFile.writeLine([
-      courseRound.sisCourseId,
-      courseRound.sisCourseId,
-      `Section for the course ${courseRound.longName}`,
+      canvasCourse.sisCourseId,
+      canvasCourse.sisCourseId,
+      `Section for the course ${canvasCourse.longName}`,
       'active'], fileName)
   }
+
+  return fileName
 }

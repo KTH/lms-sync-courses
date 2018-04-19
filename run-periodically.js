@@ -7,7 +7,7 @@ const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiK
 canvasApi.logger = logger
 const moment = require('moment')
 const {deleteFile} = require('./old/utils')
-
+const createSectionsFile = require('./old/createSectionsFile')
 const cronTime = process.env.successfulSchedule || '2 * * *'
 
 async function runCourseSync (job) {
@@ -45,9 +45,9 @@ async function syncCourses () {
       const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
       logger.info('Done sending courses', coursesResponse)
 
-      // const sectionsFileName = await createCoursesFile.createSectionsFile(canvasCourses)
-      // const sectionsResponse = await canvasApi.sendCsvFile(sectionsFileName, true)
-      // logger.info('Done sending sections', sectionsResponse)
+      const sectionsFileName = await createSectionsFile({canvasCourses, term, year, period})
+      const sectionsResponse = await canvasApi.sendCsvFile(sectionsFileName, true)
+      logger.info('Done sending sections', sectionsResponse)
       //
       // const enrollmentsFileName = await createEnrollmentsFile(canvasCourses)
       //

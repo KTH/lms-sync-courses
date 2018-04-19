@@ -4,7 +4,6 @@ const {
   buildCanvasCourseObjectV2,
   deleteFile
 } = require('./utils')
-const createSectionsFile = require('./createSectionsFile')
 const csvFile = require('./csvFile')
 const {mkdir} = require('fs')
 const logger = require('../server/logger')
