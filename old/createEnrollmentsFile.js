@@ -5,12 +5,6 @@ const csvFile = require('./csvFile')
 const logger = require('../server/logger')
 const {deleteFile} = require('./utils');
 const attributes = ['ugKthid', 'name']
-const columns = [
-  'section_id',
-  'user_id',
-  'role',
-  'status'
-]
 
 /*
 * For string array with ldap keys for users, fetch every user object
@@ -91,48 +85,32 @@ function addAdmittedStudents ([teachersMembers, assistantsMembers, courserespons
     })
 }
 
-/*
-* For the given course, fetch all user types from UG and add write all of them to the enrollments file
-*/
-function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}) {
+async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}) {
   function writeUsers (users, role) {
     return Promise.map(users, user => csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, role, 'active'], fileName))
   }
 
-  return Promise.map(['teachers', 'assistants', 'courseresponsible'], type => {
+  for (let type of ['teachers', 'assistants', 'courseresponsible']) {
     const courseInitials = canvasCourse.courseCode.substring(0, 2)
     const startTerm = termin.replace(':', '')
     const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
 
-    return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${canvasCourse.roundId}.${type}))`, ldapClient)
-  })
-    .then(arrayOfMembers => addExaminators(arrayOfMembers, canvasCourse.courseCode, ldapClient))
-  // .then(arrayOfMembers => addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId))
-    .then(arrayOfMembers => Promise.map(arrayOfMembers, members => getUsersForMembers(members, ldapClient)))
-    .then(([teachers, assistants, courseresponsible, examinators /* admittedStudents */]) => Promise.all([
-      writeUsers(teachers, 'teacher'),
-      writeUsers(courseresponsible, 'Course Responsible'),
-      writeUsers(assistants, 'ta'),
-      writeUsers(examinators, 'Examiner')
-    // writeUsers(admittedStudents, 'Admitted not registered')
-    ])
-    )
-}
-//
-/*
-* Reads the courses file and splits it's content into an array of arrays.
-* One array per line, containing one array per column
-*/
-function getAllCoursesAsLinesArrays () {
-  return fs.readFileAsync(coursesFileName, 'utf8')
-    .catch(e => console.error('Could not read the courses file. Have you run the npm script for creating the courses csv file? ', e))
-    .then(fileContentStr => fileContentStr.split('\n')) // one string per line
-    .then(lines => lines.splice(1, lines.length - 2)) // first line is columns, last is new empty line. Ignore them
-    .then(lines => lines.map(line => line.split(','))) // split into values per column
-}
-
-function createFileAndWriteHeadlines (fileName) {
-  return csvFile.writeLine(columns, fileName)
+    const arrayOfMembers = await searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${canvasCourse.roundId}.${type}))`, ldapClient)
+    await addExaminators(arrayOfMembers, canvasCourse.courseCode, ldapClient)
+    await addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId)
+    for (let members of arrayOfMembers) {
+      const [
+        teachers,
+        assistants,
+        courseresponsible,
+        examinators
+      /*, admittedStudents */] = await getUsersForMembers(members, ldapClient)
+      await writeUsers(teachers, 'teacher')
+      await writeUsers(courseresponsible, 'Course Responsible')
+      await writeUsers(assistants, 'ta')
+      await writeUsers(examinators, 'Examiner')
+    }
+  }
 }
 
 module.exports = async function ({term, year, period, canvasCourses}) {
@@ -144,7 +122,13 @@ module.exports = async function ({term, year, period, canvasCourses}) {
   const termin = `${year}${term}`
   const fileName = `${process.env.csvDir}enrollments-${termin}-${period}.csv`
   await deleteFile(fileName)
-  await createFileAndWriteHeadlines(fileName)
+  await csvFile.writeLine([
+    'section_id',
+    'user_id',
+    'role',
+    'status'
+  ], fileName)
+
   for (let canvasCourse of canvasCourses) {
     await writeUsersForCourse({canvasCourse, ldapClient, termin, fileName})
   }

@@ -16,7 +16,7 @@ async function runCourseSync (job) {
   job.cancel()
   try {
     logger.info('~~~~~~~~~~~~~~~~~~~~~~~ sync ~~~~~~~~~~~~~~~~~~~~~~~')
-    await syncCourses()
+    await syncCoursesSectionsAndEnrollments()
     console.log('TODO: reschedule!')
     // job.reschedule(cronTime)
     logger.info('^^^^^^^^^^^^^^^^ finished with syncing courses ^^^^^^^^^^^^^^^^^^^')
@@ -28,11 +28,7 @@ async function runCourseSync (job) {
   }
 }
 
-function prepareCoursesForCanvas(courses) {
-
-}
-
-async function syncCourses () {
+async function syncCoursesSectionsAndEnrollments () {
   const currentYear = moment().year()
   for (let year of [currentYear, currentYear + 1]) {
     for (let {term, period} of [{term: 1, period: 3}, {term: 2, period: 0}]) {
