@@ -36,58 +36,41 @@ function flatten (arr) {
   return [].concat.apply([], arr)
 }
 
-function searchGroup (filter, ldapClient) {
-  return ldapClient.searchAsync('OU=UG,DC=ug,DC=kth,DC=se', {
+async function searchGroup (filter, ldapClient) {
+  const res = await ldapClient.searchAsync('OU=UG,DC=ug,DC=kth,DC=se', {
     scope: 'sub',
     filter,
     timeLimit: 11,
     paged: true
   })
-    .then(res => new Promise((resolve, reject) => {
+
+  const member = await new Promise((resolve, reject) => {
       res.on('searchEntry', ({object}) => resolve(object.member)) // We will get one result for the group where querying for
       res.on('end', ({object}) => resolve(object && object.member))
       res.on('error', reject)
-    }))
-    .then(member => {
-    // Always use arrays as result
-      if (typeof member === 'string') {
-        return [member]
-      } else {
-        return member || []
+    })
+
+      // Always use arrays as result
+        if (Array.isArray(member)) {
+          return member
+        } else {
+          return [member] || []
       }
-    })
 }
 
 /*
 * Fetch the members for the examinator group for this course.
-* Return a similar array as the in-parameter, with the examinators added
 */
-function addExaminators ([teachersMembers, assistantsMembers, courseresponsibleMembers], courseCode, ldapClient) {
+async function getExaminatorMembers (courseCode, ldapClient) {
   const courseInitials = courseCode.substring(0, 2)
-  return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`, ldapClient)
-    .then(examinatorMembers => {
-      return [teachersMembers, assistantsMembers, courseresponsibleMembers, examinatorMembers]
-    })
-}
-
-/*
-* Fetch the members for the examinator group for this course.
-* Return a similar array as the in-parameter, with the examinators added
-*/
-function addAdmittedStudents ([teachersMembers, assistantsMembers, courseresponsibleMembers, examinatorMembers], courseCode, termin, sisCourseId) {
-  const startTerm = termin.replace(':', '')
-  const roundId = sisCourseId.substring(sisCourseId.length - 1, sisCourseId.length)
-  const courseInitials = courseCode.substring(0, 2)
-  const courseCodeLast = courseCode.substring(2)
-  return searchGroup(`(&(objectClass=group)(CN=ladok2.kurser.${courseInitials}.${courseCodeLast}.antagna_${startTerm}.${roundId}))`)
-    .then(admittedStudents => {
-      return [teachersMembers, assistantsMembers, courseresponsibleMembers, examinatorMembers, admittedStudents]
-    })
+  return await searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`, ldapClient)
 }
 
 async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}) {
-  function writeUsers (users, role) {
-    return Promise.map(users, user => csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, role, 'active'], fileName))
+  async function writeUsers (users, role) {
+    for (let user of users) {
+      await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, role, 'active'], fileName)
+    }
   }
 
   for (let type of ['teachers', 'assistants', 'courseresponsible']) {
@@ -96,15 +79,13 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
     const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
 
     const arrayOfMembers = await searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${canvasCourse.roundId}.${type}))`, ldapClient)
-    await addExaminators(arrayOfMembers, canvasCourse.courseCode, ldapClient)
-    await addAdmittedStudents(arrayOfMembers, courseCode, termin, sisCourseId)
-    for (let members of arrayOfMembers) {
+    const examinators = await getExaminatorMembers(canvasCourse.courseCode, ldapClient)
+    for (let members of [...arrayOfMembers, ...examinators]) {
       const [
         teachers,
         assistants,
         courseresponsible,
-        examinators
-      /*, admittedStudents */] = await getUsersForMembers(members, ldapClient)
+        examinators] = await getUsersForMembers(members, ldapClient)
       await writeUsers(teachers, 'teacher')
       await writeUsers(courseresponsible, 'Course Responsible')
       await writeUsers(assistants, 'ta')
