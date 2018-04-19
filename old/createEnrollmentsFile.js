@@ -75,7 +75,7 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
   const startTerm = termin.replace(':', '')
   const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
 
-  for (let type of ['teachers', 'assistants', 'courseresponsible']) {
+  for (let {type, role} of [{type:'teachers', role: 'teacher'}, {type:'assistants', role: 'ta'}, {type:'courseresponsible', role: 'Course Responsible'}]) {
     const courseInitials = canvasCourse.courseCode.substring(0, 2)
     const startTerm = termin.replace(':', '')
     const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
@@ -86,7 +86,7 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
     )
     const users = await getUsersForMembers(members, ldapClient)
     for (let user of users) {
-      await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, type, 'active'], fileName)
+      await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, role, 'active'], fileName)
     }
   }
 
