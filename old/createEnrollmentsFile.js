@@ -79,7 +79,7 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
     const courseInitials = canvasCourse.courseCode.substring(0, 2)
     const startTerm = termin.replace(':', '')
     const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
-  //
+
     const members = await searchGroup(
       `(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${startTerm}.${roundId}.${type}))`,
       ldapClient
@@ -89,8 +89,12 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
       await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, role, 'active'], fileName)
     }
   }
-
-  // TODO: examinators
+  // examinators
+  const examinatorMembers = await getExaminatorMembers(canvasCourse.courseCode, ldapClient)
+  const examinators = await getUsersForMembers(examinatorMembers, ldapClient)
+  for (let user of examinators) {
+    await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 'Examiner', 'active'], fileName)
+  }
 }
 
 module.exports = async function ({term, year, period, canvasCourses}) {

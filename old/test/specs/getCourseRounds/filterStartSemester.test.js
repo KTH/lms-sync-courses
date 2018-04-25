@@ -38,7 +38,7 @@ test('should just return courses with right start semester with correct start_we
       start_week: '44',
       end_week: '03'
     },
-    shortName: 'THSSM/HSSB', // todo
+    shortName: 'THSSM/HSSB',
     tutoringLanguage: 'Svenska',
     title: {
       sv: 'Introduktion till Arkitektyrket',
