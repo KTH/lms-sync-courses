@@ -6,7 +6,8 @@
   "main": "app.js",
   "scripts": {
     "start": "NODE_ENV=production nodemon app.js",
-    "start-dev": "cross-env NODE_ENV=development nodemon app.js"
+    "start-dev": "cross-env NODE_ENV=development nodemon app.js",
+    "test": "npx tape \"test/unit/**/*.js\" | tap-spec"
   },
   "dependencies": {
     "bunyan": "^1.8.12",
@@ -24,6 +25,9 @@
   "devDependencies": {
     "cross-env": "^5.1.4",
     "nodemon": "^1.17.2",
-    "standard": "^11.0.1"
+    "rewire": "^4.0.1",
+    "standard": "^11.0.1",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.9.0"
   }
 }
