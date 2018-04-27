@@ -17,8 +17,7 @@ async function runCourseSync (job) {
   try {
     logger.info('~~~~~~~~~~~~~~~~~~~~~~~ sync ~~~~~~~~~~~~~~~~~~~~~~~')
     await syncCoursesSectionsAndEnrollments()
-    console.log('TODO: reschedule!')
-    // job.reschedule(cronTime)
+    job.reschedule(cronTime)
     logger.info('^^^^^^^^^^^^^^^^ finished with syncing courses ^^^^^^^^^^^^^^^^^^^')
   } catch (e) {
     const errorCronTime = process.env.errorSchedule || '15 * * * *'
