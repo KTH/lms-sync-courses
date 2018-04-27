@@ -75,7 +75,13 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
   const startTerm = termin.replace(':', '')
   const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
 
-  for (let {type, role} of [{type:'teachers', role: 'teacher'}, {type:'assistants', role: 'ta'}, {type:'courseresponsible', role: 'Course Responsible'}]) {
+  const ugRoleCanvasRole =  [
+    {type:'teachers', role: 'teacher'},
+    {type:'courseresponsible', role: 'Course Responsible'},
+    {type:'assistants', role: 'ta'}
+  ]
+
+  for (let {type, role} of ugRoleCanvasRole) {
     const courseInitials = canvasCourse.courseCode.substring(0, 2)
     const startTerm = termin.replace(':', '')
     const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
