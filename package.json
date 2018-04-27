@@ -24,6 +24,7 @@
   "optionalDependencies": {},
   "devDependencies": {
     "cross-env": "^5.1.4",
+    "fs-extra": "^5.0.0",
     "nodemon": "^1.17.2",
     "proxyquire": "^2.0.1",
     "rewire": "^4.0.1",
