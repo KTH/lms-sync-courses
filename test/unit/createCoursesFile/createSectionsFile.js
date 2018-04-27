@@ -3,11 +3,11 @@ const proxyquire = require('proxyquire')
 const sinon = require('sinon')
 
 const writeLine = sinon.stub().returns(Promise.resolve())
-const createSectionsFile = proxyquire('../../../createSectionsFile', {
+const createSectionsFile = proxyquire('../../../server/createSectionsFile', {
   './csvFile': {writeLine}
 })
 
-test('should write a file with a section for each course', t => {
+test.only('should write a file with a section for each course', t => {
   t.plan(2)
   const courses = [
     {

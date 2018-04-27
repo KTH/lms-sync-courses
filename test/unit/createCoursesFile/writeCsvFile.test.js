@@ -1,7 +1,7 @@
 const test = require('tape')
 const sinon = require('sinon')
 const rewire = require('rewire')
-const createCoursesFile = rewire('../../../createCoursesFile.js')
+const createCoursesFile = rewire('../../../server/createCoursesFile')
 const createCsvFile = createCoursesFile.__get__('createCsvFile')
 const csvFile = createCoursesFile.__get__('csvFile')
 csvFile.writeLine = sinon.stub()

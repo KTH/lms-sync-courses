@@ -1,6 +1,6 @@
 const test = require('tape')
 const rewire = require('rewire')
-const util = rewire('../../../../utils')
+const util = rewire('../../../../server/utils')
 const flatten = util.__get__('flatten')
 
 test('should take a 2d array as input, and return a 1d array', t => {
