@@ -1,13 +1,13 @@
 const logger = require('./server/logger')
-const createCoursesFile = require('./old/createCoursesFile')
-const createEnrollmentsFile = require('./old/createEnrollmentsFile')
+const createCoursesFile = require('./server/createCoursesFile')
+const createEnrollmentsFile = require('./server/createEnrollmentsFile')
 const CanvasApi = require('kth-canvas-api')
 const schedule = require('node-schedule')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
 canvasApi.logger = logger
 const moment = require('moment')
-const {deleteFile} = require('./old/utils')
-const createSectionsFile = require('./old/createSectionsFile')
+const {deleteFile} = require('./server/utils')
+const createSectionsFile = require('./server/createSectionsFile')
 const cronTime = process.env.successfulSchedule || '2 * * *'
 
 async function runCourseSync (job) {
