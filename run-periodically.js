@@ -1,12 +1,13 @@
 const logger = require('./server/logger')
-const createCoursesFile = require('./old/createCoursesFile')
-const createEnrollmentsFile = require('./old/createEnrollmentsFile')
+const createCoursesFile = require('./server/createCoursesFile')
+const createEnrollmentsFile = require('./server/createEnrollmentsFile')
 const CanvasApi = require('kth-canvas-api')
 const schedule = require('node-schedule')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
 canvasApi.logger = logger
 const moment = require('moment')
-
+const {deleteFile} = require('./server/utils')
+const createSectionsFile = require('./server/createSectionsFile')
 const cronTime = process.env.successfulSchedule || '2 * * *'
 
 async function runCourseSync (job) {
@@ -15,7 +16,7 @@ async function runCourseSync (job) {
   job.cancel()
   try {
     logger.info('~~~~~~~~~~~~~~~~~~~~~~~ sync ~~~~~~~~~~~~~~~~~~~~~~~')
-    await syncCourses()
+    await syncCoursesSectionsAndEnrollments()
     job.reschedule(cronTime)
     logger.info('^^^^^^^^^^^^^^^^ finished with syncing courses ^^^^^^^^^^^^^^^^^^^')
   } catch (e) {
@@ -25,40 +26,32 @@ async function runCourseSync (job) {
     job.reschedule(errorCronTime)
   }
 }
-async function syncCourses () {
-  createCoursesFile.koppsBaseUrl = process.env.koppsBaseUrl
 
+async function syncCoursesSectionsAndEnrollments () {
   const currentYear = moment().year()
   for (let year of [currentYear, currentYear + 1]) {
     for (let {term, period} of [{term: 1, period: 3}, {term: 2, period: 0}]) {
       logger.info(`creating sis files for year: ${year}, term: ${term}, period: ${period}`)
 
-      const [coursesFileName, sectionsFileName] = await createCoursesFile.createCoursesFile({term, year, period, csvDir: process.env.csvDir})
+      const courseOfferings = await createCoursesFile.getCourseOfferings({term, year})
+      const canvasCourses = createCoursesFile.prepareCoursesForCanvas(courseOfferings)
+      // const coursesFileName = await createCoursesFile.createCoursesFile({term, year, period, canvasCourses})
+      // const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
+      // logger.info('Done sending courses', coursesResponse)
+      //
+      // const sectionsFileName = await createSectionsFile({canvasCourses, term, year, period})
+      // const sectionsResponse = await canvasApi.sendCsvFile(sectionsFileName, true)
+      // logger.info('Done sending sections', sectionsResponse)
 
-      logger.info('About to send the first csv file, courses')
-      const canvasReturnCourse = await canvasApi.sendCsvFile(coursesFileName, true)
-      logger.info('Done sending courses', canvasReturnCourse)
-
-      const canvasReturnSection = await canvasApi.sendCsvFile(sectionsFileName, true)
-      logger.info('Done sending sections', canvasReturnSection)
-
-      const enrollmentsFileName = await createEnrollmentsFile({
-        ugUsername: process.env.ugUsername,
-        ugUrl: process.env.ugUrl,
-        ugPwd: process.env.ugPwd,
-        term,
-        year,
-        period,
-        csvDir: process.env.csvDir
-      })
-
-      const canvasReturnEnroll = await canvasApi.sendCsvFile(enrollmentsFileName, true)
-      logger.info('Done sending enrollments', canvasReturnEnroll)
+      const enrollmentsFileName = await createEnrollmentsFile({canvasCourses, term, year, period})
+      const enrollResponse = await canvasApi.sendCsvFile(enrollmentsFileName, true)
+      logger.info('Done sending enrollments', enrollResponse)
     }
   }
 }
 
 module.exports = {
+  syncCoursesSectionsAndEnrollments,
   async start () {
     logger.info('scheduling job with interval: ', cronTime)
     const job = schedule.scheduleJob(cronTime, async function () {

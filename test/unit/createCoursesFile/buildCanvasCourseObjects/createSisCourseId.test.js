@@ -1,6 +1,6 @@
 const test = require('tape')
 const rewire = require('rewire')
-const util = rewire('../../../../utils.js')
+const util = rewire('../../../../server/utils')
 const createSisCourseId = util.__get__('createSisCourseId')
 
 // let sis_course_id = `${course_code}${_courseTerm(courseRoundObj)}${courseRoundObj.courseRound.$.roundId}`

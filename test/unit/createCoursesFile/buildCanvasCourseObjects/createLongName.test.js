@@ -1,6 +1,6 @@
 const test = require('tape')
 const rewire = require('rewire')
-const util = rewire('../../../../utils.js')
+const util = rewire('../../../../server/utils')
 const createLongName = util.__get__('createLongName')
 
 test('should use the swedish title', t => {

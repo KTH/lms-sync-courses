@@ -18,7 +18,6 @@ COPY ["config", "config"]
 COPY ["package.json", "package.json"]
 COPY ["app.js", "app.js"]
 COPY ["server", "server"]
-COPY ["old", "old"]
 COPY ["run-periodically.js", "run-periodically.js"]
 
 

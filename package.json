@@ -6,13 +6,14 @@
   "main": "app.js",
   "scripts": {
     "start": "NODE_ENV=production nodemon app.js",
-    "start-dev": "cross-env NODE_ENV=development nodemon app.js"
+    "start-dev": "cross-env NODE_ENV=development nodemon app.js",
+    "test": "npx tape \"test/unit/**/*.js\" | tap-spec"
   },
   "dependencies": {
     "bunyan": "^1.8.12",
     "dotenv": "^4.0.0",
     "express": "^4.14.0",
-    "kth-canvas-api": "^0.15.4",
+    "kth-canvas-api": "^0.15.5",
     "kth-canvas-utilities": "kth/kth-canvas-utilities",
     "kth-node-server": "^3.0.3",
     "ldapjs": "^1.0.2",
@@ -23,7 +24,13 @@
   "optionalDependencies": {},
   "devDependencies": {
     "cross-env": "^5.1.4",
+    "fs-extra": "^5.0.0",
     "nodemon": "^1.17.2",
-    "standard": "^11.0.1"
+    "proxyquire": "^2.0.1",
+    "rewire": "^4.0.1",
+    "sinon": "^4.5.0",
+    "standard": "^11.0.1",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.9.0"
   }
 }

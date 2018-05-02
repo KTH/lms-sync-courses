@@ -1,6 +1,6 @@
 const test = require('tape')
 const rewire = require('rewire')
-const utils =  rewire('../../../../utils')
+const utils = rewire('../../../../server/utils')
 const moment = require('moment')
 
 test('should create course object containing attributes needed for creating the course in canvas ', t => {
@@ -13,21 +13,21 @@ test('should create course object containing attributes needed for creating the 
   utils.__set__('calcStartDate', () => aDate)
 
   const courseRound = {
-        courseCode: 'courseCode',
-        shortName: 'shortName'
-      }
+    courseCode: 'courseCode',
+    shortName: 'shortName'
+  }
 
   const result = utils.buildCanvasCourseObjectV2(courseRound)
 
   const expected = {
-      sisCourseId: 'abc123',
-      courseCode: 'courseCode',
-      shortName: 'shortName',
-      longName: 'Långt namn',
-      startDate: aDate,
-      sisAccountId: 'sis account id',
-      status: 'active'
-    }
+    sisCourseId: 'abc123',
+    courseCode: 'courseCode',
+    shortName: 'shortName',
+    longName: 'Långt namn',
+    startDate: aDate,
+    sisAccountId: 'sis account id',
+    status: 'active'
+  }
 
   t.deepEqual(result, expected)
 })
