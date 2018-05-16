@@ -1,7 +1,6 @@
 const test = require('tape')
 const rewire = require('rewire')
 const utils = rewire('../../../../server/utils')
-const moment = require('moment')
 
 test('should create course object containing attributes needed for creating the course in canvas ', t => {
   t.plan(1)

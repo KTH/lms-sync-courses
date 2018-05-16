@@ -6,7 +6,6 @@ const schedule = require('node-schedule')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
 canvasApi.logger = logger
 const moment = require('moment')
-const {deleteFile} = require('./server/utils')
 const createSectionsFile = require('./server/createSectionsFile')
 const cronTime = process.env.successfulSchedule || '2 * * *'
 
@@ -38,7 +37,7 @@ async function syncCoursesSectionsAndEnrollments () {
       const coursesFileName = await createCoursesFile.createCoursesFile({term, year, period, canvasCourses})
       const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
       logger.info('Done sending courses', coursesResponse)
-           
+
       const sectionsFileName = await createSectionsFile({canvasCourses, term, year, period})
       const sectionsResponse = await canvasApi.sendCsvFile(sectionsFileName, true)
       logger.info('Done sending sections', sectionsResponse)
