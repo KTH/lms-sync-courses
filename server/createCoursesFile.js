@@ -1,13 +1,10 @@
 const rp = require('request-promise')
-const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const {
   buildCanvasCourseObjectV2,
   deleteFile
 } = require('./utils')
 const csvFile = require('./csvFile')
-const {mkdir} = require('fs')
 const logger = require('../server/logger')
-let mkdirAsync = Promise.promisify(mkdir)
 
 async function createCsvFile (fileName) {
   const columns = [
@@ -18,7 +15,7 @@ async function createCsvFile (fileName) {
     'account_id',
     'status']
 
-  return await csvFile.writeLine(columns, fileName)
+  return csvFile.writeLine(columns, fileName)
 }
 
 function createCourseOfferingObj (courseOffering) {
@@ -37,7 +34,7 @@ function createCourseOfferingObj (courseOffering) {
 }
 
 module.exports = {
-  prepareCoursesForCanvas(courseOfferings){
+  prepareCoursesForCanvas (courseOfferings) {
     // Re-map the objects from Kopps to objects more similar to CanvasApi
     const courseOfferingObjects = courseOfferings.map(createCourseOfferingObj)
 
@@ -45,7 +42,7 @@ module.exports = {
     return courseOfferingObjects.map(buildCanvasCourseObjectV2)
   },
 
-  async getCourseOfferings({term, year}){
+  async getCourseOfferings ({term, year}) {
     const res = await rp({
       url: `${process.env.koppsBaseUrl}v2/courses/offerings?from=${year}${term}`,
       method: 'GET',

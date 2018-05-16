@@ -1,8 +1,6 @@
 const Promise = require('bluebird')
 const ldap = require('ldapjs')
-const fs = Promise.promisifyAll(require('fs'))
 const csvFile = require('./csvFile')
-const logger = require('../server/logger')
 const {deleteFile} = require('./utils')
 const attributes = ['ugKthid', 'name']
 
@@ -50,7 +48,7 @@ async function searchGroup (filter, ldapClient) {
     res.on('error', reject)
   })
 
-      // Always use arrays as result
+  // Always use arrays as result
   if (Array.isArray(member)) {
     return member
   } else {
@@ -67,7 +65,7 @@ async function searchGroup (filter, ldapClient) {
 */
 async function getExaminatorMembers (courseCode, ldapClient) {
   const courseInitials = courseCode.substring(0, 2)
-  return await searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`, ldapClient)
+  return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`, ldapClient)
 }
 
 async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}) {
@@ -75,17 +73,13 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
   const startTerm = termin.replace(':', '')
   const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
 
-  const ugRoleCanvasRole =  [
-    {type:'teachers', role: 'teacher'},
-    {type:'courseresponsible', role: 'Course Responsible'},
-    {type:'assistants', role: 'ta'}
+  const ugRoleCanvasRole = [
+    {type: 'teachers', role: 'teacher'},
+    {type: 'courseresponsible', role: 'Course Responsible'},
+    {type: 'assistants', role: 'ta'}
   ]
 
   for (let {type, role} of ugRoleCanvasRole) {
-    const courseInitials = canvasCourse.courseCode.substring(0, 2)
-    const startTerm = termin.replace(':', '')
-    const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
-
     const members = await searchGroup(
       `(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${startTerm}.${roundId}.${type}))`,
       ldapClient

@@ -1,8 +1,5 @@
 const csvFile = require('./csvFile')
-const Promise = require('bluebird')
 const {deleteFile} = require('./utils')
-
-const columns = ['section_id', 'course_id', 'name', 'status']
 
 module.exports = async function ({canvasCourses, term, year, period}) {
   const fileName = `${process.env.csvDir}sections-${year}${term}-${period}.csv`
