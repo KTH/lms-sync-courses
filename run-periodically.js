@@ -35,13 +35,13 @@ async function syncCoursesSectionsAndEnrollments () {
 
       const courseOfferings = await createCoursesFile.getCourseOfferings({term, year})
       const canvasCourses = createCoursesFile.prepareCoursesForCanvas(courseOfferings)
-      // const coursesFileName = await createCoursesFile.createCoursesFile({term, year, period, canvasCourses})
-      // const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
-      // logger.info('Done sending courses', coursesResponse)
-      //
-      // const sectionsFileName = await createSectionsFile({canvasCourses, term, year, period})
-      // const sectionsResponse = await canvasApi.sendCsvFile(sectionsFileName, true)
-      // logger.info('Done sending sections', sectionsResponse)
+      const coursesFileName = await createCoursesFile.createCoursesFile({term, year, period, canvasCourses})
+      const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
+      logger.info('Done sending courses', coursesResponse)
+           
+      const sectionsFileName = await createSectionsFile({canvasCourses, term, year, period})
+      const sectionsResponse = await canvasApi.sendCsvFile(sectionsFileName, true)
+      logger.info('Done sending sections', sectionsResponse)
 
       const enrollmentsFileName = await createEnrollmentsFile({canvasCourses, term, year, period})
       const enrollResponse = await canvasApi.sendCsvFile(enrollmentsFileName, true)
