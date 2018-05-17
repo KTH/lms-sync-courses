@@ -56,5 +56,6 @@ module.exports = {
     const job = schedule.scheduleJob(cronTime, async function () {
       await runCourseSync(job)
     })
+    job.invoke()
   }
 }

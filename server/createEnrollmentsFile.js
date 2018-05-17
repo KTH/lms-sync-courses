@@ -3,13 +3,15 @@ const ldap = require('ldapjs')
 const csvFile = require('./csvFile')
 const {deleteFile} = require('./utils')
 const attributes = ['ugKthid', 'name']
+const logger = require('../server/logger')
 
 /*
 * For string array with ldap keys for users, fetch every user object
 */
-function getUsersForMembers (members, ldapClient) {
-  return Promise.map(members, member => {
-    return ldapClient.searchAsync('OU=UG,DC=ug,DC=kth,DC=se', {
+async function getUsersForMembers (members, ldapClient) {
+  const usersForMembers = []
+  for (let member of members) {
+    const res = await ldapClient.searchAsync('OU=UG,DC=ug,DC=kth,DC=se', {
       scope: 'sub',
       filter: `(distinguishedName=${member})`,
       timeLimit: 10,
@@ -20,18 +22,26 @@ function getUsersForMembers (members, ldapClient) {
         pagePause: false
       }
     })
-      .then(res => new Promise((resolve, reject) => {
-        const users = []
-        res.on('searchEntry', entry => users.push(entry.object))
-        res.on('end', () => resolve(users))
-        res.on('error', reject)
-      }))
-  })
-    .then(flatten)
-}
+    const res2 = await new Promise((resolve, reject) => {
+      const users = []
+      logger.info('waiting for event')
+      res.on('searchEntry', entry => {
+        users.push(entry.object)
+      })
+      res.on('end', () => {
+        logger.info('got the event')
+        resolve(users)
+      })
+      res.on('error', err => {
+        logger.info('got the error')
+        reject(err)
+      })
+    })
 
-function flatten (arr) {
-  return [].concat.apply([], arr)
+    // What if reject?
+    usersForMembers.push(...res2)
+  }
+  return usersForMembers
 }
 
 async function searchGroup (filter, ldapClient) {
