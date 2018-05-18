@@ -30,8 +30,9 @@ async function getUsersForMembers (members, ldapClient) {
         res.on('end', entry => {
           if (entry.status !== 0) {
             reject(new Error(`Rejected with status: ${entry.status}`))
+          } else {
+            resolve(users)
           }
-          resolve(users)
         })
         res.on('error', reject)
       })
