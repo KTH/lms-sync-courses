@@ -58,8 +58,9 @@ async function searchGroup (filter, ldapClient) {
       res.on('end', entry => {
         if (entry.status !== 0) {
           reject(new Error(`Rejected with status: ${entry.status}`))
+        } else {
+          resolve(members)
         }
-        resolve(members)
       })
       res.on('error', reject)
     })
