@@ -1,4 +1,4 @@
-const Promise = require('bluebird')
+const util = require('util')
 const ldap = require('ldapjs')
 const csvFile = require('./csvFile')
 const {deleteFile} = require('./utils')
@@ -7,57 +7,65 @@ const attributes = ['ugKthid', 'name']
 /*
 * For string array with ldap keys for users, fetch every user object
 */
-function getUsersForMembers (members, ldapClient) {
-  return Promise.map(members, member => {
-    return ldapClient.searchAsync('OU=UG,DC=ug,DC=kth,DC=se', {
-      scope: 'sub',
-      filter: `(distinguishedName=${member})`,
-      timeLimit: 10,
-      paging: true,
-      attributes,
-      paged: {
-        pageSize: 1000,
-        pagePause: false
-      }
-    })
-      .then(res => new Promise((resolve, reject) => {
+async function getUsersForMembers (members, ldapClient) {
+  const usersForMembers = []
+  for (let member of members) {
+    const searchResult = await new Promise((resolve, reject) => {
+      ldapClient.search('OU=UG,DC=ug,DC=kth,DC=se', {
+        scope: 'sub',
+        filter: `(distinguishedName=${member})`,
+        timeLimit: 10,
+        paging: true,
+        attributes,
+        paged: {
+          pageSize: 1000,
+          pagePause: false
+        }
+      }, (err, res) => {
+        if (err) {
+          reject(err)
+        }
         const users = []
         res.on('searchEntry', entry => users.push(entry.object))
-        res.on('end', () => resolve(users))
+        res.on('end', entry => {
+          if (entry.status !== 0) {
+            reject(new Error(`Rejected with status: ${entry.status}`))
+          } else {
+            resolve(users)
+          }
+        })
         res.on('error', reject)
-      }))
-  })
-    .then(flatten)
-}
+      })
+    })
 
-function flatten (arr) {
-  return [].concat.apply([], arr)
+    usersForMembers.push(...searchResult)
+  }
+  return usersForMembers
 }
 
 async function searchGroup (filter, ldapClient) {
-  const res = await ldapClient.searchAsync('OU=UG,DC=ug,DC=kth,DC=se', {
-    scope: 'sub',
-    filter,
-    timeLimit: 11,
-    paged: true
+  return new Promise((resolve, reject) => {
+    ldapClient.search('OU=UG,DC=ug,DC=kth,DC=se', {
+      scope: 'sub',
+      filter,
+      timeLimit: 11,
+      paged: true
+    }, (err, res) => {
+      if (err) {
+        reject(err)
+      }
+      const members = []
+      res.on('searchEntry', entry => members.push(entry.object.member))
+      res.on('end', entry => {
+        if (entry.status !== 0) {
+          reject(new Error(`Rejected with status: ${entry.status}`))
+        } else {
+          resolve(members)
+        }
+      })
+      res.on('error', reject)
+    })
   })
-
-  const member = await new Promise((resolve, reject) => {
-    res.on('searchEntry', entry => resolve(entry.object.member)) // We will get one result for the group where querying for
-    res.on('end', entry => resolve(entry.object && entry.object.member))
-    res.on('error', reject)
-  })
-
-  // Always use arrays as result
-  if (Array.isArray(member)) {
-    return member
-  } else {
-    if (member) {
-      return [member]
-    } else {
-      return []
-    }
-  }
 }
 
 /*
@@ -98,10 +106,11 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
 }
 
 module.exports = async function ({term, year, period, canvasCourses}) {
-  const ldapClient = Promise.promisifyAll(ldap.createClient({
+  const ldapClient = ldap.createClient({
     url: process.env.ugUrl
-  }))
-  await ldapClient.bindAsync(process.env.ugUsername, process.env.ugPwd)
+  })
+  const ldapClientBindAsync = util.promisify(ldapClient.bind).bind(ldapClient)
+  await ldapClientBindAsync(process.env.ugUsername, process.env.ugPwd)
 
   const termin = `${year}${term}`
   const fileName = `${process.env.csvDir}enrollments-${termin}-${period}.csv`
@@ -116,6 +125,8 @@ module.exports = async function ({term, year, period, canvasCourses}) {
   for (let canvasCourse of canvasCourses) {
     await writeUsersForCourse({canvasCourse, ldapClient, termin, fileName})
   }
-  await ldapClient.unbindAsync()
+
+  const ldapClientUnbindAsync = util.promisify(ldapClient.unbind).bind(ldapClient)
+  await ldapClientUnbindAsync()
   return fileName
 }
