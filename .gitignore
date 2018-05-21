@@ -15,4 +15,8 @@ typings.json
 # Dependency directory for NPM
 node_modules/*
 
+# Sublime Text file(s)
+*.sublime-project
+*.sublime-workspace
+
 *.env

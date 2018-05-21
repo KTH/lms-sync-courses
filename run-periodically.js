@@ -52,6 +52,8 @@ async function syncCoursesSectionsAndEnrollments () {
 module.exports = {
   syncCoursesSectionsAndEnrollments,
   async start () {
+    logger.info('initial run of job')
+    await syncCoursesSectionsAndEnrollments()
     logger.info('scheduling job with interval: ', cronTime)
     const job = schedule.scheduleJob(cronTime, async function () {
       await runCourseSync(job)

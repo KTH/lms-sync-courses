@@ -24,15 +24,16 @@ async function getUsersForMembers (members, ldapClient) {
       }, (err, res) => {
         if (err) {
           reject(err)
+          return
         }
         const users = []
         res.on('searchEntry', entry => users.push(entry.object))
         res.on('end', entry => {
           if (entry.status !== 0) {
             reject(new Error(`Rejected with status: ${entry.status}`))
-          } else {
-            resolve(users)
+            return
           }
+          resolve(users)
         })
         res.on('error', reject)
       })
@@ -53,15 +54,16 @@ async function searchGroup (filter, ldapClient) {
     }, (err, res) => {
       if (err) {
         reject(err)
+        return
       }
       const members = []
       res.on('searchEntry', entry => members.push(entry.object.member))
       res.on('end', entry => {
         if (entry.status !== 0) {
           reject(new Error(`Rejected with status: ${entry.status}`))
-        } else {
-          resolve(members)
+          return
         }
+        resolve(members)
       })
       res.on('error', reject)
     })
