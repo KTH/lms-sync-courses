@@ -44,7 +44,7 @@ module.exports = {
 
   async getCourseOfferings ({term, year}) {
     const res = await rp({
-      url: `${process.env.koppsBaseUrl}v2/courses/offerings?from=${year}${term}`,
+      url: `${process.env.koppsBaseUrl}v2/courses/offerings?from=${year}${term}&skip_coordinator_info=true`,
       method: 'GET',
       json: true,
       headers: {'content-type': 'application/json'}
