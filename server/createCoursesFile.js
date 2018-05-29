@@ -3,7 +3,7 @@ const {
   buildCanvasCourseObjectV2,
   deleteFile
 } = require('./utils')
-const csvFile = require('./csvFile')
+const csvFile = require('kth-canvas-utilities').csvFile
 const logger = require('../server/logger')
 
 async function createCsvFile (fileName) {
