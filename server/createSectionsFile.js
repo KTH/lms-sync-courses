@@ -1,4 +1,4 @@
-const csvFile = require('kth-canvas-utilities').csvFile
+const {csvFile} = require('kth-canvas-utilities')
 const {deleteFile} = require('./utils')
 
 module.exports = async function ({canvasCourses, term, year, period}) {

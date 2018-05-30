@@ -1,6 +1,6 @@
 const util = require('util')
 const ldap = require('ldapjs')
-const csvFile = require('kth-canvas-utilities').csvFile
+const {csvFile} = require('kth-canvas-utilities')
 const {deleteFile} = require('./utils')
 const attributes = ['ugKthid', 'name']
 
