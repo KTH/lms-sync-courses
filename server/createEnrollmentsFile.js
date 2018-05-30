@@ -1,6 +1,6 @@
 const util = require('util')
 const ldap = require('ldapjs')
-const csvFile = require('./csvFile')
+const {csvFile} = require('kth-canvas-utilities')
 const {deleteFile} = require('./utils')
 const attributes = ['ugKthid', 'name']
 
@@ -27,7 +27,13 @@ async function getUsersForMembers (members, ldapClient) {
           return
         }
         const users = []
-        res.on('searchEntry', entry => users.push(entry.object))
+        res.on('searchEntry', entry => {
+          if (Array.isArray(entry.object)) {
+            users.push(...entry.object)
+          } else {
+            users.push(entry.object)
+          }
+        })
         res.on('end', entry => {
           if (entry.status !== 0) {
             reject(new Error(`Rejected with status: ${entry.status}`))
@@ -57,7 +63,13 @@ async function searchGroup (filter, ldapClient) {
         return
       }
       const members = []
-      res.on('searchEntry', entry => members.push(entry.object.member))
+      res.on('searchEntry', entry => {
+        if (Array.isArray(entry.object.member)) {
+          members.push(...entry.object.member)
+        } else {
+          members.push(entry.object.member)
+        }
+      })
       res.on('end', entry => {
         if (entry.status !== 0) {
           reject(new Error(`Rejected with status: ${entry.status}`))
