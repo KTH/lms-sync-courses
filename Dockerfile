@@ -1,7 +1,8 @@
 FROM kthse/kth-nodejs-api:2.4
 
-COPY ["package.json", "package.json"]
 COPY ["config", "config"]
+COPY ["package.json", "package.json"]
+COPY ["package-lock.json", "package-lock.json"]
 
 # Source files in root
 COPY ["app.js", "app.js"]
