@@ -21,7 +21,11 @@ async function checkCanvasKey () {
 
 async function checkCanvasStatus () {
   try {
-    return checkCanvasStatus.status.indicator === 'none'
+    const canvasStatus = await rp({
+      url: 'http://nlxv32btr6v7.statuspage.io/api/v2/status.json',
+      json: true
+    })
+    return canvasStatus.status.indicator === 'none'
   } catch (e) {
     log.info('An error occured:', e)
     return false
