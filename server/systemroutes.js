@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const CanvasApi = require('kth-canvas-api')
+const rp = require('request-promise')
 const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
 const stripIndent = require('common-tags/lib/stripIndent')
 
@@ -32,7 +33,6 @@ async function checkCanvasStatus () {
   }
 }
 
-
 function _about (req, res) {
   res.setHeader('Content-Type', 'text/plain')
   res.send(`
@@ -48,26 +48,35 @@ function _about (req, res) {
 }
 
 async function _monitor (req, res) {
-  res.setHeader('Content-Type', 'text/plain')
+  const status = await checkCanvasKey()
   const statusStr = stripIndent`
-    APPLICATION_STATUS: OK
+    APPLICATION_STATUS: ${status ? 'OK' : 'ERROR'}
+
+    CANVAS_KEY: ${status ? 'OK' : 'ERROR. Token for Canvas is not properly set'}
   `
   log.info('Showing _monitor page:', statusStr)
+  res.setHeader('Content-Type', 'text/plain')
   res.send(statusStr)
 }
 
 async function _monitorAll (req, res) {
-  res.setHeader('Content-Type', 'text/plain')
+  const canvasStatus = await checkCanvasStatus()
+  const canvasKeyStatus = await checkCanvasKey()
+
   const statusStr = stripIndent`
-    APPLICATION_STATUS: OK
+    APPLICATION_STATUS: ${canvasStatus && canvasKeyStatus ? 'OK' : 'ERROR'}
+
+    CANVAS_KEY: ${canvasKeyStatus ? 'OK' : 'ERROR. Token for Canvas is not properly set'}
+    CANVAS: ${canvasStatus ? 'OK' : 'ERROR. CANVAS is down'}
   `
   log.info('Showing _monitor_all page:', statusStr)
+
+  res.setHeader('Content-Type', 'text/plain')
   res.send(statusStr)
 }
 
 router.get('/_monitor', _monitor)
 router.get('/_monitor_all', _monitorAll)
-
 router.get('/_monitor_core', function (req, res) {
   res.setHeader('Content-Type', 'text/plain')
   res.send(stripIndent`
