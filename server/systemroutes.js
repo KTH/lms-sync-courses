@@ -1,8 +1,32 @@
 const express = require('express')
 const router = express.Router()
+
+const CanvasApi = require('kth-canvas-api')
+const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
+
 const version = require('../config/version')
 const packageFile = require('../package.json')
 const log = require('./logger')
+
+async function checkCanvasKey () {
+  try {
+    await canvasApi.getRootAccount()
+    return true
+  } catch (e) {
+    log.info('An error ocurred: ', e)
+    return false
+  }
+}
+
+async function checkCanvasStatus () {
+  try {
+    return checkCanvasStatus.status.indicator === 'none'
+  } catch (e) {
+    log.info('An error occured:', e)
+    return false
+  }
+}
+
 
 function _about (req, res) {
   res.setHeader('Content-Type', 'text/plain')
