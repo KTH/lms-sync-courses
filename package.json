@@ -7,7 +7,8 @@
   "scripts": {
     "start": "NODE_ENV=production nodemon app.js",
     "start-dev": "cross-env NODE_ENV=development nodemon app.js",
-    "test": "npx tape \"test/unit/**/*.js\" | tap-spec"
+    "test": "npx tape \"test/unit/**/*.js\" | tap-spec",
+    "test:integration": "cross-env NODE_ENV=development tape \"test/integration/**/*.js\" | tap-spec"
   },
   "dependencies": {
     "bunyan": "^1.8.12",
