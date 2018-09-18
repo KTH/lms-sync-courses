@@ -7,9 +7,7 @@ test('should create the file with correct name, headers, and a line including a 
   process.env.csvDir = '/tmp/testing/'
   fs.removeSync(process.env.csvDir)
   fs.mkdirSync(process.env.csvDir)
-  t.fail('This test is failing on purpose')
-
-  // await syncCoursesSectionsAndEnrollments()
+  await syncCoursesSectionsAndEnrollments()
 
   const files = fs.readdirSync(process.env.csvDir)
   t.equal(files.length, 12, '12 csv files should be created in total')
