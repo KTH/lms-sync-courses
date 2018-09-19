@@ -7,7 +7,7 @@
   "scripts": {
     "start": "NODE_ENV=production nodemon app.js",
     "start-dev": "cross-env NODE_ENV=development nodemon app.js",
-    "test": "npx tape \"test/unit/**/*.js\" | tap-spec",
+    "test": "tape \"test/unit/**/*.js\" | tap-spec",
     "test:integration": "cross-env NODE_ENV=development tape \"test/integration/**/*.js\" | tap-spec",
     "test:docker-unit": "npm install --no-optional; npm test",
     "test:docker-integration": "npm install --no-optional; npm run test:integration"
