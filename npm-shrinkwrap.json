@@ -434,6 +434,12 @@
         }
       }
     },
+    "buffer-shims": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/buffer-shims/-/buffer-shims-1.0.0.tgz",
+      "integrity": "sha1-mXjOMXOIxkmth5MCjDR37wRKi1E=",
+      "dev": true
+    },
     "builtin-modules": {
       "version": "1.1.1",
       "resolved": "https://registry.npmjs.org/builtin-modules/-/builtin-modules-1.1.1.tgz",
@@ -781,7 +787,7 @@
     },
     "cryptiles": {
       "version": "3.1.2",
-      "resolved": "https://registry.npmjs.org/cryptiles/-/cryptiles-3.1.2.tgz",
+      "resolved": "https://registry.npmjs.org/cryptiles/-/cryptiles-4.1.2.tgz",
       "integrity": "sha1-qJ+7Ig9c4l7FboxKqKT9e1sNKf4=",
       "requires": {
         "boom": "5.x.x"
@@ -3959,7 +3965,7 @@
     },
     "pretty-ms": {
       "version": "2.1.0",
-      "resolved": "https://registry.npmjs.org/pretty-ms/-/pretty-ms-2.1.0.tgz",
+      "resolved": "http://registry.npmjs.org/pretty-ms/-/pretty-ms-2.1.0.tgz",
       "integrity": "sha1-QlfCVt8/sLRR1q/6qwIYhBJpgdw=",
       "dev": true,
       "requires": {
@@ -4978,21 +4984,42 @@
       }
     },
     "tap-out": {
-      "version": "1.4.2",
-      "resolved": "https://registry.npmjs.org/tap-out/-/tap-out-1.4.2.tgz",
-      "integrity": "sha1-yQfsG/lAURHQiCY+kvVgi4jLs3o=",
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/tap-out/-/tap-out-2.1.0.tgz",
+      "integrity": "sha512-LJE+TBoVbOWhwdz4+FQk40nmbIuxJLqaGvj3WauQw3NYYU5TdjoV3C0x/yq37YAvVyi+oeBXmWnxWSjJ7IEyUw==",
       "dev": true,
       "requires": {
-        "re-emitter": "^1.0.0",
-        "readable-stream": "^2.0.0",
-        "split": "^1.0.0",
+        "re-emitter": "1.1.3",
+        "readable-stream": "2.2.9",
+        "split": "1.0.0",
         "trim": "0.0.1"
       },
       "dependencies": {
+        "process-nextick-args": {
+          "version": "1.0.7",
+          "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.7.tgz",
+          "integrity": "sha1-FQ4gt1ZZCtP5EJPyWk8q2L/zC6M=",
+          "dev": true
+        },
+        "readable-stream": {
+          "version": "2.2.9",
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.9.tgz",
+          "integrity": "sha1-z3jsb0ptHrQ9JkiMrJfwQudLf8g=",
+          "dev": true,
+          "requires": {
+            "buffer-shims": "~1.0.0",
+            "core-util-is": "~1.0.0",
+            "inherits": "~2.0.1",
+            "isarray": "~1.0.0",
+            "process-nextick-args": "~1.0.6",
+            "string_decoder": "~1.0.0",
+            "util-deprecate": "~1.0.1"
+          }
+        },
         "split": {
-          "version": "1.0.1",
-          "resolved": "https://registry.npmjs.org/split/-/split-1.0.1.tgz",
-          "integrity": "sha512-mTyOoPbrivtXnwnIxZRFYRrPNtEFKlpB2fvjSnCQUiAA6qAZzqwna5envK4uk6OIeP17CsdF3rSBGYVBsU0Tkg==",
+          "version": "1.0.0",
+          "resolved": "http://registry.npmjs.org/split/-/split-1.0.0.tgz",
+          "integrity": "sha1-xDlc5oOrzSVLwo/h2rtuXCfc/64=",
           "dev": true,
           "requires": {
             "through": "2"
@@ -5001,24 +5028,24 @@
       }
     },
     "tap-spec": {
-      "version": "4.1.1",
-      "resolved": "https://registry.npmjs.org/tap-spec/-/tap-spec-4.1.1.tgz",
-      "integrity": "sha1-4unyb1IIIysfViKIyXYk1YqI8Fo=",
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/tap-spec/-/tap-spec-5.0.0.tgz",
+      "integrity": "sha512-zMDVJiE5I6Y4XGjlueGXJIX2YIkbDN44broZlnypT38Hj/czfOXrszHNNJBF/DXR8n+x6gbfSx68x04kIEHdrw==",
       "dev": true,
       "requires": {
         "chalk": "^1.0.0",
         "duplexer": "^0.1.1",
         "figures": "^1.4.0",
-        "lodash": "^3.6.0",
+        "lodash": "^4.17.10",
         "pretty-ms": "^2.1.0",
         "repeat-string": "^1.5.2",
-        "tap-out": "^1.4.1",
+        "tap-out": "^2.1.0",
         "through2": "^2.0.0"
       },
       "dependencies": {
         "chalk": {
           "version": "1.1.3",
-          "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz",
+          "resolved": "http://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz",
           "integrity": "sha1-qBFcVeSnAv5NFQq9OHKCKn4J/Jg=",
           "dev": true,
           "requires": {
@@ -5040,9 +5067,9 @@
           }
         },
         "lodash": {
-          "version": "3.10.1",
-          "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz",
-          "integrity": "sha1-W/Rejkm6QYnhfUgnid/RW9FAt7Y=",
+          "version": "4.17.11",
+          "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.11.tgz",
+          "integrity": "sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==",
           "dev": true
         },
         "strip-ansi": {
