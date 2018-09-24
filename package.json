@@ -2,7 +2,7 @@
   "//": "The production flag is added in the jenkins build script.",
   "name": "lms-sync-courses",
   "version": "0.1.0",
-  "description": "A program which makes sure courses are propagated into Canvas LMS.",
+  "description": "A program which propagates courses into Canvas LMS.",
   "main": "app.js",
   "scripts": {
     "start": "NODE_ENV=production nodemon app.js",
