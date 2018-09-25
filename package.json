@@ -2,12 +2,18 @@
   "//": "The production flag is added in the jenkins build script.",
   "name": "lms-sync-courses",
   "version": "0.1.0",
-  "description": "",
+  "description": "A program which propagates courses into Canvas LMS.",
   "main": "app.js",
   "scripts": {
     "start": "NODE_ENV=production nodemon app.js",
     "start-dev": "cross-env NODE_ENV=development nodemon app.js",
     "test": "npx tape \"test/unit/**/*.js\" | tap-spec"
+  },
+  "author": "team-e-larande",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KTH/lms-sync-courses.git"
   },
   "dependencies": {
     "bunyan": "^1.8.12",
@@ -19,19 +25,19 @@
     "kth-node-server": "^3.1.1",
     "ldapjs": "^1.0.2",
     "node-schedule": "^1.3.0",
-    "request": "^2.86.0",
+    "request": "^2.88.0",
     "request-promise": "^4.2.2"
   },
   "optionalDependencies": {},
   "devDependencies": {
-    "cross-env": "^5.1.5",
+    "cross-env": "^5.2.0",
     "fs-extra": "^6.0.1",
-    "nodemon": "^1.17.4",
-    "proxyquire": "^2.0.1",
+    "nodemon": "^1.18.4",
+    "proxyquire": "^2.1.0",
     "rewire": "^4.0.1",
-    "sinon": "^5.0.7",
+    "sinon": "^5.1.1",
     "standard": "^11.0.1",
-    "tap-spec": "^4.1.1",
-    "tape": "^4.9.0"
+    "tap-spec": "^5.0.0",
+    "tape": "^4.9.1"
   }
 }
