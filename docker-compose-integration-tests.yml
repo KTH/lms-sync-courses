@@ -5,11 +5,12 @@ services:
   # Start app as a container
   #############################################
   web:
+    image: $LOCAL_IMAGE_ID
+
     # build from local Dockerfile
     build: .
     # if not --build and kth-azure-app already exists in
     # your local computers registry 'image' is used.
-    image: $LOCAL_IMAGE_ID
 
     # LOCAL_IMAGE_ID, IMAGE_NAME and IMAGE_VERSION
 
