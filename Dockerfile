@@ -1,4 +1,4 @@
-FROM node:8.12
+FROM kthse/kth-nodejs:9.11.0
 
 COPY ["config", "config"]
 COPY ["package.json", "package.json"]
