@@ -30,9 +30,15 @@ function createSisCourseId ({courseCode, startTerm, roundId}) {
   return `${courseCode}${term}${shortYear}${roundId}`
 }
 
-function getSisAccountId ({courseCode}) {
-  const firstChar = courseCode[0]
-  return `${departmentCodeMapping[firstChar]} - Imported course rounds`
+function getSisAccountId ({departmentCode}) {
+  // Note: In a future version of the api, we hope to get the scool directly.
+  // For now, looking it up through the department_code is at least better than course_code.
+  const firstChar = departmentCode[0]
+  const school = departmentCodeMapping[firstChar]
+  if (!school) {
+    throw new Error(`Failed to find school for department ${departmentCode}`)
+  }
+  return `${school} - Imported course rounds`
 }
 
 function calcStartDate (courseRound) {

@@ -26,6 +26,7 @@ function createCourseOfferingObj (courseOffering) {
     startSemester: courseOffering.offered_semesters.filter(s => s.semester === courseOffering.first_yearsemester)[0], // take start_Week for whole course
     shortName: courseOffering.short_name,
     tutoringLanguage: courseOffering.language,
+    departmentCode: courseOffering.department_code,
     title: {
       sv: courseOffering.course_name,
       en: courseOffering.course_name_en
