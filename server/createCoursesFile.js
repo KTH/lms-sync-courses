@@ -27,6 +27,7 @@ function createCourseOfferingObj (courseOffering) {
     shortName: courseOffering.short_name,
     tutoringLanguage: courseOffering.language,
     departmentCode: courseOffering.department_code,
+    schoolCode: courseOffering.school_code,
     title: {
       sv: courseOffering.course_name,
       en: courseOffering.course_name_en
