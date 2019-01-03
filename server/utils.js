@@ -1,5 +1,4 @@
 const terms = require('kth-canvas-utilities').terms
-const departmentCodeMapping = require('kth-canvas-utilities').departmentCodeMapping
 const moment = require('moment')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const {unlink} = require('fs')
@@ -30,17 +29,6 @@ function createSisCourseId ({courseCode, startTerm, roundId}) {
   return `${courseCode}${term}${shortYear}${roundId}`
 }
 
-function getSisAccountId ({departmentCode}) {
-  // Note: In a future version of the api, we hope to get the scool directly.
-  // For now, looking it up through the department_code is at least better than course_code.
-  const firstChar = departmentCode[0]
-  const school = departmentCodeMapping[firstChar]
-  if (!school) {
-    throw new Error(`Failed to find school for department ${departmentCode}`)
-  }
-  return `${school} - Imported course rounds`
-}
-
 function calcStartDate (courseRound) {
   const year = courseRound.startSemester.semester.slice(0, 4)
   const weekNumber = courseRound.startSemester.start_week
@@ -55,7 +43,6 @@ function flatten (arr) {
 
 module.exports = {
   deleteFile,
-  getSisAccountId,
   flatten,
 
   buildCanvasCourseObjectV2 (courseRound) { // new for course from v2
@@ -68,7 +55,7 @@ module.exports = {
       shortName: courseRound.shortName,
       longName: createLongName(courseRound),
       startDate: calcStartDate(courseRound),
-      sisAccountId: getSisAccountId(courseRound),
+      sisAccountId: `${courseRound.schoolCode} - Imported course rounds`,
       status: 'active'
     }
   }

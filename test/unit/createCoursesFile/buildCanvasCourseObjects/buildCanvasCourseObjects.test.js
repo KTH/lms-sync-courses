@@ -8,10 +8,10 @@ test('should create course object containing attributes needed for creating the 
 
   utils.__set__('createSisCourseId', () => 'abc123')
   utils.__set__('createLongName', () => 'Långt namn')
-  utils.__set__('getSisAccountId', () => 'sis account id')
   utils.__set__('calcStartDate', () => aDate)
 
   const courseRound = {
+    schoolCode: 'ABE',
     courseCode: 'courseCode',
     shortName: 'shortName'
   }
@@ -24,7 +24,7 @@ test('should create course object containing attributes needed for creating the 
     shortName: 'shortName',
     longName: 'Långt namn',
     startDate: aDate,
-    sisAccountId: 'sis account id',
+    sisAccountId: 'ABE - Imported course rounds',
     status: 'active'
   }
 
