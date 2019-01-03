@@ -24,7 +24,7 @@ test('should create course object containing attributes needed for creating the 
     shortName: 'shortName',
     longName: 'Långt namn',
     startDate: aDate,
-    sisAccountId: 'ABE - Imported course rounds`',
+    sisAccountId: 'ABE - Imported course rounds',
     status: 'active'
   }
 
