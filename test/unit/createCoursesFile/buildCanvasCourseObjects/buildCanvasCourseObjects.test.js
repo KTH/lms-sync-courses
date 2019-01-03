@@ -11,7 +11,7 @@ test('should create course object containing attributes needed for creating the 
   utils.__set__('calcStartDate', () => aDate)
 
   const courseRound = {
-      schoolCode: 'ABE',
+    schoolCode: 'ABE',
     courseCode: 'courseCode',
     shortName: 'shortName'
   }
