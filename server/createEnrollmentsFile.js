@@ -3,6 +3,7 @@ const ldap = require('ldapjs')
 const {csvFile} = require('kth-canvas-utilities')
 const {deleteFile} = require('./utils')
 const attributes = ['ugKthid', 'name']
+const terms = require('kth-canvas-utilities/terms')
 
 /*
 * For string array with ldap keys for users, fetch every user object
@@ -90,16 +91,21 @@ async function getExaminatorMembers (courseCode, ldapClient) {
   return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`, ldapClient)
 }
 
-async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}) {
+async function writeUsersForCourse ({canvasCourse, ldapClient, fileName}) {
   const courseInitials = canvasCourse.courseCode.substring(0, 2)
-  const startTerm = termin.replace(':', '')
-  const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
 
   const ugRoleCanvasRole = [
     {type: 'teachers', role: 'teacher'},
     {type: 'courseresponsible', role: 'Course Responsible'},
     {type: 'assistants', role: 'ta'}
   ]
+    const length = canvasCourse.sisCourseId.length
+    const roundId= canvasCourse.sisCourseId.substring(l - 1, l)
+    const termin = canvasCourse.sisCourseId.substring(l - 5, l-3)
+    const year = canvasCourse.sisCourseId.substring(l - 3, l-1)
+
+    // OH no! A y2k100 bug!
+    const startTerm = `20${year}${terms[termin]}`
 
   for (let {type, role} of ugRoleCanvasRole) {
     const members = await searchGroup(
