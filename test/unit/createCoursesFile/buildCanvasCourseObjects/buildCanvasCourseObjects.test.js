@@ -14,7 +14,7 @@ test('should create course object containing attributes needed for creating the 
     schoolCode: 'ABE',
     courseCode: 'courseCode',
     shortName: 'shortName',
-      startTerm: 'startTerm'
+    startTerm: 'startTerm'
   }
 
   const result = utils.buildCanvasCourseObjectV2(courseRound)
