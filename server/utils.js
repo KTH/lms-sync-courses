@@ -50,6 +50,7 @@ module.exports = {
       return
     }
     return {
+      startTerm: courseRound.startTerm,
       sisCourseId: createSisCourseId(courseRound),
       courseCode: courseRound.courseCode,
       shortName: courseRound.shortName,
