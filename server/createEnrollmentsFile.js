@@ -5,8 +5,8 @@ const {deleteFile} = require('./utils')
 const attributes = ['ugKthid', 'name']
 
 /*
-* For string array with ldap keys for users, fetch every user object
-*/
+ * For string array with ldap keys for users, fetch every user object
+ */
 async function getUsersForMembers (members, ldapClient) {
   const usersForMembers = []
   for (let member of members) {
@@ -83,17 +83,15 @@ async function searchGroup (filter, ldapClient) {
 }
 
 /*
-* Fetch the members for the examinator group for this course.
-*/
+ * Fetch the members for the examinator group for this course.
+ */
 async function getExaminatorMembers (courseCode, ldapClient) {
   const courseInitials = courseCode.substring(0, 2)
   return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`, ldapClient)
 }
 
-async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}) {
+async function writeUsersForCourse ({canvasCourse, ldapClient, fileName}) {
   const courseInitials = canvasCourse.courseCode.substring(0, 2)
-  const startTerm = termin.replace(':', '')
-  const roundId = canvasCourse.sisCourseId.substring(canvasCourse.sisCourseId.length - 1, canvasCourse.sisCourseId.length)
 
   const ugRoleCanvasRole = [
     {type: 'teachers', role: 'teacher'},
@@ -101,9 +99,11 @@ async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}
     {type: 'assistants', role: 'ta'}
   ]
 
+  const roundId = canvasCourse.sisCourseId.slice(-1)
+
   for (let {type, role} of ugRoleCanvasRole) {
     const members = await searchGroup(
-      `(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${startTerm}.${roundId}.${type}))`,
+      `(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${roundId}.${type}))`,
       ldapClient
     )
     const users = await getUsersForMembers(members, ldapClient)
