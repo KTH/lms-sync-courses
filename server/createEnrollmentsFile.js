@@ -98,8 +98,8 @@ async function writeUsersForCourse ({canvasCourse, ldapClient, fileName}) {
     {type: 'courseresponsible', role: 'Course Responsible'},
     {type: 'assistants', role: 'ta'}
   ]
-  const length = canvasCourse.sisCourseId.length
-  const roundId = canvasCourse.sisCourseId.substring(length - 1, length)
+
+  const roundId = canvasCourse.sisCourseId.slice(-1)
 
   for (let {type, role} of ugRoleCanvasRole) {
     const members = await searchGroup(
