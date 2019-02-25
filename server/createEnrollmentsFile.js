@@ -92,8 +92,6 @@ async function getExaminatorMembers (courseCode, ldapClient) {
 
 async function writeUsersForCourse ({canvasCourse, termin, ldapClient, fileName}) {
   const courseInitials = canvasCourse.courseCode.length > 6 ? canvasCourse.courseCode.substring(0, 3) : canvasCourse.courseCode.substring(0, 2)
-
-
 
   const ugRoleCanvasRole = [
     {type: 'teachers', role: 'teacher'},
