@@ -137,7 +137,7 @@ module.exports = async function ({term, year, period, canvasCourses}) {
   ], fileName)
 
   for (let canvasCourse of canvasCourses) {
-    await writeUsersForCourse({canvasCourse, ldapClient, termin, fileName})
+    await writeUsersForCourse({canvasCourse, ldapClient, fileName})
   }
 
   const ldapClientUnbindAsync = util.promisify(ldapClient.unbind).bind(ldapClient)
