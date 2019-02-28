@@ -86,12 +86,12 @@ async function searchGroup (filter, ldapClient) {
  * Fetch the members for the examinator group for this course.
  */
 async function getExaminatorMembers (courseCode, ldapClient) {
-  const courseInitials = courseCode.substring(0, 2)
+  const courseInitials = courseCode.length > 6 ? courseCode.substring(0, 3) : courseCode.substring(0, 2)
   return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`, ldapClient)
 }
 
 async function writeUsersForCourse ({canvasCourse, ldapClient, fileName}) {
-  const courseInitials = canvasCourse.courseCode.substring(0, 2)
+  const courseInitials = canvasCourse.courseCode.length > 6 ? canvasCourse.courseCode.substring(0, 3) : canvasCourse.courseCode.substring(0, 2)
 
   const ugRoleCanvasRole = [
     {type: 'teachers', role: 'teacher'},
