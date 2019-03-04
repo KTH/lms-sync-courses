@@ -52,6 +52,7 @@ module.exports = {
     return {
       startTerm: courseRound.startTerm,
       sisCourseId: createSisCourseId(courseRound),
+      courseCode: courseRound.courseCode,
       shortName: courseRound.shortName,
       longName: createLongName(courseRound),
       startDate: calcStartDate(courseRound),
