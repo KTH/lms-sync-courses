@@ -22,6 +22,7 @@ test('should create course object containing attributes needed for creating the 
   const expected = {
     startTerm: 'startTerm',
     sisCourseId: 'abc123',
+    courseCode: 'courseCode',
     shortName: 'shortName',
     longName: 'Långt namn',
     startDate: aDate,
