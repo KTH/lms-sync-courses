@@ -67,7 +67,7 @@ module.exports = {
     for (const course of canvasCourses) {
       await csvFile.writeLine([
         course.sisCourseId,
-        course.courseCode,
+        course.sisCourseId,
         course.longName,
         course.startDate,
         course.sisAccountId,
