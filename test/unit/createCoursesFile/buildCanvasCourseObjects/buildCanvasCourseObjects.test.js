@@ -14,7 +14,10 @@ test('should create course object containing attributes needed for creating the 
     schoolCode: 'ABE',
     courseCode: 'courseCode',
     shortName: 'shortName',
-    startTerm: 'startTerm'
+    startTerm: 'startTerm',
+    startSemester: {
+      start_date: aDate
+    }
   }
 
   const result = utils.buildCanvasCourseObjectV2(courseRound)
@@ -25,7 +28,7 @@ test('should create course object containing attributes needed for creating the 
     courseCode: 'courseCode',
     shortName: 'shortName',
     longName: 'Långt namn',
-    startDate: aDate,
+    startDate: `${aDate}T06:00:00Z`,
     sisAccountId: 'ABE - Imported course rounds',
     status: 'active'
   }
