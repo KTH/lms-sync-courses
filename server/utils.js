@@ -1,5 +1,4 @@
 const terms = require('kth-canvas-utilities').terms
-const moment = require('moment')
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const {unlink} = require('fs')
 let unlinkAsync = Promise.promisify(unlink)
@@ -29,14 +28,6 @@ function createSisCourseId ({courseCode, startTerm, roundId}) {
   return `${courseCode}${term}${shortYear}${roundId}`
 }
 
-function calcStartDate (courseRound) {
-  const year = courseRound.startSemester.semester.slice(0, 4)
-  const weekNumber = courseRound.startSemester.start_week
-  const d = moment().year(year).isoWeek(weekNumber).isoWeekday(1)
-  d.set({hour: 8, minute: 0, second: 0, millisecond: 0})
-  return d.toISOString()
-}
-
 function flatten (arr) {
   return [].concat.apply([], arr)
 }
@@ -55,7 +46,7 @@ module.exports = {
       courseCode: courseRound.courseCode,
       shortName: courseRound.shortName,
       longName: createLongName(courseRound),
-      startDate: calcStartDate(courseRound),
+      startDate: `${courseRound.startSemester.start_date}T06:00:00Z`,
       sisAccountId: `${courseRound.schoolCode} - Imported course rounds`,
       status: 'active'
     }
