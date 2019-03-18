@@ -1,7 +1,7 @@
 const util = require('util')
 const ldap = require('ldapjs')
-const {csvFile} = require('kth-canvas-utilities')
-const {deleteFile} = require('./utils')
+const { csvFile } = require('kth-canvas-utilities')
+const { deleteFile } = require('./utils')
 const attributes = ['ugKthid', 'name']
 
 /*
@@ -90,27 +90,27 @@ async function getExaminatorMembers (courseCode, ldapClient) {
   return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`, ldapClient)
 }
 
-async function writeUsersForCourse ({canvasCourse, ldapClient, fileName}) {
-    let lengthOfInitials
+async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
+  let lengthOfInitials
 
-    if(canvasCourse.courseCode.length > 6){
-        lengthOfInitials = 3
-    } else {
-        lengthOfInitials = 2
-    }
+  if (canvasCourse.courseCode.length > 6) {
+    lengthOfInitials = 3
+  } else {
+    lengthOfInitials = 2
+  }
 
-        const courseInitials = canvasCourse.courseCode.substring(0, lengthOfInitials)
-        const courseCodeWOInitials = canvasCourse.courseCode.substring(lengthOfInitials)
+  const courseInitials = canvasCourse.courseCode.substring(0, lengthOfInitials)
+  const courseCodeWOInitials = canvasCourse.courseCode.substring(lengthOfInitials)
 
   const ugRoleCanvasRole = [
-    {type: 'teachers', role: 'teacher'},
-    {type: 'courseresponsible', role: 'Course Responsible'},
-    {type: 'assistants', role: 'ta'}
+    { type: 'teachers', role: 'teacher' },
+    { type: 'courseresponsible', role: 'Course Responsible' },
+    { type: 'assistants', role: 'ta' }
   ]
 
   const roundId = canvasCourse.sisCourseId.slice(-1)
 
-  for (let {type, role} of ugRoleCanvasRole) {
+  for (let { type, role } of ugRoleCanvasRole) {
     const members = await searchGroup(
       `(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${roundId}.${type}))`,
       ldapClient
@@ -127,11 +127,14 @@ async function writeUsersForCourse ({canvasCourse, ldapClient, fileName}) {
     await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 'Examiner', 'active'], fileName)
   }
 
-    // Registered students
-    await searchGroup(`ladok2.kurser.${courseInitials}.2517.registrerade_20162.1`)
+  // Registered students
+    // ladok2.kurser.DM.2517.registrerade_20162.1
+  const registeredMembers = await searchGroup(`ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}`)
+    console.log(registeredMembers)
+    process.exit()
 }
 
-module.exports = async function ({term, year, period, canvasCourses}) {
+module.exports = async function ({ term, year, period, canvasCourses }) {
   const ldapClient = ldap.createClient({
     url: process.env.ugUrl
   })
@@ -149,7 +152,7 @@ module.exports = async function ({term, year, period, canvasCourses}) {
   ], fileName)
 
   for (let canvasCourse of canvasCourses) {
-    await writeUsersForCourse({canvasCourse, ldapClient, fileName})
+    await writeUsersForCourse({ canvasCourse, ldapClient, fileName })
   }
 
   const ldapClientUnbindAsync = util.promisify(ldapClient.unbind).bind(ldapClient)

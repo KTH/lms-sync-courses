@@ -3,8 +3,7 @@ const router = express.Router()
 
 const CanvasApi = require('kth-canvas-api')
 const rp = require('request-promise')
-const canvasApi = new CanvasApi(process.env.canvasApiUrl, process.env.canvasApiKey)
-const stripIndent = require('common-tags/lib/stripIndent')
+const canvasApi = new CanvasApi(process.env.CANVAS_API_URL, process.env.CANVAS_API_KEY)
 
 const version = require('../config/version')
 const packageFile = require('../package.json')
@@ -49,11 +48,12 @@ function _about (req, res) {
 
 async function _monitor (req, res) {
   const status = await checkCanvasKey()
-  const statusStr = stripIndent`
-    APPLICATION_STATUS: ${status ? 'OK' : 'ERROR'}
-
-    CANVAS_KEY: ${status ? 'OK' : 'ERROR. Token for Canvas is not properly set'}
-  `
+   const statusStr = [
+    `APPLICATION_STATUS: ${status ? 'OK' : 'ERROR'}`,
+    '',
+    `CANVAS_KEY: ${status ? 'OK' : 'ERROR. Token for Canvas is not properly set'}`,
+].join('\n')
+    
   log.info('Showing _monitor page:', statusStr)
   res.setHeader('Content-Type', 'text/plain')
   res.send(statusStr)
