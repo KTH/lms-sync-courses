@@ -91,7 +91,16 @@ async function getExaminatorMembers (courseCode, ldapClient) {
 }
 
 async function writeUsersForCourse ({canvasCourse, ldapClient, fileName}) {
-  const courseInitials = canvasCourse.courseCode.length > 6 ? canvasCourse.courseCode.substring(0, 3) : canvasCourse.courseCode.substring(0, 2)
+    let lengthOfInitials
+
+    if(canvasCourse.courseCode.length > 6){
+        lengthOfInitials = 3
+    } else {
+        lengthOfInitials = 2
+    }
+
+        const courseInitials = canvasCourse.courseCode.substring(0, lengthOfInitials)
+        const courseCodeWOInitials = canvasCourse.courseCode.substring(lengthOfInitials)
 
   const ugRoleCanvasRole = [
     {type: 'teachers', role: 'teacher'},
@@ -117,6 +126,9 @@ async function writeUsersForCourse ({canvasCourse, ldapClient, fileName}) {
   for (let user of examinators) {
     await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 'Examiner', 'active'], fileName)
   }
+
+    // Registered students
+    await searchGroup(`ladok2.kurser.${courseInitials}.2517.registrerade_20162.1`)
 }
 
 module.exports = async function ({term, year, period, canvasCourses}) {
