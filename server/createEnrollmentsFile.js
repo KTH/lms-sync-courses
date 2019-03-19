@@ -128,10 +128,10 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
   }
 
   // Registered students
-    // ladok2.kurser.DM.2517.registrerade_20162.1
+  // ladok2.kurser.DM.2517.registrerade_20162.1
   const registeredMembers = await searchGroup(`ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}`)
-    console.log(registeredMembers)
-    process.exit()
+  console.log(registeredMembers)
+  process.exit()
 }
 
 module.exports = async function ({ term, year, period, canvasCourses }) {

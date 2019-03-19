@@ -48,12 +48,12 @@ function _about (req, res) {
 
 async function _monitor (req, res) {
   const status = await checkCanvasKey()
-   const statusStr = [
+  const statusStr = [
     `APPLICATION_STATUS: ${status ? 'OK' : 'ERROR'}`,
     '',
-    `CANVAS_KEY: ${status ? 'OK' : 'ERROR. Token for Canvas is not properly set'}`,
-].join('\n')
-    
+    `CANVAS_KEY: ${status ? 'OK' : 'ERROR. Token for Canvas is not properly set'}`
+  ].join('\n')
+
   log.info('Showing _monitor page:', statusStr)
   res.setHeader('Content-Type', 'text/plain')
   res.send(statusStr)
