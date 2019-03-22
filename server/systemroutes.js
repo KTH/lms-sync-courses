@@ -63,12 +63,13 @@ async function _monitorAll (req, res) {
   const canvasStatus = await checkCanvasStatus()
   const canvasKeyStatus = await checkCanvasKey()
 
-  const statusStr = stripIndent`
-    APPLICATION_STATUS: ${canvasStatus && canvasKeyStatus ? 'OK' : 'ERROR'}
+const statusStr = [
+    `APPLICATION_STATUS: ${canvasStatus && canvasKeyStatus ? 'OK' : 'ERROR'}`,
+    `CANVAS_KEY: ${canvasKeyStatus ? 'OK' : 'ERROR. Token for Canvas is not properly set'}`,  
+    `CANVAS: ${canvasStatus ? 'OK' : 'ERROR. CANVAS is down'}`
+ 
+  ].join('\n')
 
-    CANVAS_KEY: ${canvasKeyStatus ? 'OK' : 'ERROR. Token for Canvas is not properly set'}
-    CANVAS: ${canvasStatus ? 'OK' : 'ERROR. CANVAS is down'}
-  `
   log.info('Showing _monitor_all page:', statusStr)
 
   res.setHeader('Content-Type', 'text/plain')
@@ -79,9 +80,7 @@ router.get('/_monitor', _monitor)
 router.get('/_monitor_all', _monitorAll)
 router.get('/_monitor_core', function (req, res) {
   res.setHeader('Content-Type', 'text/plain')
-  res.send(stripIndent`
-    APPLICATION_STATUS: OK
-  `)
+  res.send('APPLICATION_STATUS: OK`)
 })
 router.get('/_about', _about)
 
