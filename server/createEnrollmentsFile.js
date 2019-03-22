@@ -128,15 +128,15 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
   }
 
 
-    console.log('get students for course',canvasCourse.courseCode)
     // Registered students
     try{
         
         const registeredMembers = await searchGroup(`ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}`, ldapClient)
         console.log(registeredMembers)
+        process.exit()
     }
     catch(err){
-logger.warn('Could not get registered students for this course. Perhaps there are no students?', err.message)
+logger.info('Could not get registered students for this course. Perhaps there are no students?', err.message)
     }
 }
 
