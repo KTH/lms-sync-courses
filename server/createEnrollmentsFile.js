@@ -130,13 +130,14 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
 
     // Registered students
     try{
-        
-        const registeredMembers = await searchGroup(`ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}`, ldapClient)
-        console.log(registeredMembers)
-        process.exit()
+        const registeredMembers = await searchGroup(`(&(objectClass=group)(CN=ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}))`, ldapClient)
+        const registeredStudents = await getUsersForMembers(registeredMembers, ldapClient)
+        for (let user of examinators) {
+            await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 'Student', 'active'], fileName)
+        }
     }
     catch(err){
-logger.info('Could not get registered students for this course. Perhaps there are no students?', err.message)
+logger.info('Could not get registered students for this course. Perhaps there are no students?', err)
     }
 }
 
