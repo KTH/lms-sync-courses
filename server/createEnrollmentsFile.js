@@ -131,7 +131,7 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
   try {
     const registeredMembers = await searchGroup(`(&(objectClass=group)(CN=ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}))`, ldapClient)
     const registeredStudents = await getUsersForMembers(registeredMembers, ldapClient)
-    for (let user of examinators) {
+    for (let user of registeredStudents) {
       await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 'Student', 'active'], fileName)
     }
   } catch (err) {
