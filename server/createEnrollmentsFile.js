@@ -3,7 +3,7 @@ const ldap = require('ldapjs')
 const { csvFile } = require('kth-canvas-utilities')
 const { deleteFile } = require('./utils')
 const attributes = ['ugKthid', 'name']
-
+const logger = require('./logger')
 /*
  * For string array with ldap keys for users, fetch every user object
  */
@@ -127,11 +127,17 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
     await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 'Examiner', 'active'], fileName)
   }
 
-  // Registered students
-  // ladok2.kurser.DM.2517.registrerade_20162.1
-  const registeredMembers = await searchGroup(`ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}`, ldapClient)
-  console.log(registeredMembers)
-  process.exit()
+
+    console.log('get students for course',canvasCourse.courseCode)
+    // Registered students
+    try{
+        
+        const registeredMembers = await searchGroup(`ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}`, ldapClient)
+        console.log(registeredMembers)
+    }
+    catch(err){
+logger.warn('Could not get registered students for this course. Perhaps there are no students?', err.message)
+    }
 }
 
 module.exports = async function ({ term, year, period, canvasCourses }) {
