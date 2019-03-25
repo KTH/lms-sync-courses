@@ -147,7 +147,7 @@ module.exports = async function ({ term, year, period, canvasCourses }) {
   await ldapClientBindAsync(process.env.ugUsername, process.env.ugPwd)
 
   const termin = `${year}${term}`
-  const fileName = `${process.env.csvDir}enrollments-${termin}-${period}.csv`
+  const fileName = `${process.env.CSV_DIR}enrollments-${termin}-${period}.csv`
   await deleteFile(fileName)
   await csvFile.writeLine([
     'section_id',

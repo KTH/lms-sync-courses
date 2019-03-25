@@ -56,7 +56,7 @@ module.exports = {
   },
 
   async createCoursesFile ({ term, year, period, canvasCourses }) {
-    const csvDir = process.env.csvDir
+    const csvDir = process.env.CSV_DIR
     const termin = `${year}${term}`
     const coursesFileName = `${csvDir}courses-${termin}-${period}.csv`
     logger.info('Using file name:', coursesFileName)
