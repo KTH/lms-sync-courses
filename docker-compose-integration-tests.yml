@@ -34,4 +34,4 @@ services:
       - koppsBaseUrl
       - ugUrl
       - ugUsername
-      - ugPwd
+      - UG_PWD

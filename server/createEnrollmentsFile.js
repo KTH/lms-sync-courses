@@ -144,7 +144,7 @@ module.exports = async function ({ term, year, period, canvasCourses }) {
     url: process.env.ugUrl
   })
   const ldapClientBindAsync = util.promisify(ldapClient.bind).bind(ldapClient)
-  await ldapClientBindAsync(process.env.ugUsername, process.env.ugPwd)
+  await ldapClientBindAsync(process.env.ugUsername, process.env.UG_PWD)
 
   const termin = `${year}${term}`
   const fileName = `${process.env.CSV_DIR}enrollments-${termin}-${period}.csv`
