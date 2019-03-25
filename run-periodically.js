@@ -7,7 +7,7 @@ const canvasApi = new CanvasApi(process.env.CANVAS_API_URL, process.env.CANVAS_A
 canvasApi.logger = logger
 const moment = require('moment')
 const createSectionsFile = require('./server/createSectionsFile')
-const cronTime = process.env.successfulSchedule || '2 * * *'
+const cronTime = process.env.SUCCESFUL_SCHEDULE || '2 * * *'
 
 async function runCourseSync (job) {
   // Cancel, because we only want this job to run once.
@@ -19,7 +19,7 @@ async function runCourseSync (job) {
     job.reschedule(cronTime)
     logger.info('^^^^^^^^^^^^^^^^ finished with syncing courses ^^^^^^^^^^^^^^^^^^^')
   } catch (e) {
-    const errorCronTime = process.env.errorSchedule || '15 * * * *'
+    const errorCronTime = process.env.ERROR_SCHEDULE || '15 * * * *'
     logger.error(`Something broke, try again with schedule ${errorCronTime}`, e)
     // In case of error, run more often until it's successful
     job.reschedule(errorCronTime)
