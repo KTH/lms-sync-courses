@@ -32,6 +32,6 @@ services:
       - canvasApiUrl
       - canvasApiKey
       - koppsBaseUrl
-      - ugUrl
+      - UG_URL
       - ugUsername
       - UG_PWD

@@ -141,7 +141,7 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
 
 module.exports = async function ({ term, year, period, canvasCourses }) {
   const ldapClient = ldap.createClient({
-    url: process.env.ugUrl
+    url: process.env.UG_URL
   })
   const ldapClientBindAsync = util.promisify(ldapClient.bind).bind(ldapClient)
   await ldapClientBindAsync(process.env.ugUsername, process.env.UG_PWD)
