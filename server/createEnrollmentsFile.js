@@ -135,7 +135,7 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
       await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 'Student', 'active'], fileName)
     }
   } catch (err) {
-    logger.info('Could not get registered students for this course. Perhaps there are no students?', err)
+    logger.info(err, 'Could not get registered students for this course. Perhaps there are no students?')
   }
 }
 
