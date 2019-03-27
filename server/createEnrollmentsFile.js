@@ -11,7 +11,7 @@ async function getUsersForMembers (members, ldapClient) {
   const usersForMembers = []
   for (let member of members) {
     const searchResult = await new Promise((resolve, reject) => {
-      ldapClient.search('OU=UG,DC=ug,DC=kth,DC=se', {
+      ldapClient.search(process.env.LDAP_BASE, {
         scope: 'sub',
         filter: `(distinguishedName=${member})`,
         timeLimit: 10,
@@ -52,7 +52,7 @@ async function getUsersForMembers (members, ldapClient) {
 
 async function searchGroup (filter, ldapClient) {
   return new Promise((resolve, reject) => {
-    ldapClient.search('OU=UG,DC=ug,DC=kth,DC=se', {
+     ldapClient.search(process.env.LDAP_BASE,{
       scope: 'sub',
       filter,
       timeLimit: 11,
@@ -141,7 +141,7 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
 
 module.exports = async function ({ term, year, period, canvasCourses }) {
   const ldapClient = ldap.createClient({
-    url: process.env.ugUrl
+    url: process.env.UG_URL
   })
   const ldapClientBindAsync = util.promisify(ldapClient.bind).bind(ldapClient)
   await ldapClientBindAsync(process.env.UG_USERNAME, process.env.UG_PWD)
