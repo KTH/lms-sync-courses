@@ -33,5 +33,6 @@ services:
       - CANVAS_API_KEY
       - KOPPS_BASE_URL
       - UG_URL
-      - UG_USERNAME
       - UG_PWD
+      - UG_USERNAME
+      - LDAP_BASE
