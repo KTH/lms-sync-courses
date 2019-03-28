@@ -29,8 +29,8 @@ services:
     tty: true
     command: npm run test:docker-integration
     environment:
-      - canvasApiUrl
-      - canvasApiKey
+      - CANVAS_API_URL
+      - CANVAS_API_KEY
       - KOPPS_BASE_URL
       - UG_URL
       - UG_USERNAME
