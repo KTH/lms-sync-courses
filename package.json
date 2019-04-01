@@ -7,8 +7,8 @@
   "scripts": {
     "start": "NODE_ENV=production nodemon app.js",
     "start-dev": "cross-env NODE_ENV=development nodemon app.js",
-    "test": "ava \"test/unit/**/*.js\" ",
-    "test:integration": "ava \"test/integration/**/*.js\" ",
+    "test": "tape \"test/unit/**/*.js\" ",
+    "test:integration": "tape \"test/integration/**/*.js\" ",
     "test:docker-unit": "npm install --no-optional; npm test",
     "test:docker-integration": "npm install --no-optional; npm run test:integration",
     "debug": "NODE_ENV=development node --nolazy --inspect-brk=9229 app.js | bunyan -o short"
@@ -41,6 +41,7 @@
     "proxyquire": "^2.1.0",
     "rewire": "^4.0.1",
     "sinon": "^5.1.1",
-    "standard": "^12.0.1"
+    "standard": "^12.0.1",
+    "tape": "^4.10.1"
   }
 }
