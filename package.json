@@ -7,7 +7,7 @@
   "scripts": {
     "start": "NODE_ENV=production nodemon app.js",
     "start-dev": "cross-env NODE_ENV=development nodemon app.js",
-    "test": "tape \"test/unit/**/*.js\" | tap-spec",
+    "test": "ava \"test/unit/**/*.js\" ",
     "test:integration": "ava \"test/integration/**/*.js\" ",
     "test:docker-unit": "npm install --no-optional; npm test",
     "test:docker-integration": "npm install --no-optional; npm run test:integration",
@@ -41,8 +41,6 @@
     "proxyquire": "^2.1.0",
     "rewire": "^4.0.1",
     "sinon": "^5.1.1",
-    "standard": "^12.0.1",
-    "tap-spec": "^5.0.0",
-    "tape": "^4.10.1"
+    "standard": "^12.0.1"
   }
 }

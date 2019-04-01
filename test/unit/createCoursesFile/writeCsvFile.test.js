@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('ava')
 const sinon = require('sinon')
 const rewire = require('rewire')
 const createCoursesFile = rewire('../../../server/createCoursesFile')
@@ -8,7 +8,7 @@ csvFile.writeLine = sinon.stub()
 
 createCoursesFile.__set__('mkdirAsync', () => Promise.resolve())
 
-test('should write a line with the headers', t => {
+test('should write a line with the headers', async t => {
   // createCoursesFile.__set__('buildCanvasCourseObjectV2', arg => [
   //   {sisCourseId: 'sisCourseId',
   //     courseCode: 'courseCode',
@@ -18,8 +18,7 @@ test('should write a line with the headers', t => {
   //     sisAccountId: 'sisAccountId'}])
   // const courseRound = { courseCode: 'AL0001'}
 
-  createCsvFile('fileName').then(() => {
-    t.ok(csvFile.writeLine.calledWith(['course_id', 'short_name', 'long_name', 'start_date', 'account_id', 'status'], 'fileName'))
-    t.end()
-  })
+  await createCsvFile('fileName')
+    t.truthy(csvFile.writeLine.calledWith(['course_id', 'short_name', 'long_name', 'start_date', 'account_id', 'status'], 'fileName'))
+
 })

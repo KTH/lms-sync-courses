@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('ava')
 const rewire = require('rewire')
 const utils = rewire('../../../../server/utils')
 
