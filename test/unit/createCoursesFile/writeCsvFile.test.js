@@ -1,4 +1,4 @@
-const test = require('ava')
+const test = require('tape')
 const sinon = require('sinon')
 const rewire = require('rewire')
 const createCoursesFile = rewire('../../../server/createCoursesFile')
@@ -19,6 +19,6 @@ test('should write a line with the headers', async t => {
   // const courseRound = { courseCode: 'AL0001'}
 
   await createCsvFile('fileName')
-    t.truthy(csvFile.writeLine.calledWith(['course_id', 'short_name', 'long_name', 'start_date', 'account_id', 'status'], 'fileName'))
-
+    t.ok(csvFile.writeLine.calledWith(['course_id', 'short_name', 'long_name', 'start_date', 'account_id', 'status'], 'fileName'))
+    t.end()
 })
