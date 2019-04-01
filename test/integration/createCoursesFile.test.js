@@ -10,7 +10,11 @@ test('should create the file with correct name, headers, and a line including a 
   process.env.CSV_DIR = '/tmp/testing/'
   fs.removeSync(process.env.CSV_DIR)
   fs.mkdirSync(process.env.CSV_DIR)
-  await syncCoursesSectionsAndEnrollments()
+    try {
+        await syncCoursesSectionsAndEnrollments()
+    } catch (error) {
+        console.error('An error occured when running integration tests', error) 
+    }
 
   const files = fs.readdirSync(process.env.CSV_DIR)
   t.equal(files.length, 12, '12 csv files should be created in total')
