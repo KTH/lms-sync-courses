@@ -1,8 +1,11 @@
 require('dotenv').config()
 const test = require('tape')
 const fs = require('fs-extra')
+const rewire = require('rewire')
 
-const { syncCoursesSectionsAndEnrollments } = require('../../run-periodically')
+
+const runPeriodically = rewire('../../run-periodically')
+const syncCoursesSectionsAndEnrollments = runPeriodically.__get__('syncCoursesSectionsAndEnrollments')
 test('should create the file with correct name, headers, and a line including a sisCourseId', async t => {
   process.env.CSV_DIR = '/tmp/testing/'
   fs.removeSync(process.env.CSV_DIR)
