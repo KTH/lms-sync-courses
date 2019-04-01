@@ -1,5 +1,5 @@
 require('dotenv').config()
-const test = require('tape')
+const test = require('ava')
 const fs = require('fs-extra')
 const rewire = require('rewire')
 
