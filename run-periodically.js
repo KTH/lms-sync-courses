@@ -50,7 +50,6 @@ async function syncCoursesSectionsAndEnrollments () {
 }
 
 module.exports = {
-  syncCoursesSectionsAndEnrollments,
   async start () {
     try {
       logger.info('initial run of job')
