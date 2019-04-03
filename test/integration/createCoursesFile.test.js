@@ -8,6 +8,8 @@ const runPeriodically = rewire('../../run-periodically')
 const syncCoursesSectionsAndEnrollments = runPeriodically.__get__('syncCoursesSectionsAndEnrollments')
 test('should create the file with correct name, headers, and a line including a sisCourseId', async t => {
   process.env.CSV_DIR = '/tmp/testing/'
+  console.log('hard coding ldap url', 'ldaps://ldap.ref.ug.kth.se')
+    process.env.UG_URL = 'ldaps://ldap.ref.ug.kth.se'
   fs.removeSync(process.env.CSV_DIR)
   fs.mkdirSync(process.env.CSV_DIR)
     try {
