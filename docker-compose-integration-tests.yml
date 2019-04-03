@@ -35,4 +35,4 @@ services:
       - UG_URL
       - UG_PWD
       - UG_USERNAME
-      - LDAP_BASE
+      - UG_LDAP_BASE
