@@ -52,7 +52,7 @@ async function getUsersForMembers (members, ldapClient) {
 
 async function searchGroup (filter, ldapClient) {
   return new Promise((resolve, reject) => {
-     ldapClient.search(process.env.UG_LDAP_BASE,{
+    ldapClient.search(process.env.UG_LDAP_BASE, {
       scope: 'sub',
       filter,
       timeLimit: 11,
