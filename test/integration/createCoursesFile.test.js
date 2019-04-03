@@ -20,7 +20,8 @@ test('should create the file with correct name, headers, and a line including a 
 
   const files = fs.readdirSync(process.env.CSV_DIR)
   t.deepEqual(files.length, 12, '12 csv files should be created in total')
-  t.deepEqual(files.filter(file => file.startsWith('courses-')).length, 4)
-  t.deepEqual(files.filter(file => file.startsWith('enrollments-')).length, 4)
-  t.deepEqual(files.filter(file => file.startsWith('sections-')).length, 4)
+  t.deepEqual(files.filter(file => file.startsWith('courses-')).length, 4, '4 files with courses should be created')
+  t.deepEqual(files.filter(file => file.startsWith('enrollments-')).length, 4, '4 files with enrollments should be created')
+  t.deepEqual(files.filter(file => file.startsWith('sections-')).length, 4, '4 files with sections should be created')
+    t.end()
 })
