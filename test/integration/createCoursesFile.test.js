@@ -13,9 +13,6 @@ test('should create the file with correct name, headers, and a line including a 
     try {
         await syncCoursesSectionsAndEnrollments()
     } catch (error) {
-        console.log(process.env.UG_URL)
-        console.log(process.env.UG_USERNAME)
-        console.log(process.env.KOPPS_BASE_URL)
         console.error('An error occured when running integration tests', error) 
     }
 
