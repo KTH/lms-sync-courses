@@ -7,7 +7,7 @@ const canvasApi = new CanvasApi(process.env.CANVAS_API_URL, process.env.CANVAS_A
 canvasApi.logger = logger
 const moment = require('moment')
 const createSectionsFile = require('./server/createSectionsFile')
-const cronTime = process.env.SUCCESFUL_SCHEDULE || '2 * * *'
+const cronTime = process.env.SUCCESSFUL_SCHEDULE || '0 5 * * *'
 
 async function runCourseSync (job) {
   // Cancel, because we only want this job to run once.
