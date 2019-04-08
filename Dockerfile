@@ -1,4 +1,4 @@
-FROM kthse/kth-nodejs:9.11.0
+FROM node:10-alpine
 
 COPY ["config", "config"]
 COPY ["package.json", "package.json"]
