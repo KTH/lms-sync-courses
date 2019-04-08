@@ -1,6 +1,6 @@
 const terms = require('kth-canvas-utilities').terms
 const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
-const {unlink} = require('fs')
+const { unlink } = require('fs')
 let unlinkAsync = Promise.promisify(unlink)
 
 function deleteFile (fileName) {
@@ -20,7 +20,7 @@ function createLongName (round) {
   return result
 }
 
-function createSisCourseId ({courseCode, startTerm, roundId}) {
+function createSisCourseId ({ courseCode, startTerm, roundId }) {
   const termNum = startTerm[4]
   const shortYear = `${startTerm[2]}${startTerm[3]}`
   const term = terms[termNum]

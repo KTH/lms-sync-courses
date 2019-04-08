@@ -3,7 +3,7 @@ const {
   buildCanvasCourseObjectV2,
   deleteFile
 } = require('./utils')
-const {csvFile} = require('kth-canvas-utilities')
+const { csvFile } = require('kth-canvas-utilities')
 const logger = require('../server/logger')
 
 async function createCsvFile (fileName) {
@@ -44,19 +44,19 @@ module.exports = {
     return courseOfferingObjects.map(buildCanvasCourseObjectV2)
   },
 
-  async getCourseOfferings ({term, year}) {
+  async getCourseOfferings ({ term, year }) {
     const res = await rp({
-      url: `${process.env.koppsBaseUrl}v2/courses/offerings?from=${year}${term}&skip_coordinator_info=true`,
+      url: `${process.env.KOPPS_BASE_URL}v2/courses/offerings?from=${year}${term}&skip_coordinator_info=true`,
       method: 'GET',
       json: true,
-      headers: {'content-type': 'application/json'}
+      headers: { 'content-type': 'application/json' }
     })
 
     return res.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
   },
 
-  async createCoursesFile ({term, year, period, canvasCourses}) {
-    const csvDir = process.env.csvDir
+  async createCoursesFile ({ term, year, period, canvasCourses }) {
+    const csvDir = process.env.CSV_DIR
     const termin = `${year}${term}`
     const coursesFileName = `${csvDir}courses-${termin}-${period}.csv`
     logger.info('Using file name:', coursesFileName)
@@ -75,4 +75,4 @@ module.exports = {
     }
 
     return coursesFileName
-  }}
+  } }

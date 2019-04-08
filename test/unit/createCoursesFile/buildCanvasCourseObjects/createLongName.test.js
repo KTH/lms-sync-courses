@@ -18,7 +18,7 @@ test('should use the swedish title', t => {
     }
 
   const result = createLongName(courseRound)
-  t.equal(result, 'AL2140 VT17-roundId Renare produktion')
+  t.deepEqual(result, 'AL2140 VT17-roundId Renare produktion')
 })
 
 test('should include the short name', t => {
@@ -36,5 +36,5 @@ test('should include the short name', t => {
   }
 
   const result = createLongName(courseRound)
-  t.equal(result, 'AL2140 shortName VT17-roundId Renare produktion')
+  t.deepEqual(result, 'AL2140 shortName VT17-roundId Renare produktion')
 })
