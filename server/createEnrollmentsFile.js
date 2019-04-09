@@ -86,22 +86,10 @@ async function searchGroup (filter, ldapClient) {
  * Fetch the members for the examinator group for this course.
  */
 async function getExaminatorMembers (courseCode, ldapClient) {
-  const courseInitials = courseCode.length > 6 ? courseCode.substring(0, 3) : courseCode.substring(0, 2)
-  return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseInitials}.${courseCode}.examiner))`, ldapClient)
+  return searchGroup(`(&(objectClass=group)(CN=edu.courses.${courseCode.substring(0, 2)}.${courseCode}.examiner))`, ldapClient)
 }
 
 async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
-  let lengthOfInitials
-
-  if (canvasCourse.courseCode.length > 6) {
-    lengthOfInitials = 3
-  } else {
-    lengthOfInitials = 2
-  }
-
-  const courseInitials = canvasCourse.courseCode.substring(0, lengthOfInitials)
-  const courseCodeWOInitials = canvasCourse.courseCode.substring(lengthOfInitials)
-
   const ugRoleCanvasRole = [
     { type: 'teachers', role: 'teacher' },
     { type: 'courseresponsible', role: 'Course Responsible' },
@@ -112,7 +100,7 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
 
   for (let { type, role } of ugRoleCanvasRole) {
     const members = await searchGroup(
-      `(&(objectClass=group)(CN=edu.courses.${courseInitials}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${roundId}.${type}))`,
+      `(&(objectClass=group)(CN=edu.courses.${canvasCourse.courseCode.substring(0, 2)}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${roundId}.${type}))`,
       ldapClient
     )
     const users = await getUsersForMembers(members, ldapClient)
@@ -129,6 +117,14 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
 
   // Registered students
   try {
+    let lengthOfInitials
+    if (canvasCourse.courseCode.length > 6) {
+      lengthOfInitials = 3
+    } else {
+      lengthOfInitials = 2
+    }
+    const courseInitials = canvasCourse.courseCode.substring(0, lengthOfInitials)
+    const courseCodeWOInitials = canvasCourse.courseCode.substring(lengthOfInitials)
     const registeredMembers = await searchGroup(`(&(objectClass=group)(CN=ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}))`, ldapClient)
     const registeredStudents = await getUsersForMembers(registeredMembers, ldapClient)
     for (let user of registeredStudents) {
