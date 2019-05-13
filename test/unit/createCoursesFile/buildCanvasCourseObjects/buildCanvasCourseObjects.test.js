@@ -9,16 +9,16 @@ test('should create course object containing attributes needed for creating the 
   utils.__set__('createSisCourseId', () => 'abc123')
   utils.__set__('createLongName', () => 'Långt namn')
   utils.__set__('calcStartDate', () => aDate)
-  utils.__set__('integrationId', () => 'd1ff3r3n-71nt-3gr4-710n-1dt3571ng123')
 
   const courseRound = {
     schoolCode: 'ABE',
     courseCode: 'courseCode',
     shortName: 'shortName',
     startTerm: 'startTerm',
+    integrationId: 'd1ff3r3n-71nt-3gr4-710n-1dt3571ng123',
     startSemester: {
       start_date: aDate
-    }
+    }    
   }
 
   const result = utils.buildCanvasCourseObjectV2(courseRound)
