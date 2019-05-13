@@ -13,6 +13,7 @@ async function createCsvFile (fileName) {
     'long_name',
     'start_date',
     'account_id',
+    'integration_id',
     'status']
 
   return csvFile.writeLine(columns, fileName)
@@ -28,6 +29,7 @@ function createCourseOfferingObj (courseOffering) {
     tutoringLanguage: courseOffering.language,
     departmentCode: courseOffering.department_code,
     schoolCode: courseOffering.school_code,
+    integrationId: courseOffering.course_round_applications[0].ladok_uid,
     title: {
       sv: courseOffering.course_name,
       en: courseOffering.course_name_en
@@ -51,7 +53,7 @@ module.exports = {
       json: true,
       headers: { 'content-type': 'application/json' }
     })
-
+    
     return res.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
   },
 
@@ -71,6 +73,7 @@ module.exports = {
         course.longName,
         course.startDate,
         course.sisAccountId,
+        course.integrationId,
         'active'], coursesFileName)
     }
 
