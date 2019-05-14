@@ -11,7 +11,7 @@ COPY ["run-periodically.js", "run-periodically.js"]
 # Source files directories
 COPY ["server", "server"]
 
-RUN npm install --production --no-optional
+RUN npm ci --production
 
 EXPOSE 3000
 
