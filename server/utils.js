@@ -48,6 +48,7 @@ module.exports = {
       longName: createLongName(courseRound),
       startDate: `${courseRound.startSemester.start_date}T06:00:00Z`,
       sisAccountId: `${courseRound.schoolCode} - Imported course rounds`,
+      integrationId: courseRound.integrationId,
       status: 'active'
     }
   }

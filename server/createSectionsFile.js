@@ -5,12 +5,13 @@ module.exports = async function ({ canvasCourses, term, year, period }) {
   const fileName = `${process.env.CSV_DIR}sections-${year}${term}-${period}.csv`
 
   await deleteFile(fileName)
-  await csvFile.writeLine(['section_id', 'course_id', 'name', 'status'], fileName)
+  await csvFile.writeLine(['section_id', 'course_id', 'integration_id', 'name', 'status'], fileName)
 
   for (const canvasCourse of canvasCourses) {
     await csvFile.writeLine([
       canvasCourse.sisCourseId,
       canvasCourse.sisCourseId,
+      canvasCourse.integrationId,
       `Section for the course ${canvasCourse.longName}`,
       'active'], fileName)
   }

@@ -15,6 +15,7 @@ test('should create course object containing attributes needed for creating the 
     courseCode: 'courseCode',
     shortName: 'shortName',
     startTerm: 'startTerm',
+    integrationId: 'd1ff3r3n-71nt-3gr4-710n-1dt3571ng123',
     startSemester: {
       start_date: aDate
     }
@@ -30,6 +31,7 @@ test('should create course object containing attributes needed for creating the 
     longName: 'Långt namn',
     startDate: `${aDate}T06:00:00Z`,
     sisAccountId: 'ABE - Imported course rounds',
+    integrationId: 'd1ff3r3n-71nt-3gr4-710n-1dt3571ng123',
     status: 'active'
   }
 
