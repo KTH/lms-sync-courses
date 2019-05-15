@@ -18,7 +18,7 @@ test('should create course object containing attributes needed for creating the 
     integrationId: 'd1ff3r3n-71nt-3gr4-710n-1dt3571ng123',
     startSemester: {
       start_date: aDate
-    }    
+    }
   }
 
   const result = utils.buildCanvasCourseObjectV2(courseRound)

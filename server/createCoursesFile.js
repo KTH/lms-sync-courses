@@ -53,7 +53,7 @@ module.exports = {
       json: true,
       headers: { 'content-type': 'application/json' }
     })
-    
+
     return res.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
   },
 
