@@ -1,4 +1,4 @@
-const rp = require('request-promise')
+const got = require('got')
 const {
   buildCanvasCourseObjectV2,
   deleteFile
@@ -47,14 +47,11 @@ module.exports = {
   },
 
   async getCourseOfferings ({ term, year }) {
-    const res = await rp({
-      url: `${process.env.KOPPS_BASE_URL}v2/courses/offerings?from=${year}${term}&skip_coordinator_info=true`,
-      method: 'GET',
-      json: true,
-      headers: { 'content-type': 'application/json' }
+    const { body } = await got(`${process.env.KOPPS_BASE_URL}v2/courses/offerings?from=${year}${term}&skip_coordinator_info=true`, {
+      json: true
     })
 
-    return res.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
+    return body.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
   },
 
   async createCoursesFile ({ term, year, period, canvasCourses }) {
