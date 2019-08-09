@@ -8,6 +8,7 @@ canvasApi.logger = logger
 const moment = require('moment')
 const createSectionsFile = require('./server/createSectionsFile')
 const cronTime = process.env.SUCCESSFUL_SCHEDULE || '0 5 * * *'
+const got = require('got')
 
 async function runCourseSync (job) {
   // Cancel, because we only want this job to run once.
@@ -34,6 +35,7 @@ async function syncCoursesSectionsAndEnrollments () {
 
       const courseOfferings = await createCoursesFile.getCourseOfferings({ term, year })
       const canvasCourses = createCoursesFile.prepareCoursesForCanvas(courseOfferings)
+
       const coursesFileName = await createCoursesFile.createCoursesFile({ term, year, period, canvasCourses })
       const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
       logger.info('Done sending courses', coursesResponse)
@@ -45,6 +47,26 @@ async function syncCoursesSectionsAndEnrollments () {
       const enrollmentsFileName = await createEnrollmentsFile({ canvasCourses, term, year, period })
       const enrollResponse = await canvasApi.sendCsvFile(enrollmentsFileName, true)
       logger.info('Done sending enrollments', enrollResponse)
+
+      // Lastly, ask the ladok assignment app to create ladok assignments
+      // Doing all of these sequentially now, could probably send them in bulk and ignore the results
+      for await (const course of canvasCourses) {
+        try {
+          // TODO: read the url from .env
+          console.log('Call the other api to create assignments...')
+          await got('http://localhost:3002/graphql', {
+            method: 'POST',
+            json: true,
+            body: { query: `
+              mutation{
+                createLadokAssignments(sisCourseId: "${course.sisCourseId}")
+              }`
+            }
+          })
+        } catch (e) {
+          logger.warn(`got an error from the ladok assignments api. Let's just ignore it.`, e)
+        }
+      }
     }
   }
 }
