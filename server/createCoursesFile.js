@@ -51,7 +51,14 @@ module.exports = {
       json: true
     })
 
-    return body.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
+    const acceptedCourses = body.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
+    const validCourses = acceptedCourses.filter(courseOffering => isNaN(courseOffering.offering_id) === false)
+    
+    if (validCourses.length < acceptedCourses.length) {
+      const invalidCourses = acceptedCourses.filter(courseOffering => isNaN(courseOffering.offering_id) === true)
+      invalidCourses.forEach(courseOffering => logger.error('Invalid Course Offering Found: '+courseOffering.course_code+'-'+courseOffering.first_semester+'-'+courseOffering.offering_id+': '+courseOffering.state))
+    }
+    return validCourses
   },
 
   async createCoursesFile ({ term, year, period, canvasCourses }) {
