@@ -56,9 +56,9 @@ module.exports = {
     
     if (validCourses.length < acceptedCourses.length) {
       const invalidCourses = acceptedCourses.filter(courseOffering => isNaN(courseOffering.offering_id) === true)
-      invalidCourses.forEach(courseOffering => logger.error('Invalid Course Offering Found: '+courseOffering.course_code+'-'+courseOffering.first_semester+'-'+courseOffering.offering_id+': '+courseOffering.state))
+      logger.error('Found '+invalidCourses.length+' invalid course offerings.')
     }
-    return validCourses
+    return acceptedCourses
   },
 
   async createCoursesFile ({ term, year, period, canvasCourses }) {
