@@ -52,11 +52,10 @@ module.exports = {
     })
 
     const acceptedCourses = body.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
-    const validCourses = acceptedCourses.filter(courseOffering => isNaN(courseOffering.offering_id) === false)
+    const invalidCourseRounds = acceptedCourses.filter(courseOffering => /^\d+$/.test(courseOffering.offering_id))
     
-    if (validCourses.length < acceptedCourses.length) {
-      const invalidCourses = acceptedCourses.filter(courseOffering => isNaN(courseOffering.offering_id) === true)
-      logger.error('Found '+invalidCourses.length+' invalid course offerings.')
+    if (invalidCourseRounds.length > 0) {
+      logger.error('Found ${invalidCourses.length} invalid course rounds.')
     }
     return acceptedCourses
   },
