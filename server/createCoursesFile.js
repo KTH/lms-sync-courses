@@ -55,7 +55,7 @@ module.exports = {
     const invalidCourseRounds = acceptedCourses.filter(courseOffering => !/^\d+$/.test(courseOffering.offering_id))
     
     if (invalidCourseRounds.length > 0) {
-      logger.error('Found ${invalidCourses.length} invalid course rounds.')
+      logger.error(`Found ${invalidCourses.length} invalid course rounds.`)
     }
     return acceptedCourses
   },
