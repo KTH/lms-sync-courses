@@ -51,7 +51,13 @@ module.exports = {
       json: true
     })
 
-    return body.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
+    const acceptedCourses = body.filter(courseOffering => courseOffering.state === 'Godkänt' || courseOffering.state === 'Fullsatt')
+    const invalidCourseRounds = acceptedCourses.filter(courseOffering => !/^\d+$/.test(courseOffering.offering_id))
+    
+    if (invalidCourseRounds.length > 0) {
+      logger.error(`Found ${invalidCourses.length} invalid course rounds.`)
+    }
+    return acceptedCourses
   },
 
   async createCoursesFile ({ term, year, period, canvasCourses }) {
