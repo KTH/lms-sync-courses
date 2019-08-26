@@ -91,31 +91,32 @@ async function getExaminatorMembers (courseCode, ldapClient) {
 
 async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
   const ugRoleCanvasRole = [
-    { type: 'teachers', role_id: 4},//role: 'teacher' }, //id:4
-    { type: 'courseresponsible', role_id: 9},//role: 'Course Responsible' }, //id:9
-    { type: 'assistants', role_id: 5}//role: 'ta' } // id:5
+    // role_id's are defined in Canvas
+    { type: 'teachers', role_id: 4},
+    { type: 'courseresponsible', role_id: 9},
+    { type: 'assistants', role_id: 5}
   ]
 
   const roundId = canvasCourse.sisCourseId.slice(-1)
 
-  for (let { type, role_id } of ugRoleCanvasRole) {//role } of ugRoleCanvasRole) {
+  for (let { type, role_id } of ugRoleCanvasRole) {
     const members = await searchGroup(
       `(&(objectClass=group)(CN=edu.courses.${canvasCourse.courseCode.substring(0, 2)}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${roundId}.${type}))`,
       ldapClient
     )
     const users = await getUsersForMembers(members, ldapClient)
     for (let user of users) {
-      await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, role_id, 'active'], fileName)//role, 'active'], fileName)
+      await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, role_id, 'active'], fileName)
     }
   }
-  // examinators
+  // examinators, role_id: 10
   const examinatorMembers = await getExaminatorMembers(canvasCourse.courseCode, ldapClient)
   const examinators = await getUsersForMembers(examinatorMembers, ldapClient)
   for (let user of examinators) {
-    await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 'Examiner', 'active'], fileName)
+    await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 10, 'active'], fileName) 
   }
 
-  // Registered students
+  // Registered students, role_id: 3
   try {
     let lengthOfInitials
     if (canvasCourse.courseCode.length > 6) {
@@ -128,7 +129,7 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
     const registeredMembers = await searchGroup(`(&(objectClass=group)(CN=ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}))`, ldapClient)
     const registeredStudents = await getUsersForMembers(registeredMembers, ldapClient)
     for (let user of registeredStudents) {
-      await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 'Student', 'active'], fileName)
+      await csvFile.writeLine([canvasCourse.sisCourseId, user.ugKthid, 3, 'active'], fileName) 
     }
   } catch (err) {
     logger.info(err, 'Could not get registered students for this course. Perhaps there are no students?')
@@ -148,7 +149,7 @@ module.exports = async function ({ term, year, period, canvasCourses }) {
   await csvFile.writeLine([
     'section_id',
     'user_id',
-    'role_id',//'role',
+    'role_id',
     'status'
   ], fileName)
 
