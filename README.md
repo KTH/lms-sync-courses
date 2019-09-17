@@ -1,3 +1,1 @@
-## lms-sync-courses
---
-1
+# lms-sync-courses
