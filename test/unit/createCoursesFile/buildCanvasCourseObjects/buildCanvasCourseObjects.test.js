@@ -24,7 +24,7 @@ test('should create course object containing attributes needed for creating the 
   const result = utils.buildCanvasCourseObjectV2(courseRound)
 
   const expected = {
-    startTerm: 'startTerm',
+    startTerm: 'startTermin',
     sisCourseId: 'abc123',
     courseCode: 'courseCode',
     shortName: 'shortName',
