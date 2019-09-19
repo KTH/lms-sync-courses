@@ -2,10 +2,10 @@ require('dotenv').config()
 const app = require('kth-node-server')
 const logger = require('./server/logger')
 const runPeriodically = require('./run-periodically')
-const packageFile = require('./package.json')
 
 process.on('uncaughtException', err => {
   // In case of unknown Error, just log and crash the app!
+  // Reminder: if this code is ever called, it is a bug and should be fixed. This is only as a last resort
   logger.fatal(err, 'Uncaught Exception thrown')
   process.exit(1)
 })
