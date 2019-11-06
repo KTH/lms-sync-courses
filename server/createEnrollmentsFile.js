@@ -5,7 +5,7 @@ const { deleteFile } = require('./utils')
 const attributes = ['ugKthid', 'name']
 const logger = require('./logger')
 
-function createAndFilter (cnValue) {
+function createGroupFilter (groupName) {
   return new AndFilter({
     filters: [
       new EqualityFilter({
@@ -14,7 +14,7 @@ function createAndFilter (cnValue) {
       }),
       new EqualityFilter({
         attribute: 'CN',
-        value: cnValue
+        value: groupName
       })
     ]
   })
@@ -74,7 +74,7 @@ async function searchGroup (filter, ldapClient) {
  * Fetch the members for the examinator group for this course.
  */
 async function getExaminatorMembers (courseCode, ldapClient) {
-  const filter = createAndFilter(`edu.courses.${courseCode.substring(0, 2)}.${courseCode}.examiner`)
+  const filter = createGroupFilter(`edu.courses.${courseCode.substring(0, 2)}.${courseCode}.examiner`)
   return searchGroup(filter, ldapClient)
 }
 
@@ -89,7 +89,7 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
   const roundId = canvasCourse.sisCourseId.slice(-1)
 
   for (let { type, role_id } of ugRoleCanvasRole) {
-    const filter = createAndFilter(`edu.courses.${canvasCourse.courseCode.substring(0, 2)}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${roundId}.${type}`)
+    const filter = createGroupFilter(`edu.courses.${canvasCourse.courseCode.substring(0, 2)}.${canvasCourse.courseCode}.${canvasCourse.startTerm}.${roundId}.${type}`)
     const members = await searchGroup(filter, ldapClient)
     const users = await getUsersForMembers(members, ldapClient)
     for (let user of users) {
@@ -113,7 +113,7 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
     }
     const courseInitials = canvasCourse.courseCode.substring(0, lengthOfInitials)
     const courseCodeWOInitials = canvasCourse.courseCode.substring(lengthOfInitials)
-    const filter = createAndFilter(`ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}`)
+    const filter = createGroupFilter(`ladok2.kurser.${courseInitials}.${courseCodeWOInitials}.registrerade_${canvasCourse.startTerm}.${roundId}`)
     const registeredMembers = await searchGroup(filter, ldapClient)
     const registeredStudents = await getUsersForMembers(registeredMembers, ldapClient)
     for (let user of registeredStudents) {
