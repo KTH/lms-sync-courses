@@ -22,7 +22,7 @@ pipeline {
         // These are the commands run in the original Jenkins project
         stage('Original Process') {
             environment {
-                COMPOSE_PROJECT_NAME = 'lmssyncusers'
+                COMPOSE_PROJECT_NAME = "lms-sync-users-${env.BRANCH_NAME}"
             }
             steps {
                 sh 'ls $JENKINS_HOME/workspace/zermatt/jenkins/'
