@@ -21,6 +21,10 @@ pipeline {
 
         // These are the commands run in the original Jenkins project
         stage('Original Process') {
+            environment {
+                // This env variable avoids the "invalid container name" issue
+                COMPOSE_PROJECT_NAME = "${env.BUILD_TAG}"
+            }
             steps {
                 sh 'ls $JENKINS_HOME/workspace/zermatt/jenkins/'
                 sh '$JENKINS_HOME/workspace/zermatt/jenkins/buildinfo-to-node-module.sh /config/version.js'
