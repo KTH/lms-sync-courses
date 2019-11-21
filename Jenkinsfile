@@ -23,7 +23,7 @@ pipeline {
         stage('Original Process') {
             environment {
                 // This env variable avoids the "invalid container name" issue
-                COMPOSE_PROJECT_NAME = "${env.JOB_BASE_NAME}-${env.BRANCH_NAME}"
+                COMPOSE_PROJECT_NAME = "${env.BUILD_TAG}"
             }
             steps {
                 sh 'ls $JENKINS_HOME/workspace/zermatt/jenkins/'
