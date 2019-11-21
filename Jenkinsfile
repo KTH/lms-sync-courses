@@ -22,6 +22,7 @@ pipeline {
         // These are the commands run in the original Jenkins project
         stage('Original Process') {
             environment {
+                // This env variable avoids the "invalid container name" issue
                 COMPOSE_PROJECT_NAME = "lms-sync-users-${env.BRANCH_NAME}"
             }
             steps {
