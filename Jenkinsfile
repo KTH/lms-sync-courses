@@ -1,3 +1,4 @@
+// Read more: https://jenkins.io/doc/book/pipeline/jenkinsfile/
 String cron_string = BRANCH_NAME == "master" ? "@midnight" : ""
 
 pipeline {
@@ -8,25 +9,8 @@ pipeline {
     }
 
     stages {
-        // Some example code for creating a new process!
-        /*stage('Test') {
-            environment {
-                HOME = '.'
-            }
-            agent {
-                docker { image 'node:10-alpine' }
-            }
-            steps {
-                withCredentials([string(credentialsId: 'CANVAS_API_TOKEN_PROVISIONAL', variable: 'CANVAS_API_KEY')]){
-                    echo "My test HOME: '${HOME}'"
-                    sh 'npm run test:docker-unit'
-                    sh 'npm run test:docker-integration'
-                }
-            }
-        }*/
 
-        // These are the commands run in the original Jenkins project
-        stage('Original Process') {
+        stage('Run Evolene') {
             environment {
                 // This env variable avoids the "invalid container name" issue
                 COMPOSE_PROJECT_NAME = "${env.BUILD_TAG}"
@@ -39,11 +23,4 @@ pipeline {
             }
         }
     }
-
-    // Some more example code which can be extended in the future...
-    /*post {
-        success {
-            echo "SUCCESS!"
-        }
-    }*/
 }
