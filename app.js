@@ -1,4 +1,5 @@
 require('dotenv').config()
+require('@kth/reqvars').check()
 const app = require('kth-node-server')
 const logger = require('./server/logger')
 const runPeriodically = require('./run-periodically')
