@@ -3,7 +3,10 @@ const router = express.Router()
 
 const CanvasApi = require('kth-canvas-api')
 const got = require('got')
-const canvasApi = new CanvasApi(process.env.CANVAS_API_URL, process.env.CANVAS_API_KEY)
+const canvasApi = new CanvasApi(
+  process.env.CANVAS_API_URL,
+  process.env.CANVAS_API_KEY
+)
 
 const version = require('../config/version')
 const packageFile = require('../package.json')
@@ -21,9 +24,12 @@ async function checkCanvasKey () {
 
 async function checkCanvasStatus () {
   try {
-    const canvasStatus = await got('http://nlxv32btr6v7.statuspage.io/api/v2/status.json', {
-      json: true
-    })
+    const canvasStatus = await got(
+      'http://nlxv32btr6v7.statuspage.io/api/v2/status.json',
+      {
+        json: true
+      }
+    )
     return canvasStatus.status.indicator === 'none'
   } catch (e) {
     log.info('An error occured:', e)
@@ -50,7 +56,9 @@ async function _monitor (req, res) {
   const statusStr = [
     `APPLICATION_STATUS: ${status ? 'OK' : 'ERROR'}`,
     '',
-    `CANVAS_KEY: ${status ? 'OK' : 'ERROR. Token for Canvas is not properly set'}`
+    `CANVAS_KEY: ${
+      status ? 'OK' : 'ERROR. Token for Canvas is not properly set'
+    }`
   ].join('\n')
 
   log.info('Showing _monitor page:', statusStr)
@@ -64,9 +72,10 @@ async function _monitorAll (req, res) {
 
   const statusStr = [
     `APPLICATION_STATUS: ${canvasStatus && canvasKeyStatus ? 'OK' : 'ERROR'}`,
-    `CANVAS_KEY: ${canvasKeyStatus ? 'OK' : 'ERROR. Token for Canvas is not properly set'}`,
+    `CANVAS_KEY: ${
+      canvasKeyStatus ? 'OK' : 'ERROR. Token for Canvas is not properly set'
+    }`,
     `CANVAS: ${canvasStatus ? 'OK' : 'ERROR. CANVAS is down'}`
-
   ].join('\n')
 
   log.info('Showing _monitor_all page:', statusStr)

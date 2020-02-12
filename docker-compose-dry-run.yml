@@ -1,0 +1,17 @@
+version: '3.2'
+
+# ToDo: This does not work in the current version.
+# Look into a solution down the road!
+services:
+  dry_run:
+    image: $LOCAL_IMAGE_ID
+
+    environment:
+      - CANVAS_API_URL
+      - CANVAS_API_KEY
+      - KOPPS_BASE_URL
+      - UG_URL
+      - UG_USERNAME
+      - UG_PWD
+      - UG_LDAP_BASE
+      - CSV_DIR

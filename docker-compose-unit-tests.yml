@@ -1,29 +1,20 @@
 version: '3.2'
 
 services:
-  #############################################
-  # Start app as a container
-  #############################################
-  web:
-    # build from local Dockerfile
-    build: .
-    # if not --build and kth-azure-app already exists in
-    # your local computers registry 'image' is used.
+  unit_tests:
     image: $LOCAL_IMAGE_ID
 
-    # LOCAL_IMAGE_ID, IMAGE_NAME and IMAGE_VERSION
-
-    # Since we do not want to add tests to our
-    # production image. We mount the catalog
-    # 'tests' on in the repo on your local machine
-    # to /tests on the inside of the container.
-    # The volume mount is done at startup.
+    # We are setting "/usr/src/testdir" as current directory
+    # to not manipulate the image contents with testing elements.
     volumes:
-      - ./test:/test
-      - ./node_modules:/node_modules
-    # The unit test command that triggers tests to be run
-    # inside the container
-    # This example runs test in package.json which is
-    # part of the kth-azure-app image.
-    tty: true
-    command: npm run test:docker-unit
+      - ./test/:/app/test/
+      - ./.prettierignore:/app/.prettierignore
+
+    tty: false
+    command: >
+      sh -c "apk --no-cache --virtual build-dependencies add \
+            git \
+            python \
+            make \
+            && npm install \
+            && npm run test"

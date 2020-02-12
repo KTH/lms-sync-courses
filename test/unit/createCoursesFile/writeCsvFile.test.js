@@ -20,6 +20,19 @@ test('should write a line with the headers', async t => {
   // const courseRound = { courseCode: 'AL0001'}
 
   await createCsvFile('fileName')
-  t.ok(csvFile.writeLine.calledWith(['course_id', 'short_name', 'long_name', 'start_date', 'account_id', 'integration_id', 'status'], 'fileName'))
+  t.ok(
+    csvFile.writeLine.calledWith(
+      [
+        'course_id',
+        'short_name',
+        'long_name',
+        'start_date',
+        'account_id',
+        'integration_id',
+        'status'
+      ],
+      'fileName'
+    )
+  )
   t.end()
 })

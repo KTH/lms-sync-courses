@@ -5,17 +5,16 @@ const createLongName = util.__get__('createLongName')
 
 test('should use the swedish title', t => {
   t.plan(1)
-  const courseRound =
-    {
-      courseCode: 'AL2140',
-      startTerm: '20171',
-      roundId: 'roundId',
-      tutoringLanguage: 'Svenska',
-      title: {
-        sv: 'Renare produktion',
-        en: 'Cleaner Production'
-      }
+  const courseRound = {
+    courseCode: 'AL2140',
+    startTerm: '20171',
+    roundId: 'roundId',
+    tutoringLanguage: 'Svenska',
+    title: {
+      sv: 'Renare produktion',
+      en: 'Cleaner Production'
     }
+  }
 
   const result = createLongName(courseRound)
   t.deepEqual(result, 'AL2140 VT17-roundId Renare produktion')

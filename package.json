@@ -7,11 +7,11 @@
   "scripts": {
     "start": "NODE_ENV=production nodemon app.js",
     "start-dev": "cross-env NODE_ENV=development nodemon app.js",
-    "test": "tape \"test/unit/**/*.js\" | tap-spec",
+    "format": "prettier-standard \"**/*.{js,md,yml,json}\"",
+    "test": "prettier-standard --lint --check \"**/*.{js,md,yml,json}\" && tape \"test/unit/**/*.js\" | tap-spec",
     "test:integration": "tape \"test/integration/**/*.js\" | tap-spec",
-    "test:docker-unit": "npm install --no-optional; npm test",
-    "test:docker-integration": "npm install --no-optional; npm run test:integration",
-    "debug": "NODE_ENV=development node --nolazy --inspect-brk=9229 app.js | bunyan -o short"
+    "debug": "NODE_ENV=development node --nolazy --inspect-brk=9229 app.js | bunyan -o short",
+    "test-unit-in-docker": "ID=$(docker build -q .) && LOCAL_IMAGE_ID=$ID docker-compose -f docker-compose-unit-tests.yml up --abort-on-container-exit --always-recreate-deps"
   },
   "author": "team-e-larande",
   "license": "MIT",
@@ -36,10 +36,10 @@
     "cross-env": "^5.2.0",
     "fs-extra": "^6.0.1",
     "nodemon": "^1.19.0",
+    "prettier-standard": "^16.1.0",
     "proxyquire": "^2.1.0",
     "rewire": "^4.0.1",
     "sinon": "^5.1.1",
-    "standard": "^12.0.1",
     "tap-spec": "^5.0.0",
     "tape": "^4.10.1"
   }

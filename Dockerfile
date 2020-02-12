@@ -1,8 +1,9 @@
-FROM node:10-alpine
+FROM node:12-alpine
 
-COPY ["config", "config"]
-COPY ["package.json", "package.json"]
-COPY ["package-lock.json", "package-lock.json"]
+WORKDIR /app
+
+COPY ["package.json", "/app/package.json"]
+COPY ["package-lock.json", "/app/package-lock.json"]
 
 # Source files in root
 COPY [".env.in", ".env.in"]
@@ -11,8 +12,13 @@ COPY ["run-periodically.js", "run-periodically.js"]
 
 # Source files directories
 COPY ["server", "server"]
+COPY ["config", "config"]
 
-RUN npm install --production --no-optional
+RUN apk --no-cache --virtual build-dependencies add \
+    python \
+    make \
+    && npm ci --production \
+    && apk del build-dependencies
 
 EXPOSE 3000
 
