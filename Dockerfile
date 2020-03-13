@@ -14,11 +14,7 @@ COPY ["run-periodically.js", "run-periodically.js"]
 COPY ["server", "server"]
 COPY ["config", "config"]
 
-RUN apk --no-cache --virtual build-dependencies add \
-    python \
-    make \
-    && npm ci --production \
-    && apk del build-dependencies
+RUN npm ci --production
 
 EXPOSE 3000
 
