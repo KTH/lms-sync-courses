@@ -22,15 +22,6 @@ pipeline {
                 // Since a successful run relies on environment varibles being set,
                 // we need to skip it for now.
                 SKIP_DRY_RUN="True"
-
-                CANVAS_API_URL = credentials('CANVAS_API_URL')
-                CANVAS_API_KEY = credentials('CANVAS_API_KEY')
-                KOPPS_BASE_URL = credentials('KOPPS_BASE_URL')
-                UG_URL = credentials('UG_URL')
-                UG_USERNAME = credentials('UG_USERNAME')
-                UG_PWD = credentials('UG_PWD')
-                UG_LDAP_BASE = credentials('UG_LDAP_BASE')
-                CSV_DIR = credentials('CSV_DIR')
             }
             steps {
                 sh 'sudo /var/lib/jenkins/chown_jenkins.sh'
