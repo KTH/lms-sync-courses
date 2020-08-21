@@ -78,9 +78,9 @@ async function getExaminatorMembers (courseCode, ldapClient) {
 async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
   const ugRoleCanvasRole = [
     // role_id's are defined in Canvas
-    { type: 'teachers', role_id: 4 },
-    { type: 'courseresponsible', role_id: 9 },
-    { type: 'assistants', role_id: 5 }
+    { type: 'teachers', roleId: 4 },
+    { type: 'courseresponsible', roleId: 9 },
+    { type: 'assistants', roleId: 5 }
   ]
 
   const roundId = canvasCourse.sisCourseId.slice(-1)
