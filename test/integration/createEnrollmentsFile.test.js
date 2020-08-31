@@ -1,11 +1,14 @@
 require('dotenv').config()
 const test = require('ava')
 const createCoursesFile = require('../../server/createCoursesFile')
-const createSectionsFile = require('../../server/createSectionsFile')
 const createEnrollmentsFile = require('../../server/createEnrollmentsFile')
 const fs = require('fs')
 
-test('Generate courses.csv files for 2017-1-3', async t => {
+function removeId (line) {
+  return line.replace(/u\w{6}/i, 'uXXXXXX')
+}
+
+test('Generate enrollments.csv files for 2017-1-3', async t => {
   const term = 1
   const year = 2017
   const period = 3
@@ -19,13 +22,15 @@ test('Generate courses.csv files for 2017-1-3', async t => {
     courseOfferings
   )
 
-  const fileName = await createCoursesFile.createCoursesFile({
+  const fileName = await createEnrollmentsFile({
+    canvasCourses,
     term,
     year,
-    period,
-    canvasCourses
+    period
   })
 
   const content = fs.readFileSync(fileName, { encoding: 'utf-8'})
-  t.snapshot(content)
+  const safeContent = content.split('\n').map(removeId).join('\n')
+
+  t.snapshot(safeContent)
 })
