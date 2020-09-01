@@ -154,7 +154,12 @@ module.exports = async function ({ term, year, canvasCourses }) {
   const ldapClient = new Client({
     url: process.env.UG_URL
   })
-  await ldapClient.bind(process.env.UG_USERNAME, process.env.UG_PWD)
+  try {
+    await ldapClient.bind(process.env.UG_USERNAME, process.env.UG_PWD)
+  } catch (err) {
+    console.error('Error when binding', err)
+    return
+  }
   console.log('--- bound successful')
 
   const fileName = `${process.env.CSV_DIR}enrollments-${year}-${term}.csv`
