@@ -25,6 +25,6 @@ test('Generate sections.csv files for 2017-1-3', async t => {
     period
   })
 
-  const content = fs.readFileSync(fileName, { encoding: 'utf-8'})
+  const content = fs.readFileSync(fileName, { encoding: 'utf-8' })
   t.snapshot(content)
 })

@@ -29,8 +29,11 @@ test('Generate enrollments.csv files for 2017-1-3', async t => {
     period
   })
 
-  const content = fs.readFileSync(fileName, { encoding: 'utf-8'})
-  const safeContent = content.split('\n').map(removeId).join('\n')
+  const content = fs.readFileSync(fileName, { encoding: 'utf-8' })
+  const safeContent = content
+    .split('\n')
+    .map(removeId)
+    .join('\n')
 
   t.snapshot(safeContent)
 })
