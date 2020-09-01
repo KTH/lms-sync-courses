@@ -4,11 +4,6 @@ const createCoursesFile = require('../../server/createCoursesFile')
 const fs = require('fs')
 
 test('Generate courses.csv files for 2017-1-3', async t => {
-  console.log('......')
-  console.log(process.env.KOPPS_BASE_URL)
-  console.log('......')
-  console.log(process.env)
-  console.log('......')
   const term = 1
   const year = 2017
 

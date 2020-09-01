@@ -9,3 +9,10 @@ services:
       sh -c "apk add openssl git python make &&
              npm ci && \
              npm run test:integration"
+    environment:
+      - KOPPS_BASE_URL
+      - UG_URL
+      - UG_PWD
+      - UG_USERNAME
+      - UG_LDAP_BASE
+      - CSV_DIR: "/tmp/"
