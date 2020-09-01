@@ -11,7 +11,6 @@ function removeId (line) {
 test('Generate enrollments.csv files for 2017-1-3', async t => {
   const term = 1
   const year = 2017
-  const period = 3
 
   const courseOfferings = await createCoursesFile.getCourseOfferings({
     term,
@@ -25,8 +24,7 @@ test('Generate enrollments.csv files for 2017-1-3', async t => {
   const fileName = await createEnrollmentsFile({
     canvasCourses,
     term,
-    year,
-    period
+    year
   })
 
   const content = fs.readFileSync(fileName, { encoding: 'utf-8' })

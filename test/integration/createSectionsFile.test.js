@@ -7,7 +7,6 @@ const fs = require('fs')
 test('Generate sections.csv files for 2017-1-3', async t => {
   const term = 1
   const year = 2017
-  const period = 3
 
   const courseOfferings = await createCoursesFile.getCourseOfferings({
     term,
@@ -21,8 +20,7 @@ test('Generate sections.csv files for 2017-1-3', async t => {
   const fileName = await createSectionsFile({
     canvasCourses,
     term,
-    year,
-    period
+    year
   })
 
   const content = fs.readFileSync(fileName, { encoding: 'utf-8' })
