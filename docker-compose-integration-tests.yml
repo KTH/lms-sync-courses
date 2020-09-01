@@ -15,4 +15,4 @@ services:
       - UG_PWD
       - UG_USERNAME
       - UG_LDAP_BASE
-      - CSV_DIR: "/tmp/"
+      - CSV_DIR: '/tmp/'
