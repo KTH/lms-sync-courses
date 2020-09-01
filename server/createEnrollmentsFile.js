@@ -155,6 +155,7 @@ module.exports = async function ({ term, year, canvasCourses }) {
     url: process.env.UG_URL
   })
   await ldapClient.bind(process.env.UG_USERNAME, process.env.UG_PWD)
+  console.log('--- bound successful')
 
   const fileName = `${process.env.CSV_DIR}enrollments-${year}-${term}.csv`
   await deleteFile(fileName)
@@ -164,6 +165,7 @@ module.exports = async function ({ term, year, canvasCourses }) {
   )
 
   for (const canvasCourse of canvasCourses) {
+    console.log('--- ', canvasCourse.sisCourseId)
     await writeUsersForCourse({ canvasCourse, ldapClient, fileName })
   }
 
