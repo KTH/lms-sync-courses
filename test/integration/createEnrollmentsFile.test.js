@@ -8,7 +8,7 @@ function removeId (line) {
   return line.replace(/u\w{6}/i, 'uXXXXXX')
 }
 
-test('Generate enrollments.csv files for 2017-1-3', async t => {
+test.skip('Generate enrollments.csv files for 2017-1-3', async t => {
   const term = 1
   const year = 2017
 
