@@ -10,6 +10,7 @@
     "format": "prettier-standard \"**/*.{js,md,yml,json}\"",
     "test": "prettier-standard --lint --check \"**/*.{js,md,yml,json}\" && ava \"test/unit/**/*.js\"",
     "test:integration": "ava \"test/integration/**/*.js\" -v --timeout=60m",
+    "test:update-snapshots": "test:integration -- --update-snapshots",
     "debug": "NODE_ENV=development node --nolazy --inspect-brk=9229 app.js | bunyan -o short",
     "test-unit-in-docker": "ID=$(docker build -q .) && LOCAL_IMAGE_ID=$ID docker-compose -f docker-compose-unit-tests.yml up --abort-on-container-exit --always-recreate-deps"
   },
