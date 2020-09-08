@@ -150,14 +150,13 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
   }
 }
 
-module.exports = async function ({ term, year, period, canvasCourses }) {
+module.exports = async function ({ term, year, canvasCourses }) {
   const ldapClient = new Client({
     url: process.env.UG_URL
   })
   await ldapClient.bind(process.env.UG_USERNAME, process.env.UG_PWD)
 
-  const termin = `${year}${term}`
-  const fileName = `${process.env.CSV_DIR}enrollments-${termin}-${period}.csv`
+  const fileName = `${process.env.CSV_DIR}enrollments-${year}-${term}.csv`
   await deleteFile(fileName)
   await csvFile.writeLine(
     ['section_id', 'user_id', 'role_id', 'status'],

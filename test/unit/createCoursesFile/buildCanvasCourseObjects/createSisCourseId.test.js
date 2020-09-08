@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('ava')
 const rewire = require('rewire')
 const util = rewire('../../../../server/utils')
 const createSisCourseId = util.__get__('createSisCourseId')
@@ -12,5 +12,4 @@ test('should take a 2d array as input, and return a 1d array', t => {
   })
 
   t.deepEqual(result, 'AL2140VT171')
-  t.end()
 })
