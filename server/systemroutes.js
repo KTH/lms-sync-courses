@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const CanvasApi = require('kth-canvas-api')
+const CanvasApi = require('@kth/canvas-api')
 const got = require('got')
 const canvasApi = new CanvasApi(
   process.env.CANVAS_API_URL,
