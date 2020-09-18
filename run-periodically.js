@@ -1,7 +1,7 @@
 const logger = require('./server/logger')
 const createCoursesFile = require('./server/createCoursesFile')
 // const createEnrollmentsFile = require('./server/createEnrollmentsFile')
-const CanvasApi = require('kth-canvas-api')
+const CanvasApi = require('@kth/canvas-api')
 const schedule = require('node-schedule')
 const canvasApi = new CanvasApi(
   process.env.CANVAS_API_URL,
