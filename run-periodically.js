@@ -8,7 +8,7 @@ const canvasApi = new CanvasApi(
   process.env.CANVAS_API_KEY
 )
 canvasApi.logger = logger
-const moment = require('moment')
+const { getYear } = require('date-fns')
 const createSectionsFile = require('./server/createSectionsFile')
 const cronTime = process.env.SUCCESSFUL_SCHEDULE || '0 5 * * *'
 
@@ -32,7 +32,7 @@ async function runCourseSync (job) {
 }
 
 async function syncCoursesSectionsAndEnrollments () {
-  const currentYear = moment().year()
+  const currentYear = getYear(new Date())
   for (const year of [currentYear, currentYear + 1]) {
     for (const { term, period } of [
       { term: 1, period: 3 },
