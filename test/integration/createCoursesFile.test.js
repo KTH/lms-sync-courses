@@ -1,5 +1,5 @@
-const test = require('tape')
+const test = require('ava')
 
-test('Not implemented', { skip: true }, async t => {
+test.skip('Not implemented', async t => {
   t.end()
 })
