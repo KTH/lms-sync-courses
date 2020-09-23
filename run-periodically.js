@@ -34,13 +34,8 @@ async function runCourseSync (job) {
 async function syncCoursesSectionsAndEnrollments () {
   const currentYear = getYear(new Date())
   for (const year of [currentYear, currentYear + 1]) {
-    for (const { term, period } of [
-      { term: 1, period: 3 },
-      { term: 2, period: 0 }
-    ]) {
-      logger.info(
-        `creating sis files for year: ${year}, term: ${term}, period: ${period}`
-      )
+    for (const term of [1, 2]) {
+      logger.info(`creating sis files for year: ${year}, term: ${term}`)
 
       const courseOfferings = await createCoursesFile.getCourseOfferings({
         term,
@@ -52,7 +47,6 @@ async function syncCoursesSectionsAndEnrollments () {
       const coursesFileName = await createCoursesFile.createCoursesFile({
         term,
         year,
-        period,
         canvasCourses
       })
       const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
@@ -61,8 +55,7 @@ async function syncCoursesSectionsAndEnrollments () {
       const sectionsFileName = await createSectionsFile({
         canvasCourses,
         term,
-        year,
-        period
+        year
       })
       const sectionsResponse = await canvasApi.sendCsvFile(
         sectionsFileName,
