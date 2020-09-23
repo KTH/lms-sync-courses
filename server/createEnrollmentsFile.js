@@ -78,9 +78,9 @@ async function getExaminatorMembers (courseCode, ldapClient) {
 async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
   const ugRoleCanvasRole = [
     // role_id's are defined in Canvas
-    { type: 'teachers', roleId: 4 },
-    { type: 'courseresponsible', roleId: 9 },
-    { type: 'assistants', roleId: 5 }
+    { type: 'teachers', role_id: 4 },
+    { type: 'courseresponsible', role_id: 9 },
+    { type: 'assistants', role_id: 5 }
   ]
 
   const roundId = canvasCourse.sisCourseId.slice(-1)
@@ -150,13 +150,14 @@ async function writeUsersForCourse ({ canvasCourse, ldapClient, fileName }) {
   }
 }
 
-module.exports = async function ({ term, year, canvasCourses }) {
+module.exports = async function ({ term, year, period, canvasCourses }) {
   const ldapClient = new Client({
     url: process.env.UG_URL
   })
   await ldapClient.bind(process.env.UG_USERNAME, process.env.UG_PWD)
 
-  const fileName = `${process.env.CSV_DIR}enrollments-${year}-${term}.csv`
+  const termin = `${year}${term}`
+  const fileName = `${process.env.CSV_DIR}enrollments-${termin}-${period}.csv`
   await deleteFile(fileName)
   await csvFile.writeLine(
     ['section_id', 'user_id', 'role_id', 'status'],

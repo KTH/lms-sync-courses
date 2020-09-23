@@ -1,8 +1,8 @@
 const { csvFile } = require('kth-canvas-utilities')
 const { deleteFile } = require('./utils')
 
-module.exports = async function ({ canvasCourses, term, year }) {
-  const fileName = `${process.env.CSV_DIR}sections-${year}-${term}.csv`
+module.exports = async function ({ canvasCourses, term, year, period }) {
+  const fileName = `${process.env.CSV_DIR}sections-${year}${term}-${period}.csv`
 
   await deleteFile(fileName)
   await csvFile.writeLine(
