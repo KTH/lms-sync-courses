@@ -3,7 +3,7 @@ const createCoursesFile = require('./server/createCoursesFile')
 const createEnrollmentsFile = require('./server/createEnrollmentsFile')
 const CanvasApi = require('@kth/canvas-api')
 const schedule = require('node-schedule')
-const canvasApi = new CanvasApi(
+const canvasApi = CanvasApi(
   process.env.CANVAS_API_URL,
   process.env.CANVAS_API_KEY
 )
@@ -49,7 +49,10 @@ async function syncCoursesSectionsAndEnrollments () {
         year,
         canvasCourses
       })
-      const coursesResponse = await canvasApi.sendCsvFile(coursesFileName, true)
+      const { body: coursesResponse } = await canvasApi.sendSis(
+        'accounts/1/sis_imports',
+        coursesFileName
+      )
       logger.info('Done sending courses', coursesResponse)
 
       const sectionsFileName = await createSectionsFile({
@@ -57,9 +60,9 @@ async function syncCoursesSectionsAndEnrollments () {
         term,
         year
       })
-      const sectionsResponse = await canvasApi.sendCsvFile(
-        sectionsFileName,
-        true
+      const { body: sectionsResponse } = await canvasApi.sendSis(
+        'accounts/1/sis_imports',
+        sectionsFileName
       )
       logger.info('Done sending sections', sectionsResponse)
 
@@ -68,9 +71,9 @@ async function syncCoursesSectionsAndEnrollments () {
         term,
         year
       })
-      const enrollResponse = await canvasApi.sendCsvFile(
-        enrollmentsFileName,
-        true
+      const { body: enrollResponse } = await canvasApi.sendSis(
+        'accounts/1/sis_imports',
+        enrollmentsFileName
       )
       logger.info('Done sending enrollments', enrollResponse)
     }
