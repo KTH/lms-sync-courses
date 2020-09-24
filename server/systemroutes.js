@@ -14,7 +14,7 @@ const log = require('./logger')
 
 async function checkCanvasKey () {
   try {
-    await canvasApi.getRootAccount()
+    await canvasApi.get('accounts/1')
     return true
   } catch (e) {
     log.info('An error ocurred: ', e)
