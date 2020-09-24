@@ -17,7 +17,7 @@ async function checkCanvasKey () {
     await canvasApi.get('accounts/1')
     return true
   } catch (e) {
-    log.info('An error ocurred: ', e)
+    log.error('An error ocurred: ', e)
     return false
   }
 }
@@ -32,7 +32,7 @@ async function checkCanvasStatus () {
     )
     return canvasStatus.status.indicator === 'none'
   } catch (e) {
-    log.info('An error occured:', e)
+    log.error('An error occured:', e)
     return false
   }
 }
