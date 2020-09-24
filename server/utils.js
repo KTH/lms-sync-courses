@@ -1,7 +1,7 @@
 const terms = require('kth-canvas-utilities').terms
-const Promise = require('bluebird') // use bluebird to get a little more promise functions then the standard Promise AP
 const { unlink } = require('fs')
-const unlinkAsync = Promise.promisify(unlink)
+const util = require('util')
+const unlinkAsync = util.promisify(unlink)
 
 function deleteFile (fileName) {
   return unlinkAsync(fileName).catch(e =>
