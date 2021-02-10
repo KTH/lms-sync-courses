@@ -48,9 +48,11 @@ module.exports = {
 
   async getCourseOfferings ({ term, year }) {
     const { body } = await got(
-      `${process.env.KOPPS_BASE_URL}v2/courses/offerings?from=${year}${term}&skip_coordinator_info=true`,
+      `v2/courses/offerings?from=${year}${term}&skip_coordinator_info=true`,
       {
-        json: true
+        prefixUrl: process.env.KOPPS_BASE_URL,
+        responseType: 'json',
+        timeout: 60 * 1000 // 1 minute
       }
     )
 

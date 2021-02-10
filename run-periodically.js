@@ -3,11 +3,11 @@ const createCoursesFile = require('./server/createCoursesFile')
 const createEnrollmentsFile = require('./server/createEnrollmentsFile')
 const CanvasApi = require('@kth/canvas-api')
 const schedule = require('node-schedule')
-const canvasApi = CanvasApi(
+const canvasApi = new CanvasApi(
   process.env.CANVAS_API_URL,
   process.env.CANVAS_API_KEY
 )
-canvasApi.logger = logger
+
 const { getYear } = require('date-fns')
 const createSectionsFile = require('./server/createSectionsFile')
 const cronTime = process.env.SUCCESSFUL_SCHEDULE || '0 5 * * *'

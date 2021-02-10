@@ -21,13 +21,13 @@
     "url": "https://github.com/KTH/lms-sync-courses.git"
   },
   "dependencies": {
-    "@kth/canvas-api": "^2.1.2",
+    "@kth/canvas-api": "^3.0.0",
     "@kth/reqvars": "^2.0.1",
     "bunyan": "^1.8.12",
     "date-fns": "^2.16.1",
     "dotenv": "^5.0.1",
     "express": "^4.17.0",
-    "got": "^9.6.0",
+    "got": "^11.8.1",
     "kth-canvas-utilities": "^1.18.0",
     "kth-node-server": "^3.1.2",
     "ldapts": "^2.6.1",
