@@ -5,7 +5,10 @@ const CanvasApi = require('@kth/canvas-api')
 const schedule = require('node-schedule')
 const canvasApi = new CanvasApi(
   process.env.CANVAS_API_URL,
-  process.env.CANVAS_API_KEY
+  process.env.CANVAS_API_KEY,
+  {
+    timeout: 10 * 1000 // 10 seconds
+  }
 )
 
 const { getYear } = require('date-fns')
